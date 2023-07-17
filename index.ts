@@ -2,7 +2,7 @@ import path from "path";
 import net from "net";
 import os from "os";
 import { readdir } from "fs/promises";
-import createClient from "openapi-fetch";
+import createClient from "openapi-fetch-bun";
 import PromiseSocket from "promise-socket";
 import { paths } from "./latest";
 
@@ -28,7 +28,9 @@ export function userSettingsDir() {
 }
 
 export async function userConfig() {
-	return await Bun.file(path.join(userSettingsDir(), "config.json")).json<DockerUserConfig>();
+	const file = Bun.file(path.join(userSettingsDir(), "config.json"));
+	if (!(await file.exists())) return null;
+	return await file.json<DockerUserConfig>();
 }
 
 export async function* contexts() {
@@ -40,7 +42,7 @@ export async function* contexts() {
 
 export async function currentContext() {
 	const config = await userConfig();
-	if (!config.currentContext) return null;
+	if (!config?.currentContext) return null;
 	for await (const context of contexts()) {
 		if (context.Name == config.currentContext) {
 			return context;
@@ -75,13 +77,20 @@ async function unixFetch(url: string | URL | Request, init?: RequestInit): Promi
 	const socket = new net.Socket();
 	const promiseSocket = new PromiseSocket(socket);
 	await promiseSocket.connect(unixPath!);
-	const requestHeaders = init?.headers ? Object.entries(init.headers)
-		.map(([key, value]) => `${key}: ${value}`).
-		join("\r\n") : "\r\n";
+	const requestHeaders = init?.headers
+		? Object.entries(init.headers)
+				.map(([key, value]) => `${key}: ${value}`)
+				.join("\r\n")
+		: "\r\n";
 	await promiseSocket.write(`${init?.method || "GET"} ${url} HTTP/1.0\r\nHost: localhost\r\n${requestHeaders}\r\n`);
-	const buf = await promiseSocket.read() as Buffer;
+	// TODO: figure out Docker stream responses
+	const buf = (await promiseSocket.read()) as Buffer;
 	const body = decoder.decode(buf).split("\r\n\r\n");
-	const headers = body.shift()?.split("\r\n")?.map(header => header.split(": ") as [string, string]) || [];
+	const headers =
+		body
+			.shift()
+			?.split("\r\n")
+			?.map((header) => header.split(": ") as [string, string]) || [];
 	const status = headers.shift()![0].split(" ") || [];
 	const response = new Response(body[0], {
 		status: Number(status[1]),
@@ -102,4 +111,4 @@ export default function createDockerClient<Paths extends {} = paths>(version?: s
 		baseUrl: `/${version ? version + "/" : ""}`,
 		fetch: unixFetch,
 	});
-};
+}

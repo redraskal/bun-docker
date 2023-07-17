@@ -1,20 +1,20 @@
 {
-  "name": "bun-docker",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "prettier": "prettier --write .",
-    "gen": "./gen.sh"
-  },
-  "devDependencies": {
-    "bun-types": "latest",
-    "openapi-typescript": "v5"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "openapi-fetch": "^0.6.1",
-    "promise-socket": "^7.0.0"
-  }
+	"name": "bun-docker",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"prettier": "prettier --write .",
+		"gen": "./gen.sh"
+	},
+	"devDependencies": {
+		"bun-types": "latest",
+		"openapi-typescript": "v5"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"openapi-fetch-bun": "redraskal/openapi-fetch-bun#main",
+		"promise-socket": "^7.0.0"
+	}
 }
