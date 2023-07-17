@@ -2,8 +2,8 @@
 
 TypeScript Docker API for Bun using unix sockets.
 
-* API generated with [openapi-typescript](https://github.com/drwpow/openapi-typescript)
-* Supports [colima](https://github.com/abiosoft/colima) for macOS/Linux
+- API generated with [openapi-typescript](https://github.com/drwpow/openapi-typescript)
+- Supports [colima](https://github.com/abiosoft/colima) for macOS/Linux
 
 [Latest Docker API spec](https://docs.docker.com/engine/api/latest)
 

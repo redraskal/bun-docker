@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"prettier": "prettier --write .",
-		"gen": "./gen.sh"
+		"gen": "./generate_latest_api.sh && bun prettier"
 	},
 	"devDependencies": {
 		"bun-types": "latest",
