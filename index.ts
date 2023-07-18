@@ -1,7 +1,7 @@
 import path from "path";
 import net from "net";
 import os from "os";
-import { readdir } from "fs/promises";
+import { exists, readdir } from "fs/promises";
 import createClient from "openapi-fetch-bun";
 import PromiseSocket from "promise-socket";
 import { paths } from "./latest";
@@ -53,8 +53,11 @@ export async function currentContext() {
 
 export async function socketPath() {
 	let location = "unix:///var/run/docker.sock";
-	if (await Bun.file(location).exists()) {
+	if (await exists(location)) {
 		return location;
+	}
+	if (await exists("docker.sock")) {
+		return "unix://docker.sock";
 	}
 	return (await currentContext())?.Endpoints.docker.Host;
 }
