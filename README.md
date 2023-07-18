@@ -10,7 +10,7 @@ TypeScript Docker API for Bun using unix sockets.
 ```ts
 import createDockerClient from "bun-docker";
 
-const { get } = createDockerClient();
+const { get } = await createDockerClient();
 const { data, error } = await get("/info", {});
 
 console.log(data);

@@ -70,45 +70,47 @@ async function* walk(directory: string): AsyncGenerator<string> {
 	}
 }
 
-const unixPath = await socketPath();
 const decoder = new TextDecoder("utf-8");
 
-async function unixFetch(url: string | URL | Request, init?: RequestInit): Promise<Response> {
-	const socket = new net.Socket();
-	const promiseSocket = new PromiseSocket(socket);
-	await promiseSocket.connect(unixPath!);
-	const requestHeaders = init?.headers
-		? Object.entries(init.headers)
-				.map(([key, value]) => `${key}: ${value}`)
-				.join("\r\n")
-		: "\r\n";
-	await promiseSocket.write(`${init?.method || "GET"} ${url} HTTP/1.0\r\nHost: localhost\r\n${requestHeaders}\r\n`);
-	// TODO: figure out Docker stream responses
-	const buf = (await promiseSocket.read()) as Buffer;
-	const body = decoder.decode(buf).split("\r\n\r\n");
-	const headers =
-		body
-			.shift()
-			?.split("\r\n")
-			?.map((header) => header.split(": ") as [string, string]) || [];
-	const status = headers.shift()![0].split(" ") || [];
-	const response = new Response(body[0], {
-		status: Number(status[1]),
-		statusText: status[2],
-		headers: headers,
-	});
-	return response;
+function unixFetch(unixPath: string) {
+	return async function (url: string | URL | Request, init?: RequestInit): Promise<Response> {
+		const socket = new net.Socket();
+		const promiseSocket = new PromiseSocket(socket);
+		await promiseSocket.connect(unixPath);
+		const requestHeaders = init?.headers
+			? Object.entries(init.headers)
+					.map(([key, value]) => `${key}: ${value}`)
+					.join("\r\n")
+			: "\r\n";
+		await promiseSocket.write(`${init?.method || "GET"} ${url} HTTP/1.0\r\nHost: localhost\r\n${requestHeaders}\r\n`);
+		// TODO: figure out Docker stream responses
+		const buf = (await promiseSocket.read()) as Buffer;
+		const body = decoder.decode(buf).split("\r\n\r\n");
+		const headers =
+			body
+				.shift()
+				?.split("\r\n")
+				?.map((header) => header.split(": ") as [string, string]) || [];
+		const status = headers.shift()![0].split(" ") || [];
+		const response = new Response(body[0], {
+			status: Number(status[1]),
+			statusText: status[2],
+			headers: headers,
+		});
+		return response;
+	};
 }
 
 /**
  * @param version API version (specify if you do not use the latest version)
  */
-export default function createDockerClient<Paths extends {} = paths>(version?: string) {
+export default async function createDockerClient<Paths extends {} = paths>(version?: string) {
+	const unixPath = await socketPath();
 	if (!unixPath) {
 		throw new Error("Docker unix socket not found");
 	}
 	return createClient<Paths>({
 		baseUrl: `/${version ? version + "/" : ""}`,
-		fetch: unixFetch,
+		fetch: unixFetch(unixPath),
 	});
 }
