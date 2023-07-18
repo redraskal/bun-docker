@@ -661,3015 +661,406 @@ export interface paths {
 	};
 }
 
-export interface definitions {
-	/**
-	 * @description An open port on a container
-	 * @example {
-	 *   "PrivatePort": 8080,
-	 *   "PublicPort": 80,
-	 *   "Type": "tcp"
-	 * }
-	 */
-	Port: {
+export interface components {
+	schemas: {
 		/**
-		 * Format: ip-address
-		 * @description Host IP address that the container's port is mapped to
+		 * @description An open port on a container
+		 * @example {
+		 *   "PrivatePort": 8080,
+		 *   "PublicPort": 80,
+		 *   "Type": "tcp"
+		 * }
 		 */
-		IP?: string;
-		/**
-		 * Format: uint16
-		 * @description Port on the container
-		 */
-		PrivatePort: number;
-		/**
-		 * Format: uint16
-		 * @description Port exposed on the host
-		 */
-		PublicPort?: number;
-		/** @enum {string} */
-		Type: "tcp" | "udp" | "sctp";
-	};
-	/**
-	 * @description MountPoint represents a mount point configuration inside the container.
-	 * This is used for reporting the mountpoints in use by a container.
-	 */
-	MountPoint: {
-		/**
-		 * @description The mount type:
-		 *
-		 * - `bind` a mount of a file or directory from the host into the container.
-		 * - `volume` a docker volume with the given `Name`.
-		 * - `tmpfs` a `tmpfs`.
-		 * - `npipe` a named pipe from the host into the container.
-		 * - `cluster` a Swarm cluster volume
-		 *
-		 * @example volume
-		 * @enum {string}
-		 */
-		Type?: "bind" | "volume" | "tmpfs" | "npipe" | "cluster";
-		/**
-		 * @description Name is the name reference to the underlying data defined by `Source`
-		 * e.g., the volume name.
-		 *
-		 * @example myvolume
-		 */
-		Name?: string;
-		/**
-		 * @description Source location of the mount.
-		 *
-		 * For volumes, this contains the storage location of the volume (within
-		 * `/var/lib/docker/volumes/`). For bind-mounts, and `npipe`, this contains
-		 * the source (host) part of the bind-mount. For `tmpfs` mount points, this
-		 * field is empty.
-		 *
-		 * @example /var/lib/docker/volumes/myvolume/_data
-		 */
-		Source?: string;
-		/**
-		 * @description Destination is the path relative to the container root (`/`) where
-		 * the `Source` is mounted inside the container.
-		 *
-		 * @example /usr/share/nginx/html/
-		 */
-		Destination?: string;
-		/**
-		 * @description Driver is the volume driver used to create the volume (if it is a volume).
-		 *
-		 * @example local
-		 */
-		Driver?: string;
-		/**
-		 * @description Mode is a comma separated list of options supplied by the user when
-		 * creating the bind/volume mount.
-		 *
-		 * The default is platform-specific (`"z"` on Linux, empty on Windows).
-		 *
-		 * @example z
-		 */
-		Mode?: string;
-		/**
-		 * @description Whether the mount is mounted writable (read-write).
-		 *
-		 * @example true
-		 */
-		RW?: boolean;
-		/**
-		 * @description Propagation describes how mounts are propagated from the host into the
-		 * mount point, and vice-versa. Refer to the [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt)
-		 * for details. This field is not used on Windows.
-		 *
-		 * @example
-		 */
-		Propagation?: string;
-	};
-	/**
-	 * @description A device mapping between the host and container
-	 * @example {
-	 *   "PathOnHost": "/dev/deviceName",
-	 *   "PathInContainer": "/dev/deviceName",
-	 *   "CgroupPermissions": "mrw"
-	 * }
-	 */
-	DeviceMapping: {
-		PathOnHost?: string;
-		PathInContainer?: string;
-		CgroupPermissions?: string;
-	};
-	/** @description A request for devices to be sent to device drivers */
-	DeviceRequest: {
-		/** @example nvidia */
-		Driver?: string;
-		/** @example -1 */
-		Count?: number;
-		/**
-		 * @example [
-		 *   "0",
-		 *   "1",
-		 *   "GPU-fef8089b-4820-abfc-e83e-94318197576e"
-		 * ]
-		 */
-		DeviceIDs?: string[];
-		/**
-		 * @description A list of capabilities; an OR list of AND lists of capabilities.
-		 *
-		 * @example [
-		 *   [
-		 *     "gpu",
-		 *     "nvidia",
-		 *     "compute"
-		 *   ]
-		 * ]
-		 */
-		Capabilities?: string[][];
-		/**
-		 * @description Driver-specific options, specified as a key/value pairs. These options
-		 * are passed directly to the driver.
-		 */
-		Options?: { [key: string]: string };
-	};
-	ThrottleDevice: {
-		/** @description Device path */
-		Path?: string;
-		/**
-		 * Format: int64
-		 * @description Rate
-		 */
-		Rate?: number;
-	};
-	Mount: {
-		/** @description Container path. */
-		Target?: string;
-		/** @description Mount source (e.g. a volume name, a host path). */
-		Source?: string;
-		/**
-		 * @description The mount type. Available types:
-		 *
-		 * - `bind` Mounts a file or directory from the host into the container. Must exist prior to creating the container.
-		 * - `volume` Creates a volume with the given name and options (or uses a pre-existing volume with the same name and options). These are **not** removed when the container is removed.
-		 * - `tmpfs` Create a tmpfs with the given options. The mount source cannot be specified for tmpfs.
-		 * - `npipe` Mounts a named pipe from the host into the container. Must exist prior to creating the container.
-		 * - `cluster` a Swarm cluster volume
-		 *
-		 * @enum {string}
-		 */
-		Type?: "bind" | "volume" | "tmpfs" | "npipe" | "cluster";
-		/** @description Whether the mount should be read-only. */
-		ReadOnly?: boolean;
-		/** @description The consistency requirement for the mount: `default`, `consistent`, `cached`, or `delegated`. */
-		Consistency?: string;
-		/** @description Optional configuration for the `bind` type. */
-		BindOptions?: {
+		Port: {
 			/**
-			 * @description A propagation mode with the value `[r]private`, `[r]shared`, or `[r]slave`.
-			 * @enum {string}
+			 * Format: ip-address
+			 * @description Host IP address that the container's port is mapped to
 			 */
-			Propagation?: "private" | "rprivate" | "shared" | "rshared" | "slave" | "rslave";
+			IP?: string;
 			/**
-			 * @description Disable recursive bind mount.
-			 * @default false
+			 * Format: uint16
+			 * @description Port on the container
 			 */
-			NonRecursive?: boolean;
+			PrivatePort: number;
 			/**
-			 * @description Create mount point on host if missing
-			 * @default false
+			 * Format: uint16
+			 * @description Port exposed on the host
 			 */
-			CreateMountpoint?: boolean;
-		};
-		/** @description Optional configuration for the `volume` type. */
-		VolumeOptions?: {
-			/**
-			 * @description Populate volume with data from the target.
-			 * @default false
-			 */
-			NoCopy?: boolean;
-			/** @description User-defined key/value metadata. */
-			Labels?: { [key: string]: string };
-			/** @description Map of driver specific options */
-			DriverConfig?: {
-				/** @description Name of the driver to use to create the volume. */
-				Name?: string;
-				/** @description key/value map of driver specific options. */
-				Options?: { [key: string]: string };
-			};
-		};
-		/** @description Optional configuration for the `tmpfs` type. */
-		TmpfsOptions?: {
-			/**
-			 * Format: int64
-			 * @description The size for the tmpfs mount in bytes.
-			 */
-			SizeBytes?: number;
-			/** @description The permission mode for the tmpfs mount in an integer. */
-			Mode?: number;
-		};
-	};
-	/**
-	 * @description The behavior to apply when the container exits. The default is not to
-	 * restart.
-	 *
-	 * An ever increasing delay (double the previous delay, starting at 100ms) is
-	 * added before each restart to prevent flooding the server.
-	 */
-	RestartPolicy: {
-		/**
-		 * @description - Empty string means not to restart
-		 * - `no` Do not automatically restart
-		 * - `always` Always restart
-		 * - `unless-stopped` Restart always except when the user has manually stopped the container
-		 * - `on-failure` Restart only when the container exit code is non-zero
-		 *
-		 * @enum {string}
-		 */
-		Name?: "" | "no" | "always" | "unless-stopped" | "on-failure";
-		/** @description If `on-failure` is used, the number of times to retry before giving up. */
-		MaximumRetryCount?: number;
-	};
-	/** @description A container's resources (cgroups config, ulimits, etc) */
-	Resources: {
-		/**
-		 * @description An integer value representing this container's relative CPU weight
-		 * versus other containers.
-		 */
-		CpuShares?: number;
-		/**
-		 * Format: int64
-		 * @description Memory limit in bytes.
-		 * @default 0
-		 */
-		Memory?: number;
-		/**
-		 * @description Path to `cgroups` under which the container's `cgroup` is created. If
-		 * the path is not absolute, the path is considered to be relative to the
-		 * `cgroups` path of the init process. Cgroups are created if they do not
-		 * already exist.
-		 */
-		CgroupParent?: string;
-		/** @description Block IO weight (relative weight). */
-		BlkioWeight?: number;
-		/**
-		 * @description Block IO weight (relative device weight) in the form:
-		 *
-		 * ```
-		 * [{"Path": "device_path", "Weight": weight}]
-		 * ```
-		 */
-		BlkioWeightDevice?: {
-			Path?: string;
-			Weight?: number;
-		}[];
-		/**
-		 * @description Limit read rate (bytes per second) from a device, in the form:
-		 *
-		 * ```
-		 * [{"Path": "device_path", "Rate": rate}]
-		 * ```
-		 */
-		BlkioDeviceReadBps?: definitions["ThrottleDevice"][];
-		/**
-		 * @description Limit write rate (bytes per second) to a device, in the form:
-		 *
-		 * ```
-		 * [{"Path": "device_path", "Rate": rate}]
-		 * ```
-		 */
-		BlkioDeviceWriteBps?: definitions["ThrottleDevice"][];
-		/**
-		 * @description Limit read rate (IO per second) from a device, in the form:
-		 *
-		 * ```
-		 * [{"Path": "device_path", "Rate": rate}]
-		 * ```
-		 */
-		BlkioDeviceReadIOps?: definitions["ThrottleDevice"][];
-		/**
-		 * @description Limit write rate (IO per second) to a device, in the form:
-		 *
-		 * ```
-		 * [{"Path": "device_path", "Rate": rate}]
-		 * ```
-		 */
-		BlkioDeviceWriteIOps?: definitions["ThrottleDevice"][];
-		/**
-		 * Format: int64
-		 * @description The length of a CPU period in microseconds.
-		 */
-		CpuPeriod?: number;
-		/**
-		 * Format: int64
-		 * @description Microseconds of CPU time that the container can get in a CPU period.
-		 */
-		CpuQuota?: number;
-		/**
-		 * Format: int64
-		 * @description The length of a CPU real-time period in microseconds. Set to 0 to
-		 * allocate no time allocated to real-time tasks.
-		 */
-		CpuRealtimePeriod?: number;
-		/**
-		 * Format: int64
-		 * @description The length of a CPU real-time runtime in microseconds. Set to 0 to
-		 * allocate no time allocated to real-time tasks.
-		 */
-		CpuRealtimeRuntime?: number;
-		/**
-		 * @description CPUs in which to allow execution (e.g., `0-3`, `0,1`).
-		 *
-		 * @example 0-3
-		 */
-		CpusetCpus?: string;
-		/**
-		 * @description Memory nodes (MEMs) in which to allow execution (0-3, 0,1). Only
-		 * effective on NUMA systems.
-		 */
-		CpusetMems?: string;
-		/** @description A list of devices to add to the container. */
-		Devices?: definitions["DeviceMapping"][];
-		/** @description a list of cgroup rules to apply to the container */
-		DeviceCgroupRules?: string[];
-		/** @description A list of requests for devices to be sent to device drivers. */
-		DeviceRequests?: definitions["DeviceRequest"][];
-		/**
-		 * Format: int64
-		 * @description Hard limit for kernel TCP buffer memory (in bytes). Depending on the
-		 * OCI runtime in use, this option may be ignored. It is no longer supported
-		 * by the default (runc) runtime.
-		 *
-		 * This field is omitted when empty.
-		 */
-		KernelMemoryTCP?: number;
-		/**
-		 * Format: int64
-		 * @description Memory soft limit in bytes.
-		 */
-		MemoryReservation?: number;
-		/**
-		 * Format: int64
-		 * @description Total memory limit (memory + swap). Set as `-1` to enable unlimited
-		 * swap.
-		 */
-		MemorySwap?: number;
-		/**
-		 * Format: int64
-		 * @description Tune a container's memory swappiness behavior. Accepts an integer
-		 * between 0 and 100.
-		 */
-		MemorySwappiness?: number;
-		/**
-		 * Format: int64
-		 * @description CPU quota in units of 10<sup>-9</sup> CPUs.
-		 */
-		NanoCpus?: number;
-		/** @description Disable OOM Killer for the container. */
-		OomKillDisable?: boolean;
-		/**
-		 * @description Run an init inside the container that forwards signals and reaps
-		 * processes. This field is omitted if empty, and the default (as
-		 * configured on the daemon) is used.
-		 */
-		Init?: boolean;
-		/**
-		 * Format: int64
-		 * @description Tune a container's PIDs limit. Set `0` or `-1` for unlimited, or `null`
-		 * to not change.
-		 */
-		PidsLimit?: number;
-		/**
-		 * @description A list of resource limits to set in the container. For example:
-		 *
-		 * ```
-		 * {"Name": "nofile", "Soft": 1024, "Hard": 2048}
-		 * ```
-		 */
-		Ulimits?: {
-			/** @description Name of ulimit */
-			Name?: string;
-			/** @description Soft limit */
-			Soft?: number;
-			/** @description Hard limit */
-			Hard?: number;
-		}[];
-		/**
-		 * Format: int64
-		 * @description The number of usable CPUs (Windows only).
-		 *
-		 * On Windows Server containers, the processor resource controls are
-		 * mutually exclusive. The order of precedence is `CPUCount` first, then
-		 * `CPUShares`, and `CPUPercent` last.
-		 */
-		CpuCount?: number;
-		/**
-		 * Format: int64
-		 * @description The usable percentage of the available CPUs (Windows only).
-		 *
-		 * On Windows Server containers, the processor resource controls are
-		 * mutually exclusive. The order of precedence is `CPUCount` first, then
-		 * `CPUShares`, and `CPUPercent` last.
-		 */
-		CpuPercent?: number;
-		/**
-		 * Format: int64
-		 * @description Maximum IOps for the container system drive (Windows only)
-		 */
-		IOMaximumIOps?: number;
-		/**
-		 * Format: int64
-		 * @description Maximum IO in bytes per second for the container system drive
-		 * (Windows only).
-		 */
-		IOMaximumBandwidth?: number;
-	};
-	/** @description An object describing a limit on resources which can be requested by a task. */
-	Limit: {
-		/**
-		 * Format: int64
-		 * @example 4000000000
-		 */
-		NanoCPUs?: number;
-		/**
-		 * Format: int64
-		 * @example 8272408576
-		 */
-		MemoryBytes?: number;
-		/**
-		 * Format: int64
-		 * @description Limits the maximum number of PIDs in the container. Set `0` for unlimited.
-		 *
-		 * @default 0
-		 * @example 100
-		 */
-		Pids?: number;
-	};
-	/**
-	 * @description An object describing the resources which can be advertised by a node and
-	 * requested by a task.
-	 */
-	ResourceObject: {
-		/**
-		 * Format: int64
-		 * @example 4000000000
-		 */
-		NanoCPUs?: number;
-		/**
-		 * Format: int64
-		 * @example 8272408576
-		 */
-		MemoryBytes?: number;
-		GenericResources?: definitions["GenericResources"];
-	};
-	/**
-	 * @description User-defined resources can be either Integer resources (e.g, `SSD=3`) or
-	 * String resources (e.g, `GPU=UUID1`).
-	 *
-	 * @example [
-	 *   {
-	 *     "DiscreteResourceSpec": {
-	 *       "Kind": "SSD",
-	 *       "Value": 3
-	 *     }
-	 *   },
-	 *   {
-	 *     "NamedResourceSpec": {
-	 *       "Kind": "GPU",
-	 *       "Value": "UUID1"
-	 *     }
-	 *   },
-	 *   {
-	 *     "NamedResourceSpec": {
-	 *       "Kind": "GPU",
-	 *       "Value": "UUID2"
-	 *     }
-	 *   }
-	 * ]
-	 */
-	GenericResources: {
-		NamedResourceSpec?: {
-			Kind?: string;
-			Value?: string;
-		};
-		DiscreteResourceSpec?: {
-			Kind?: string;
-			/** Format: int64 */
-			Value?: number;
-		};
-	}[];
-	/** @description A test to perform to check that the container is healthy. */
-	HealthConfig: {
-		/**
-		 * @description The test to perform. Possible values are:
-		 *
-		 * - `[]` inherit healthcheck from image or parent image
-		 * - `["NONE"]` disable healthcheck
-		 * - `["CMD", args...]` exec arguments directly
-		 * - `["CMD-SHELL", command]` run command with system's default shell
-		 */
-		Test?: string[];
-		/**
-		 * Format: int64
-		 * @description The time to wait between checks in nanoseconds. It should be 0 or at
-		 * least 1000000 (1 ms). 0 means inherit.
-		 */
-		Interval?: number;
-		/**
-		 * Format: int64
-		 * @description The time to wait before considering the check to have hung. It should
-		 * be 0 or at least 1000000 (1 ms). 0 means inherit.
-		 */
-		Timeout?: number;
-		/**
-		 * @description The number of consecutive failures needed to consider a container as
-		 * unhealthy. 0 means inherit.
-		 */
-		Retries?: number;
-		/**
-		 * Format: int64
-		 * @description Start period for the container to initialize before starting
-		 * health-retries countdown in nanoseconds. It should be 0 or at least
-		 * 1000000 (1 ms). 0 means inherit.
-		 */
-		StartPeriod?: number;
-	};
-	/** @description Health stores information about the container's healthcheck results. */
-	Health: {
-		/**
-		 * @description Status is one of `none`, `starting`, `healthy` or `unhealthy`
-		 *
-		 * - "none"      Indicates there is no healthcheck
-		 * - "starting"  Starting indicates that the container is not yet ready
-		 * - "healthy"   Healthy indicates that the container is running correctly
-		 * - "unhealthy" Unhealthy indicates that the container has a problem
-		 *
-		 * @example healthy
-		 * @enum {string}
-		 */
-		Status?: "none" | "starting" | "healthy" | "unhealthy";
-		/**
-		 * @description FailingStreak is the number of consecutive failures
-		 * @example 0
-		 */
-		FailingStreak?: number;
-		/** @description Log contains the last few results (oldest first) */
-		Log?: definitions["HealthcheckResult"][];
-	};
-	/** @description HealthcheckResult stores information about a single run of a healthcheck probe */
-	HealthcheckResult: {
-		/**
-		 * Format: date-time
-		 * @description Date and time at which this check started in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2020-01-04T10:44:24.496525531Z
-		 */
-		Start?: string;
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which this check ended in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2020-01-04T10:45:21.364524523Z
-		 */
-		End?: string;
-		/**
-		 * @description ExitCode meanings:
-		 *
-		 * - `0` healthy
-		 * - `1` unhealthy
-		 * - `2` reserved (considered unhealthy)
-		 * - other values: error running probe
-		 *
-		 * @example 0
-		 */
-		ExitCode?: number;
-		/** @description Output from last check */
-		Output?: string;
-	};
-	/** @description Container configuration that depends on the host we are running on */
-	HostConfig: definitions["Resources"] & {
-		/**
-		 * @description A list of volume bindings for this container. Each volume binding
-		 * is a string in one of these forms:
-		 *
-		 * - `host-src:container-dest[:options]` to bind-mount a host path
-		 *   into the container. Both `host-src`, and `container-dest` must
-		 *   be an _absolute_ path.
-		 * - `volume-name:container-dest[:options]` to bind-mount a volume
-		 *   managed by a volume driver into the container. `container-dest`
-		 *   must be an _absolute_ path.
-		 *
-		 * `options` is an optional, comma-delimited list of:
-		 *
-		 * - `nocopy` disables automatic copying of data from the container
-		 *   path to the volume. The `nocopy` flag only applies to named volumes.
-		 * - `[ro|rw]` mounts a volume read-only or read-write, respectively.
-		 *   If omitted or set to `rw`, volumes are mounted read-write.
-		 * - `[z|Z]` applies SELinux labels to allow or deny multiple containers
-		 *   to read and write to the same volume.
-		 *     - `z`: a _shared_ content label is applied to the content. This
-		 *       label indicates that multiple containers can share the volume
-		 *       content, for both reading and writing.
-		 *     - `Z`: a _private unshared_ label is applied to the content.
-		 *       This label indicates that only the current container can use
-		 *       a private volume. Labeling systems such as SELinux require
-		 *       proper labels to be placed on volume content that is mounted
-		 *       into a container. Without a label, the security system can
-		 *       prevent a container's processes from using the content. By
-		 *       default, the labels set by the host operating system are not
-		 *       modified.
-		 * - `[[r]shared|[r]slave|[r]private]` specifies mount
-		 *   [propagation behavior](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt).
-		 *   This only applies to bind-mounted volumes, not internal volumes
-		 *   or named volumes. Mount propagation requires the source mount
-		 *   point (the location where the source directory is mounted in the
-		 *   host operating system) to have the correct propagation properties.
-		 *   For shared volumes, the source mount point must be set to `shared`.
-		 *   For slave volumes, the mount must be set to either `shared` or
-		 *   `slave`.
-		 */
-		Binds?: string[];
-		/** @description Path to a file where the container ID is written */
-		ContainerIDFile?: string;
-		/** @description The logging configuration for this container */
-		LogConfig?: {
+			PublicPort?: number;
 			/** @enum {string} */
-			Type?: "json-file" | "syslog" | "journald" | "gelf" | "fluentd" | "awslogs" | "splunk" | "etwlogs" | "none";
-			Config?: { [key: string]: string };
+			Type: "tcp" | "udp" | "sctp";
 		};
 		/**
-		 * @description Network mode to use for this container. Supported standard values
-		 * are: `bridge`, `host`, `none`, and `container:<name|id>`. Any
-		 * other value is taken as a custom network's name to which this
-		 * container should connect to.
+		 * @description MountPoint represents a mount point configuration inside the container.
+		 * This is used for reporting the mountpoints in use by a container.
 		 */
-		NetworkMode?: string;
-		PortBindings?: definitions["PortMap"];
-		RestartPolicy?: definitions["RestartPolicy"];
-		/**
-		 * @description Automatically remove the container when the container's process
-		 * exits. This has no effect if `RestartPolicy` is set.
-		 */
-		AutoRemove?: boolean;
-		/** @description Driver that this container uses to mount volumes. */
-		VolumeDriver?: string;
-		/**
-		 * @description A list of volumes to inherit from another container, specified in
-		 * the form `<container name>[:<ro|rw>]`.
-		 */
-		VolumesFrom?: string[];
-		/** @description Specification for mounts to be added to the container. */
-		Mounts?: definitions["Mount"][];
-		/** @description Initial console size, as an `[height, width]` array. */
-		ConsoleSize?: number[];
-		/**
-		 * @description Arbitrary non-identifying metadata attached to container and
-		 * provided to the runtime when the container is started.
-		 */
-		Annotations?: { [key: string]: string };
-		/**
-		 * @description A list of kernel capabilities to add to the container. Conflicts
-		 * with option 'Capabilities'.
-		 */
-		CapAdd?: string[];
-		/**
-		 * @description A list of kernel capabilities to drop from the container. Conflicts
-		 * with option 'Capabilities'.
-		 */
-		CapDrop?: string[];
-		/**
-		 * @description cgroup namespace mode for the container. Possible values are:
-		 *
-		 * - `"private"`: the container runs in its own private cgroup namespace
-		 * - `"host"`: use the host system's cgroup namespace
-		 *
-		 * If not specified, the daemon default is used, which can either be `"private"`
-		 * or `"host"`, depending on daemon version, kernel support and configuration.
-		 *
-		 * @enum {string}
-		 */
-		CgroupnsMode?: "private" | "host";
-		/** @description A list of DNS servers for the container to use. */
-		Dns?: string[];
-		/** @description A list of DNS options. */
-		DnsOptions?: string[];
-		/** @description A list of DNS search domains. */
-		DnsSearch?: string[];
-		/**
-		 * @description A list of hostnames/IP mappings to add to the container's `/etc/hosts`
-		 * file. Specified in the form `["hostname:IP"]`.
-		 */
-		ExtraHosts?: string[];
-		/** @description A list of additional groups that the container process will run as. */
-		GroupAdd?: string[];
-		/**
-		 * @description IPC sharing mode for the container. Possible values are:
-		 *
-		 * - `"none"`: own private IPC namespace, with /dev/shm not mounted
-		 * - `"private"`: own private IPC namespace
-		 * - `"shareable"`: own private IPC namespace, with a possibility to share it with other containers
-		 * - `"container:<name|id>"`: join another (shareable) container's IPC namespace
-		 * - `"host"`: use the host system's IPC namespace
-		 *
-		 * If not specified, daemon default is used, which can either be `"private"`
-		 * or `"shareable"`, depending on daemon version and configuration.
-		 */
-		IpcMode?: string;
-		/** @description Cgroup to use for the container. */
-		Cgroup?: string;
-		/** @description A list of links for the container in the form `container_name:alias`. */
-		Links?: string[];
-		/**
-		 * @description An integer value containing the score given to the container in
-		 * order to tune OOM killer preferences.
-		 *
-		 * @example 500
-		 */
-		OomScoreAdj?: number;
-		/**
-		 * @description Set the PID (Process) Namespace mode for the container. It can be
-		 * either:
-		 *
-		 * - `"container:<name|id>"`: joins another container's PID namespace
-		 * - `"host"`: use the host's PID namespace inside the container
-		 */
-		PidMode?: string;
-		/** @description Gives the container full access to the host. */
-		Privileged?: boolean;
-		/**
-		 * @description Allocates an ephemeral host port for all of a container's
-		 * exposed ports.
-		 *
-		 * Ports are de-allocated when the container stops and allocated when
-		 * the container starts. The allocated port might be changed when
-		 * restarting the container.
-		 *
-		 * The port is selected from the ephemeral port range that depends on
-		 * the kernel. For example, on Linux the range is defined by
-		 * `/proc/sys/net/ipv4/ip_local_port_range`.
-		 */
-		PublishAllPorts?: boolean;
-		/** @description Mount the container's root filesystem as read only. */
-		ReadonlyRootfs?: boolean;
-		/**
-		 * @description A list of string values to customize labels for MLS systems, such
-		 * as SELinux.
-		 */
-		SecurityOpt?: string[];
-		/** @description Storage driver options for this container, in the form `{"size": "120G"}`. */
-		StorageOpt?: { [key: string]: string };
-		/**
-		 * @description A map of container directories which should be replaced by tmpfs
-		 * mounts, and their corresponding mount options. For example:
-		 *
-		 * ```
-		 * { "/run": "rw,noexec,nosuid,size=65536k" }
-		 * ```
-		 */
-		Tmpfs?: { [key: string]: string };
-		/** @description UTS namespace to use for the container. */
-		UTSMode?: string;
-		/**
-		 * @description Sets the usernamespace mode for the container when usernamespace
-		 * remapping option is enabled.
-		 */
-		UsernsMode?: string;
-		/**
-		 * Format: int64
-		 * @description Size of `/dev/shm` in bytes. If omitted, the system uses 64MB.
-		 */
-		ShmSize?: number;
-		/**
-		 * @description A list of kernel parameters (sysctls) to set in the container.
-		 * For example:
-		 *
-		 * ```
-		 * {"net.ipv4.ip_forward": "1"}
-		 * ```
-		 */
-		Sysctls?: { [key: string]: string };
-		/** @description Runtime to use with this container. */
-		Runtime?: string;
-		/**
-		 * @description Isolation technology of the container. (Windows only)
-		 *
-		 * @enum {string}
-		 */
-		Isolation?: "default" | "process" | "hyperv";
-		/**
-		 * @description The list of paths to be masked inside the container (this overrides
-		 * the default set of paths).
-		 */
-		MaskedPaths?: string[];
-		/**
-		 * @description The list of paths to be set as read-only inside the container
-		 * (this overrides the default set of paths).
-		 */
-		ReadonlyPaths?: string[];
-	};
-	/**
-	 * @description Configuration for a container that is portable between hosts.
-	 *
-	 * When used as `ContainerConfig` field in an image, `ContainerConfig` is an
-	 * optional field containing the configuration of the container that was last
-	 * committed when creating the image.
-	 *
-	 * Previous versions of Docker builder used this field to store build cache,
-	 * and it is not in active use anymore.
-	 */
-	ContainerConfig: {
-		/**
-		 * @description The hostname to use for the container, as a valid RFC 1123 hostname.
-		 *
-		 * @example 439f4e91bd1d
-		 */
-		Hostname?: string;
-		/** @description The domain name to use for the container. */
-		Domainname?: string;
-		/** @description The user that commands are run as inside the container. */
-		User?: string;
-		/**
-		 * @description Whether to attach to `stdin`.
-		 * @default false
-		 */
-		AttachStdin?: boolean;
-		/**
-		 * @description Whether to attach to `stdout`.
-		 * @default true
-		 */
-		AttachStdout?: boolean;
-		/**
-		 * @description Whether to attach to `stderr`.
-		 * @default true
-		 */
-		AttachStderr?: boolean;
-		/**
-		 * @description An object mapping ports to an empty object in the form:
-		 *
-		 * `{"<port>/<tcp|udp|sctp>": {}}`
-		 *
-		 * @example {
-		 *   "80/tcp": {},
-		 *   "443/tcp": {}
-		 * }
-		 */
-		ExposedPorts?: { [key: string]: {} };
-		/**
-		 * @description Attach standard streams to a TTY, including `stdin` if it is not closed.
-		 *
-		 * @default false
-		 */
-		Tty?: boolean;
-		/**
-		 * @description Open `stdin`
-		 * @default false
-		 */
-		OpenStdin?: boolean;
-		/**
-		 * @description Close `stdin` after one attached client disconnects
-		 * @default false
-		 */
-		StdinOnce?: boolean;
-		/**
-		 * @description A list of environment variables to set inside the container in the
-		 * form `["VAR=value", ...]`. A variable without `=` is removed from the
-		 * environment, rather than to have an empty value.
-		 *
-		 * @example [
-		 *   "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-		 * ]
-		 */
-		Env?: string[];
-		/**
-		 * @description Command to run specified as a string or an array of strings.
-		 *
-		 * @example [
-		 *   "/bin/sh"
-		 * ]
-		 */
-		Cmd?: string[];
-		Healthcheck?: definitions["HealthConfig"];
-		/**
-		 * @description Command is already escaped (Windows only)
-		 * @default false
-		 * @example false
-		 */
-		ArgsEscaped?: boolean;
-		/**
-		 * @description The name (or reference) of the image to use when creating the container,
-		 * or which was used when the container was created.
-		 *
-		 * @example example-image:1.0
-		 */
-		Image?: string;
-		/**
-		 * @description An object mapping mount point paths inside the container to empty
-		 * objects.
-		 */
-		Volumes?: { [key: string]: {} };
-		/**
-		 * @description The working directory for commands to run in.
-		 * @example /public/
-		 */
-		WorkingDir?: string;
-		/**
-		 * @description The entry point for the container as a string or an array of strings.
-		 *
-		 * If the array consists of exactly one empty string (`[""]`) then the
-		 * entry point is reset to system default (i.e., the entry point used by
-		 * docker when there is no `ENTRYPOINT` instruction in the `Dockerfile`).
-		 *
-		 * @example []
-		 */
-		Entrypoint?: string[];
-		/** @description Disable networking for the container. */
-		NetworkDisabled?: boolean;
-		/** @description MAC address of the container. */
-		MacAddress?: string;
-		/**
-		 * @description `ONBUILD` metadata that were defined in the image's `Dockerfile`.
-		 *
-		 * @example []
-		 */
-		OnBuild?: string[];
-		/**
-		 * @description User-defined key/value metadata.
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		Labels?: { [key: string]: string };
-		/**
-		 * @description Signal to stop a container as a string or unsigned integer.
-		 *
-		 * @example SIGTERM
-		 */
-		StopSignal?: string;
-		/**
-		 * @description Timeout to stop a container in seconds.
-		 * @default 10
-		 */
-		StopTimeout?: number;
-		/**
-		 * @description Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell.
-		 *
-		 * @example [
-		 *   "/bin/sh",
-		 *   "-c"
-		 * ]
-		 */
-		Shell?: string[];
-	};
-	/**
-	 * @description NetworkingConfig represents the container's networking configuration for
-	 * each of its interfaces.
-	 * It is used for the networking configs specified in the `docker create`
-	 * and `docker network connect` commands.
-	 *
-	 * @example {
-	 *   "EndpointsConfig": {
-	 *     "isolated_nw": {
-	 *       "IPAMConfig": {
-	 *         "IPv4Address": "172.20.30.33",
-	 *         "IPv6Address": "2001:db8:abcd::3033",
-	 *         "LinkLocalIPs": [
-	 *           "169.254.34.68",
-	 *           "fe80::3468"
-	 *         ]
-	 *       },
-	 *       "Links": [
-	 *         "container_1",
-	 *         "container_2"
-	 *       ],
-	 *       "Aliases": [
-	 *         "server_x",
-	 *         "server_y"
-	 *       ]
-	 *     }
-	 *   }
-	 * }
-	 */
-	NetworkingConfig: {
-		/** @description A mapping of network name to endpoint configuration for that network. */
-		EndpointsConfig?: { [key: string]: definitions["EndpointSettings"] };
-	};
-	/** @description NetworkSettings exposes the network settings in the API */
-	NetworkSettings: {
-		/**
-		 * @description Name of the network's bridge (for example, `docker0`).
-		 * @example docker0
-		 */
-		Bridge?: string;
-		/**
-		 * @description SandboxID uniquely represents a container's network stack.
-		 * @example 9d12daf2c33f5959c8bf90aa513e4f65b561738661003029ec84830cd503a0c3
-		 */
-		SandboxID?: string;
-		/**
-		 * @description Indicates if hairpin NAT should be enabled on the virtual interface.
-		 *
-		 * @example false
-		 */
-		HairpinMode?: boolean;
-		/**
-		 * @description IPv6 unicast address using the link-local prefix.
-		 * @example fe80::42:acff:fe11:1
-		 */
-		LinkLocalIPv6Address?: string;
-		/**
-		 * @description Prefix length of the IPv6 unicast address.
-		 * @example 64
-		 */
-		LinkLocalIPv6PrefixLen?: number;
-		Ports?: definitions["PortMap"];
-		/**
-		 * @description SandboxKey identifies the sandbox
-		 * @example /var/run/docker/netns/8ab54b426c38
-		 */
-		SandboxKey?: string;
-		SecondaryIPAddresses?: definitions["Address"][];
-		SecondaryIPv6Addresses?: definitions["Address"][];
-		/**
-		 * @description EndpointID uniquely represents a service endpoint in a Sandbox.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b
-		 */
-		EndpointID?: string;
-		/**
-		 * @description Gateway address for the default "bridge" network.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 172.17.0.1
-		 */
-		Gateway?: string;
-		/**
-		 * @description Global IPv6 address for the default "bridge" network.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 2001:db8::5689
-		 */
-		GlobalIPv6Address?: string;
-		/**
-		 * @description Mask length of the global IPv6 address.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 64
-		 */
-		GlobalIPv6PrefixLen?: number;
-		/**
-		 * @description IPv4 address for the default "bridge" network.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 172.17.0.4
-		 */
-		IPAddress?: string;
-		/**
-		 * @description Mask length of the IPv4 address.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 16
-		 */
-		IPPrefixLen?: number;
-		/**
-		 * @description IPv6 gateway address for this network.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 2001:db8:2::100
-		 */
-		IPv6Gateway?: string;
-		/**
-		 * @description MAC address for the container on the default "bridge" network.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Deprecated**: This field is only propagated when attached to the
-		 * > default "bridge" network. Use the information from the "bridge"
-		 * > network inside the `Networks` map instead, which contains the same
-		 * > information. This field was deprecated in Docker 1.9 and is scheduled
-		 * > to be removed in Docker 17.12.0
-		 *
-		 * @example 02:42:ac:11:00:04
-		 */
-		MacAddress?: string;
-		/** @description Information about all networks that the container is connected to. */
-		Networks?: { [key: string]: definitions["EndpointSettings"] };
-	};
-	/** @description Address represents an IPv4 or IPv6 IP address. */
-	Address: {
-		/** @description IP address. */
-		Addr?: string;
-		/** @description Mask length of the IP address. */
-		PrefixLen?: number;
-	};
-	/**
-	 * @description PortMap describes the mapping of container ports to host ports, using the
-	 * container's port-number and protocol as key in the format `<port>/<protocol>`,
-	 * for example, `80/udp`.
-	 *
-	 * If a container's port is mapped for multiple protocols, separate entries
-	 * are added to the mapping table.
-	 *
-	 * @example {
-	 *   "443/tcp": [
-	 *     {
-	 *       "HostIp": "127.0.0.1",
-	 *       "HostPort": "4443"
-	 *     }
-	 *   ],
-	 *   "80/tcp": [
-	 *     {
-	 *       "HostIp": "0.0.0.0",
-	 *       "HostPort": "80"
-	 *     },
-	 *     {
-	 *       "HostIp": "0.0.0.0",
-	 *       "HostPort": "8080"
-	 *     }
-	 *   ],
-	 *   "80/udp": [
-	 *     {
-	 *       "HostIp": "0.0.0.0",
-	 *       "HostPort": "80"
-	 *     }
-	 *   ],
-	 *   "53/udp": [
-	 *     {
-	 *       "HostIp": "0.0.0.0",
-	 *       "HostPort": "53"
-	 *     }
-	 *   ],
-	 *   "2377/tcp": null
-	 * }
-	 */
-	PortMap: { [key: string]: definitions["PortBinding"][] };
-	/**
-	 * @description PortBinding represents a binding between a host IP address and a host
-	 * port.
-	 */
-	PortBinding: {
-		/**
-		 * @description Host IP address that the container's port is mapped to.
-		 * @example 127.0.0.1
-		 */
-		HostIp?: string;
-		/**
-		 * @description Host port number that the container's port is mapped to.
-		 * @example 4443
-		 */
-		HostPort?: string;
-	};
-	/**
-	 * @description Information about the storage driver used to store the container's and
-	 * image's filesystem.
-	 */
-	GraphDriverData: {
-		/**
-		 * @description Name of the storage driver.
-		 * @example overlay2
-		 */
-		Name: string;
-		/**
-		 * @description Low-level storage metadata, provided as key/value pairs.
-		 *
-		 * This information is driver-specific, and depends on the storage-driver
-		 * in use, and should be used for informational purposes only.
-		 *
-		 * @example {
-		 *   "MergedDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/merged",
-		 *   "UpperDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/diff",
-		 *   "WorkDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/work"
-		 * }
-		 */
-		Data: { [key: string]: string };
-	};
-	/** @description Change in the container's filesystem. */
-	FilesystemChange: {
-		/** @description Path to file or directory that has changed. */
-		Path: string;
-		Kind: definitions["ChangeType"];
-	};
-	/**
-	 * Format: uint8
-	 * @description Kind of change
-	 *
-	 * Can be one of:
-	 *
-	 * - `0`: Modified ("C")
-	 * - `1`: Added ("A")
-	 * - `2`: Deleted ("D")
-	 *
-	 * @enum {integer}
-	 */
-	ChangeType: 0 | 1 | 2;
-	/** @description Information about an image in the local image cache. */
-	ImageInspect: {
-		/**
-		 * @description ID is the content-addressable ID of an image.
-		 *
-		 * This identifier is a content-addressable digest calculated from the
-		 * image's configuration (which includes the digests of layers used by
-		 * the image).
-		 *
-		 * Note that this digest differs from the `RepoDigests` below, which
-		 * holds digests of image manifests that reference the image.
-		 *
-		 * @example sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710
-		 */
-		Id?: string;
-		/**
-		 * @description List of image names/tags in the local image cache that reference this
-		 * image.
-		 *
-		 * Multiple image tags can refer to the same image, and this list may be
-		 * empty if no tags reference the image, in which case the image is
-		 * "untagged", in which case it can still be referenced by its ID.
-		 *
-		 * @example [
-		 *   "example:1.0",
-		 *   "example:latest",
-		 *   "example:stable",
-		 *   "internal.registry.example.com:5000/example:1.0"
-		 * ]
-		 */
-		RepoTags?: string[];
-		/**
-		 * @description List of content-addressable digests of locally available image manifests
-		 * that the image is referenced from. Multiple manifests can refer to the
-		 * same image.
-		 *
-		 * These digests are usually only available if the image was either pulled
-		 * from a registry, or if the image was pushed to a registry, which is when
-		 * the manifest is generated and its digest calculated.
-		 *
-		 * @example [
-		 *   "example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb",
-		 *   "internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578"
-		 * ]
-		 */
-		RepoDigests?: string[];
-		/**
-		 * @description ID of the parent image.
-		 *
-		 * Depending on how the image was created, this field may be empty and
-		 * is only set for images that were built/created locally. This field
-		 * is empty if the image was pulled from an image registry.
-		 *
-		 * @example
-		 */
-		Parent?: string;
-		/**
-		 * @description Optional message that was set when committing or importing the image.
-		 *
-		 * @example
-		 */
-		Comment?: string;
-		/**
-		 * @description Date and time at which the image was created, formatted in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2022-02-04T21:20:12.497794809Z
-		 */
-		Created?: string;
-		/**
-		 * @description The ID of the container that was used to create the image.
-		 *
-		 * Depending on how the image was created, this field may be empty.
-		 *
-		 * @example 65974bc86f1770ae4bff79f651ebdbce166ae9aada632ee3fa9af3a264911735
-		 */
-		Container?: string;
-		ContainerConfig?: definitions["ContainerConfig"];
-		/**
-		 * @description The version of Docker that was used to build the image.
-		 *
-		 * Depending on how the image was created, this field may be empty.
-		 *
-		 * @example 20.10.7
-		 */
-		DockerVersion?: string;
-		/**
-		 * @description Name of the author that was specified when committing the image, or as
-		 * specified through MAINTAINER (deprecated) in the Dockerfile.
-		 *
-		 * @example
-		 */
-		Author?: string;
-		Config?: definitions["ContainerConfig"];
-		/**
-		 * @description Hardware CPU architecture that the image runs on.
-		 *
-		 * @example arm
-		 */
-		Architecture?: string;
-		/**
-		 * @description CPU architecture variant (presently ARM-only).
-		 *
-		 * @example v7
-		 */
-		Variant?: string;
-		/**
-		 * @description Operating System the image is built to run on.
-		 *
-		 * @example linux
-		 */
-		Os?: string;
-		/**
-		 * @description Operating System version the image is built to run on (especially
-		 * for Windows).
-		 *
-		 * @example
-		 */
-		OsVersion?: string;
-		/**
-		 * Format: int64
-		 * @description Total size of the image including all layers it is composed of.
-		 *
-		 * @example 1239828
-		 */
-		Size?: number;
-		/**
-		 * Format: int64
-		 * @description Total size of the image including all layers it is composed of.
-		 *
-		 * In versions of Docker before v1.10, this field was calculated from
-		 * the image itself and all of its parent images. Images are now stored
-		 * self-contained, and no longer use a parent-chain, making this field
-		 * an equivalent of the Size field.
-		 *
-		 * > **Deprecated**: this field is kept for backward compatibility, but
-		 * > will be removed in API v1.44.
-		 *
-		 * @example 1239828
-		 */
-		VirtualSize?: number;
-		GraphDriver?: definitions["GraphDriverData"];
-		/** @description Information about the image's RootFS, including the layer IDs. */
-		RootFS?: {
-			/** @example layers */
-			Type: string;
+		MountPoint: {
 			/**
-			 * @example [
-			 *   "sha256:1834950e52ce4d5a88a1bbd131c537f4d0e56d10ff0dd69e66be3b7dfa9df7e6",
-			 *   "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
-			 * ]
-			 */
-			Layers?: string[];
-		};
-		/**
-		 * @description Additional metadata of the image in the local cache. This information
-		 * is local to the daemon, and not part of the image itself.
-		 */
-		Metadata?: {
-			/**
-			 * Format: dateTime
-			 * @description Date and time at which the image was last tagged in
-			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 * @description The mount type:
 			 *
-			 * This information is only available if the image was tagged locally,
-			 * and omitted otherwise.
+			 * - `bind` a mount of a file or directory from the host into the container.
+			 * - `volume` a docker volume with the given `Name`.
+			 * - `tmpfs` a `tmpfs`.
+			 * - `npipe` a named pipe from the host into the container.
+			 * - `cluster` a Swarm cluster volume
 			 *
-			 * @example 2022-02-28T14:40:02.623929178Z
+			 * @example volume
+			 * @enum {string}
 			 */
-			LastTagTime?: string;
-		};
-	};
-	ImageSummary: {
-		/**
-		 * @description ID is the content-addressable ID of an image.
-		 *
-		 * This identifier is a content-addressable digest calculated from the
-		 * image's configuration (which includes the digests of layers used by
-		 * the image).
-		 *
-		 * Note that this digest differs from the `RepoDigests` below, which
-		 * holds digests of image manifests that reference the image.
-		 *
-		 * @example sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710
-		 */
-		Id: string;
-		/**
-		 * @description ID of the parent image.
-		 *
-		 * Depending on how the image was created, this field may be empty and
-		 * is only set for images that were built/created locally. This field
-		 * is empty if the image was pulled from an image registry.
-		 *
-		 * @example
-		 */
-		ParentId: string;
-		/**
-		 * @description List of image names/tags in the local image cache that reference this
-		 * image.
-		 *
-		 * Multiple image tags can refer to the same image, and this list may be
-		 * empty if no tags reference the image, in which case the image is
-		 * "untagged", in which case it can still be referenced by its ID.
-		 *
-		 * @example [
-		 *   "example:1.0",
-		 *   "example:latest",
-		 *   "example:stable",
-		 *   "internal.registry.example.com:5000/example:1.0"
-		 * ]
-		 */
-		RepoTags: string[];
-		/**
-		 * @description List of content-addressable digests of locally available image manifests
-		 * that the image is referenced from. Multiple manifests can refer to the
-		 * same image.
-		 *
-		 * These digests are usually only available if the image was either pulled
-		 * from a registry, or if the image was pushed to a registry, which is when
-		 * the manifest is generated and its digest calculated.
-		 *
-		 * @example [
-		 *   "example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb",
-		 *   "internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578"
-		 * ]
-		 */
-		RepoDigests: string[];
-		/**
-		 * @description Date and time at which the image was created as a Unix timestamp
-		 * (number of seconds sinds EPOCH).
-		 *
-		 * @example 1644009612
-		 */
-		Created: number;
-		/**
-		 * Format: int64
-		 * @description Total size of the image including all layers it is composed of.
-		 *
-		 * @example 172064416
-		 */
-		Size: number;
-		/**
-		 * Format: int64
-		 * @description Total size of image layers that are shared between this image and other
-		 * images.
-		 *
-		 * This size is not calculated by default. `-1` indicates that the value
-		 * has not been set / calculated.
-		 *
-		 * @example 1239828
-		 */
-		SharedSize: number;
-		/**
-		 * Format: int64
-		 * @description Total size of the image including all layers it is composed of.
-		 *
-		 * In versions of Docker before v1.10, this field was calculated from
-		 * the image itself and all of its parent images. Images are now stored
-		 * self-contained, and no longer use a parent-chain, making this field
-		 * an equivalent of the Size field.
-		 *
-		 * Deprecated: this field is kept for backward compatibility, and will be removed in API v1.44.
-		 * @example 172064416
-		 */
-		VirtualSize?: number;
-		/**
-		 * @description User-defined key/value metadata.
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		Labels: { [key: string]: string };
-		/**
-		 * @description Number of containers using this image. Includes both stopped and running
-		 * containers.
-		 *
-		 * This size is not calculated by default, and depends on which API endpoint
-		 * is used. `-1` indicates that the value has not been set / calculated.
-		 *
-		 * @example 2
-		 */
-		Containers: number;
-	};
-	/**
-	 * @example {
-	 *   "username": "hannibal",
-	 *   "password": "xxxx",
-	 *   "serveraddress": "https://index.docker.io/v1/"
-	 * }
-	 */
-	AuthConfig: {
-		username?: string;
-		password?: string;
-		email?: string;
-		serveraddress?: string;
-	};
-	ProcessConfig: {
-		privileged?: boolean;
-		user?: string;
-		tty?: boolean;
-		entrypoint?: string;
-		arguments?: string[];
-	};
-	Volume: {
-		/**
-		 * @description Name of the volume.
-		 * @example tardis
-		 */
-		Name: string;
-		/**
-		 * @description Name of the volume driver used by the volume.
-		 * @example custom
-		 */
-		Driver: string;
-		/**
-		 * @description Mount path of the volume on the host.
-		 * @example /var/lib/docker/volumes/tardis
-		 */
-		Mountpoint: string;
-		/**
-		 * Format: dateTime
-		 * @description Date/Time the volume was created.
-		 * @example 2016-06-07T20:31:11.853781916Z
-		 */
-		CreatedAt?: string;
-		/**
-		 * @description Low-level details about the volume, provided by the volume driver.
-		 * Details are returned as a map with key/value pairs:
-		 * `{"key":"value","key2":"value2"}`.
-		 *
-		 * The `Status` field is optional, and is omitted if the volume driver
-		 * does not support this feature.
-		 *
-		 * @example {
-		 *   "hello": "world"
-		 * }
-		 */
-		Status?: { [key: string]: { [key: string]: unknown } };
-		/**
-		 * @description User-defined key/value metadata.
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		Labels: { [key: string]: string };
-		/**
-		 * @description The level at which the volume exists. Either `global` for cluster-wide,
-		 * or `local` for machine level.
-		 *
-		 * @default local
-		 * @example local
-		 * @enum {string}
-		 */
-		Scope: "local" | "global";
-		ClusterVolume?: definitions["ClusterVolume"];
-		/**
-		 * @description The driver specific options used when creating the volume.
-		 *
-		 * @example {
-		 *   "device": "tmpfs",
-		 *   "o": "size=100m,uid=1000",
-		 *   "type": "tmpfs"
-		 * }
-		 */
-		Options: { [key: string]: string };
-		/**
-		 * @description Usage details about the volume. This information is used by the
-		 * `GET /system/df` endpoint, and omitted in other endpoints.
-		 */
-		UsageData?: {
+			Type?: "bind" | "volume" | "tmpfs" | "npipe" | "cluster";
 			/**
-			 * Format: int64
-			 * @description Amount of disk space used by the volume (in bytes). This information
-			 * is only available for volumes created with the `"local"` volume
-			 * driver. For volumes created with other volume drivers, this field
-			 * is set to `-1` ("not available")
+			 * @description Name is the name reference to the underlying data defined by `Source`
+			 * e.g., the volume name.
 			 *
-			 * @default -1
+			 * @example myvolume
 			 */
-			Size: number;
-			/**
-			 * Format: int64
-			 * @description The number of containers referencing this volume. This field
-			 * is set to `-1` if the reference-count is not available.
-			 *
-			 * @default -1
-			 */
-			RefCount: number;
-		};
-	};
-	/**
-	 * VolumeConfig
-	 * @description Volume configuration
-	 */
-	VolumeCreateOptions: {
-		/**
-		 * @description The new volume's name. If not specified, Docker generates a name.
-		 *
-		 * @example tardis
-		 */
-		Name?: string;
-		/**
-		 * @description Name of the volume driver to use.
-		 * @default local
-		 * @example custom
-		 */
-		Driver?: string;
-		/**
-		 * @description A mapping of driver options and values. These options are
-		 * passed directly to the driver and are driver specific.
-		 *
-		 * @example {
-		 *   "device": "tmpfs",
-		 *   "o": "size=100m,uid=1000",
-		 *   "type": "tmpfs"
-		 * }
-		 */
-		DriverOpts?: { [key: string]: string };
-		/**
-		 * @description User-defined key/value metadata.
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		Labels?: { [key: string]: string };
-		ClusterVolumeSpec?: definitions["ClusterVolumeSpec"];
-	};
-	/**
-	 * VolumeListResponse
-	 * @description Volume list response
-	 */
-	VolumeListResponse: {
-		/** @description List of volumes */
-		Volumes?: definitions["Volume"][];
-		/**
-		 * @description Warnings that occurred when fetching the list of volumes.
-		 *
-		 * @example []
-		 */
-		Warnings?: string[];
-	};
-	/**
-	 * @example {
-	 *   "Name": "net01",
-	 *   "Id": "7d86d31b1478e7cca9ebed7e73aa0fdeec46c5ca29497431d3007d2d9e15ed99",
-	 *   "Created": "2016-10-19T04:33:30.360899459Z",
-	 *   "Scope": "local",
-	 *   "Driver": "bridge",
-	 *   "EnableIPv6": false,
-	 *   "IPAM": {
-	 *     "Driver": "default",
-	 *     "Config": [
-	 *       {
-	 *         "Subnet": "172.19.0.0/16",
-	 *         "Gateway": "172.19.0.1"
-	 *       }
-	 *     ],
-	 *     "Options": {
-	 *       "foo": "bar"
-	 *     }
-	 *   },
-	 *   "Internal": false,
-	 *   "Attachable": false,
-	 *   "Ingress": false,
-	 *   "Containers": {
-	 *     "19a4d5d687db25203351ed79d478946f861258f018fe384f229f2efa4b23513c": {
-	 *       "Name": "test",
-	 *       "EndpointID": "628cadb8bcb92de107b2a1e516cbffe463e321f548feb37697cce00ad694f21a",
-	 *       "MacAddress": "02:42:ac:13:00:02",
-	 *       "IPv4Address": "172.19.0.2/16",
-	 *       "IPv6Address": ""
-	 *     }
-	 *   },
-	 *   "Options": {
-	 *     "com.docker.network.bridge.default_bridge": "true",
-	 *     "com.docker.network.bridge.enable_icc": "true",
-	 *     "com.docker.network.bridge.enable_ip_masquerade": "true",
-	 *     "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
-	 *     "com.docker.network.bridge.name": "docker0",
-	 *     "com.docker.network.driver.mtu": "1500"
-	 *   },
-	 *   "Labels": {
-	 *     "com.example.some-label": "some-value",
-	 *     "com.example.some-other-label": "some-other-value"
-	 *   }
-	 * }
-	 */
-	Network: {
-		Name?: string;
-		Id?: string;
-		/** Format: dateTime */
-		Created?: string;
-		Scope?: string;
-		Driver?: string;
-		EnableIPv6?: boolean;
-		IPAM?: definitions["IPAM"];
-		Internal?: boolean;
-		Attachable?: boolean;
-		Ingress?: boolean;
-		Containers?: { [key: string]: definitions["NetworkContainer"] };
-		Options?: { [key: string]: string };
-		Labels?: { [key: string]: string };
-	};
-	IPAM: {
-		/**
-		 * @description Name of the IPAM driver to use.
-		 * @default default
-		 */
-		Driver?: string;
-		/**
-		 * @description List of IPAM configuration options, specified as a map:
-		 *
-		 * ```
-		 * {"Subnet": <CIDR>, "IPRange": <CIDR>, "Gateway": <IP address>, "AuxAddress": <device_name:IP address>}
-		 * ```
-		 */
-		Config?: definitions["IPAMConfig"][];
-		/** @description Driver-specific options, specified as a map. */
-		Options?: { [key: string]: string };
-	};
-	IPAMConfig: {
-		Subnet?: string;
-		IPRange?: string;
-		Gateway?: string;
-		AuxiliaryAddresses?: { [key: string]: string };
-	};
-	NetworkContainer: {
-		Name?: string;
-		EndpointID?: string;
-		MacAddress?: string;
-		IPv4Address?: string;
-		IPv6Address?: string;
-	};
-	BuildInfo: {
-		id?: string;
-		stream?: string;
-		error?: string;
-		errorDetail?: definitions["ErrorDetail"];
-		status?: string;
-		progress?: string;
-		progressDetail?: definitions["ProgressDetail"];
-		aux?: definitions["ImageID"];
-	};
-	/** @description BuildCache contains information about a build cache record. */
-	BuildCache: {
-		/**
-		 * @description Unique ID of the build cache record.
-		 *
-		 * @example ndlpt0hhvkqcdfkputsk4cq9c
-		 */
-		ID?: string;
-		/**
-		 * @description ID of the parent build cache record.
-		 *
-		 * > **Deprecated**: This field is deprecated, and omitted if empty.
-		 *
-		 * @example
-		 */
-		Parent?: string;
-		/**
-		 * @description List of parent build cache record IDs.
-		 *
-		 * @example [
-		 *   "hw53o5aio51xtltp5xjp8v7fx"
-		 * ]
-		 */
-		Parents?: string[];
-		/**
-		 * @description Cache record type.
-		 *
-		 * @example regular
-		 * @enum {string}
-		 */
-		Type?: "internal" | "frontend" | "source.local" | "source.git.checkout" | "exec.cachemount" | "regular";
-		/**
-		 * @description Description of the build-step that produced the build cache.
-		 *
-		 * @example mount / from exec /bin/sh -c echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-		 */
-		Description?: string;
-		/**
-		 * @description Indicates if the build cache is in use.
-		 *
-		 * @example false
-		 */
-		InUse?: boolean;
-		/**
-		 * @description Indicates if the build cache is shared.
-		 *
-		 * @example true
-		 */
-		Shared?: boolean;
-		/**
-		 * @description Amount of disk space used by the build cache (in bytes).
-		 *
-		 * @example 51
-		 */
-		Size?: number;
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the build cache was created in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2016-08-18T10:44:24.496525531Z
-		 */
-		CreatedAt?: string;
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the build cache was last used in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2017-08-09T07:09:37.632105588Z
-		 */
-		LastUsedAt?: string;
-		/** @example 26 */
-		UsageCount?: number;
-	};
-	/**
-	 * @description Image ID or Digest
-	 * @example {
-	 *   "ID": "sha256:85f05633ddc1c50679be2b16a0479ab6f7637f8884e0cfe0f4d20e1ebb3d6e7c"
-	 * }
-	 */
-	ImageID: {
-		ID?: string;
-	};
-	CreateImageInfo: {
-		id?: string;
-		error?: string;
-		errorDetail?: definitions["ErrorDetail"];
-		status?: string;
-		progress?: string;
-		progressDetail?: definitions["ProgressDetail"];
-	};
-	PushImageInfo: {
-		error?: string;
-		status?: string;
-		progress?: string;
-		progressDetail?: definitions["ProgressDetail"];
-	};
-	ErrorDetail: {
-		code?: number;
-		message?: string;
-	};
-	ProgressDetail: {
-		current?: number;
-		total?: number;
-	};
-	/**
-	 * @description Represents an error.
-	 * @example {
-	 *   "message": "Something went wrong."
-	 * }
-	 */
-	ErrorResponse: {
-		/** @description The error message. */
-		message: string;
-	};
-	/** @description Response to an API call that returns just an Id */
-	IdResponse: {
-		/** @description The id of the newly created object. */
-		Id: string;
-	};
-	/** @description Configuration for a network endpoint. */
-	EndpointSettings: {
-		IPAMConfig?: definitions["EndpointIPAMConfig"];
-		/**
-		 * @example [
-		 *   "container_1",
-		 *   "container_2"
-		 * ]
-		 */
-		Links?: string[];
-		/**
-		 * @example [
-		 *   "server_x",
-		 *   "server_y"
-		 * ]
-		 */
-		Aliases?: string[];
-		/**
-		 * @description Unique ID of the network.
-		 *
-		 * @example 08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a
-		 */
-		NetworkID?: string;
-		/**
-		 * @description Unique ID for the service endpoint in a Sandbox.
-		 *
-		 * @example b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b
-		 */
-		EndpointID?: string;
-		/**
-		 * @description Gateway address for this network.
-		 *
-		 * @example 172.17.0.1
-		 */
-		Gateway?: string;
-		/**
-		 * @description IPv4 address.
-		 *
-		 * @example 172.17.0.4
-		 */
-		IPAddress?: string;
-		/**
-		 * @description Mask length of the IPv4 address.
-		 *
-		 * @example 16
-		 */
-		IPPrefixLen?: number;
-		/**
-		 * @description IPv6 gateway address.
-		 *
-		 * @example 2001:db8:2::100
-		 */
-		IPv6Gateway?: string;
-		/**
-		 * @description Global IPv6 address.
-		 *
-		 * @example 2001:db8::5689
-		 */
-		GlobalIPv6Address?: string;
-		/**
-		 * Format: int64
-		 * @description Mask length of the global IPv6 address.
-		 *
-		 * @example 64
-		 */
-		GlobalIPv6PrefixLen?: number;
-		/**
-		 * @description MAC address for the endpoint on this network.
-		 *
-		 * @example 02:42:ac:11:00:04
-		 */
-		MacAddress?: string;
-		/**
-		 * @description DriverOpts is a mapping of driver options and values. These options
-		 * are passed directly to the driver and are driver specific.
-		 *
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		DriverOpts?: { [key: string]: string };
-	};
-	/** @description EndpointIPAMConfig represents an endpoint's IPAM configuration. */
-	EndpointIPAMConfig: {
-		/** @example 172.20.30.33 */
-		IPv4Address?: string;
-		/** @example 2001:db8:abcd::3033 */
-		IPv6Address?: string;
-		/**
-		 * @example [
-		 *   "169.254.34.68",
-		 *   "fe80::3468"
-		 * ]
-		 */
-		LinkLocalIPs?: string[];
-	};
-	PluginMount: {
-		/** @example some-mount */
-		Name: string;
-		/** @example This is a mount that's used by the plugin. */
-		Description: string;
-		Settable: string[];
-		/** @example /var/lib/docker/plugins/ */
-		Source: string;
-		/** @example /mnt/state */
-		Destination: string;
-		/** @example bind */
-		Type: string;
-		/**
-		 * @example [
-		 *   "rbind",
-		 *   "rw"
-		 * ]
-		 */
-		Options: string[];
-	};
-	PluginDevice: {
-		Name: string;
-		Description: string;
-		Settable: string[];
-		/** @example /dev/fuse */
-		Path: string;
-	};
-	PluginEnv: {
-		Name: string;
-		Description: string;
-		Settable: string[];
-		Value: string;
-	};
-	PluginInterfaceType: {
-		Prefix: string;
-		Capability: string;
-		Version: string;
-	};
-	/**
-	 * @description Describes a permission the user has to accept upon installing
-	 * the plugin.
-	 */
-	PluginPrivilege: {
-		/** @example network */
-		Name?: string;
-		Description?: string;
-		/**
-		 * @example [
-		 *   "host"
-		 * ]
-		 */
-		Value?: string[];
-	};
-	/** @description A plugin for the Engine API */
-	Plugin: {
-		/** @example 5724e2c8652da337ab2eedd19fc6fc0ec908e4bd907c7421bf6a8dfc70c4c078 */
-		Id?: string;
-		/** @example tiborvass/sample-volume-plugin */
-		Name: string;
-		/**
-		 * @description True if the plugin is running. False if the plugin is not running, only installed.
-		 * @example true
-		 */
-		Enabled: boolean;
-		/** @description Settings that can be modified by users. */
-		Settings: {
-			Mounts: definitions["PluginMount"][];
-			/**
-			 * @example [
-			 *   "DEBUG=0"
-			 * ]
-			 */
-			Env: string[];
-			Args: string[];
-			Devices: definitions["PluginDevice"][];
-		};
-		/**
-		 * @description plugin remote reference used to push/pull the plugin
-		 * @example localhost:5000/tiborvass/sample-volume-plugin:latest
-		 */
-		PluginReference?: string;
-		/** @description The config of a plugin. */
-		Config: {
-			/**
-			 * @description Docker Version used to create the plugin
-			 * @example 17.06.0-ce
-			 */
-			DockerVersion?: string;
-			/** @example A sample volume plugin for Docker */
-			Description: string;
-			/** @example /engine/extend/plugins/ */
-			Documentation: string;
-			/** @description The interface between Docker and the plugin */
-			Interface: {
-				/**
-				 * @example [
-				 *   "docker.volumedriver/1.0"
-				 * ]
-				 */
-				Types: definitions["PluginInterfaceType"][];
-				/** @example plugins.sock */
-				Socket: string;
-				/**
-				 * @description Protocol to use for clients connecting to the plugin.
-				 * @example some.protocol/v1.0
-				 * @enum {string}
-				 */
-				ProtocolScheme?: "" | "moby.plugins.http/v1";
-			};
-			/**
-			 * @example [
-			 *   "/usr/bin/sample-volume-plugin",
-			 *   "/data"
-			 * ]
-			 */
-			Entrypoint: string[];
-			/** @example /bin/ */
-			WorkDir: string;
-			User?: {
-				/**
-				 * Format: uint32
-				 * @example 1000
-				 */
-				UID?: number;
-				/**
-				 * Format: uint32
-				 * @example 1000
-				 */
-				GID?: number;
-			};
-			Network: {
-				/** @example host */
-				Type: string;
-			};
-			Linux: {
-				/**
-				 * @example [
-				 *   "CAP_SYS_ADMIN",
-				 *   "CAP_SYSLOG"
-				 * ]
-				 */
-				Capabilities: string[];
-				/** @example false */
-				AllowAllDevices: boolean;
-				Devices: definitions["PluginDevice"][];
-			};
-			/** @example /mnt/volumes */
-			PropagatedMount: string;
-			/** @example false */
-			IpcHost: boolean;
-			/** @example false */
-			PidHost: boolean;
-			Mounts: definitions["PluginMount"][];
-			/**
-			 * @example [
-			 *   {
-			 *     "Name": "DEBUG",
-			 *     "Description": "If set, prints debug messages",
-			 *     "Settable": null,
-			 *     "Value": "0"
-			 *   }
-			 * ]
-			 */
-			Env: definitions["PluginEnv"][];
-			Args: {
-				/** @example args */
-				Name: string;
-				/** @example command line arguments */
-				Description: string;
-				Settable: string[];
-				Value: string[];
-			};
-			rootfs?: {
-				/** @example layers */
-				type?: string;
-				/**
-				 * @example [
-				 *   "sha256:675532206fbf3030b8458f88d6e26d4eb1577688a25efec97154c94e8b6b4887",
-				 *   "sha256:e216a057b1cb1efc11f8a268f37ef62083e70b1b38323ba252e25ac88904a7e8"
-				 * ]
-				 */
-				diff_ids?: string[];
-			};
-		};
-	};
-	/**
-	 * @description The version number of the object such as node, service, etc. This is needed
-	 * to avoid conflicting writes. The client must send the version number along
-	 * with the modified specification when updating these objects.
-	 *
-	 * This approach ensures safe concurrency and determinism in that the change
-	 * on the object may not be applied if the version number has changed from the
-	 * last read. In other words, if two update requests specify the same base
-	 * version, only one of the requests can succeed. As a result, two separate
-	 * update requests that happen at the same time will not unintentionally
-	 * overwrite each other.
-	 */
-	ObjectVersion: {
-		/**
-		 * Format: uint64
-		 * @example 373531
-		 */
-		Index?: number;
-	};
-	/**
-	 * @example {
-	 *   "Availability": "active",
-	 *   "Name": "node-name",
-	 *   "Role": "manager",
-	 *   "Labels": {
-	 *     "foo": "bar"
-	 *   }
-	 * }
-	 */
-	NodeSpec: {
-		/**
-		 * @description Name for the node.
-		 * @example my-node
-		 */
-		Name?: string;
-		/** @description User-defined key/value metadata. */
-		Labels?: { [key: string]: string };
-		/**
-		 * @description Role of the node.
-		 * @example manager
-		 * @enum {string}
-		 */
-		Role?: "worker" | "manager";
-		/**
-		 * @description Availability of the node.
-		 * @example active
-		 * @enum {string}
-		 */
-		Availability?: "active" | "pause" | "drain";
-	};
-	Node: {
-		/** @example 24ifsmvkjbyhk */
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the node was added to the swarm in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2016-08-18T10:44:24.496525531Z
-		 */
-		CreatedAt?: string;
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the node was last updated in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2017-08-09T07:09:37.632105588Z
-		 */
-		UpdatedAt?: string;
-		Spec?: definitions["NodeSpec"];
-		Description?: definitions["NodeDescription"];
-		Status?: definitions["NodeStatus"];
-		ManagerStatus?: definitions["ManagerStatus"];
-	};
-	/**
-	 * @description NodeDescription encapsulates the properties of the Node as reported by the
-	 * agent.
-	 */
-	NodeDescription: {
-		/** @example bf3067039e47 */
-		Hostname?: string;
-		Platform?: definitions["Platform"];
-		Resources?: definitions["ResourceObject"];
-		Engine?: definitions["EngineDescription"];
-		TLSInfo?: definitions["TLSInfo"];
-	};
-	/** @description Platform represents the platform (Arch/OS). */
-	Platform: {
-		/**
-		 * @description Architecture represents the hardware architecture (for example,
-		 * `x86_64`).
-		 *
-		 * @example x86_64
-		 */
-		Architecture?: string;
-		/**
-		 * @description OS represents the Operating System (for example, `linux` or `windows`).
-		 *
-		 * @example linux
-		 */
-		OS?: string;
-	};
-	/** @description EngineDescription provides information about an engine. */
-	EngineDescription: {
-		/** @example 17.06.0 */
-		EngineVersion?: string;
-		/**
-		 * @example {
-		 *   "foo": "bar"
-		 * }
-		 */
-		Labels?: { [key: string]: string };
-		/**
-		 * @example [
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "awslogs"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "fluentd"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "gcplogs"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "gelf"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "journald"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "json-file"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "logentries"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "splunk"
-		 *   },
-		 *   {
-		 *     "Type": "Log",
-		 *     "Name": "syslog"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "bridge"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "host"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "ipvlan"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "macvlan"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "null"
-		 *   },
-		 *   {
-		 *     "Type": "Network",
-		 *     "Name": "overlay"
-		 *   },
-		 *   {
-		 *     "Type": "Volume",
-		 *     "Name": "local"
-		 *   },
-		 *   {
-		 *     "Type": "Volume",
-		 *     "Name": "localhost:5000/vieux/sshfs:latest"
-		 *   },
-		 *   {
-		 *     "Type": "Volume",
-		 *     "Name": "vieux/sshfs:latest"
-		 *   }
-		 * ]
-		 */
-		Plugins?: {
-			Type?: string;
 			Name?: string;
-		}[];
-	};
-	/**
-	 * @description Information about the issuer of leaf TLS certificates and the trusted root
-	 * CA certificate.
-	 *
-	 * @example {
-	 *   "TrustRoot": "-----BEGIN CERTIFICATE-----\nMIIBajCCARCgAwIBAgIUbYqrLSOSQHoxD8CwG6Bi2PJi9c8wCgYIKoZIzj0EAwIw\nEzERMA8GA1UEAxMIc3dhcm0tY2EwHhcNMTcwNDI0MjE0MzAwWhcNMzcwNDE5MjE0\nMzAwWjATMREwDwYDVQQDEwhzd2FybS1jYTBZMBMGByqGSM49AgEGCCqGSM49AwEH\nA0IABJk/VyMPYdaqDXJb/VXh5n/1Yuv7iNrxV3Qb3l06XD46seovcDWs3IZNV1lf\n3Skyr0ofcchipoiHkXBODojJydSjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMB\nAf8EBTADAQH/MB0GA1UdDgQWBBRUXxuRcnFjDfR/RIAUQab8ZV/n4jAKBggqhkjO\nPQQDAgNIADBFAiAy+JTe6Uc3KyLCMiqGl2GyWGQqQDEcO3/YG36x7om65AIhAJvz\npxv6zFeVEkAEEkqIYi0omA9+CjanB/6Bz4n1uw8H\n-----END CERTIFICATE-----\n",
-	 *   "CertIssuerSubject": "MBMxETAPBgNVBAMTCHN3YXJtLWNh",
-	 *   "CertIssuerPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmT9XIw9h1qoNclv9VeHmf/Vi6/uI2vFXdBveXTpcPjqx6i9wNazchk1XWV/dKTKvSh9xyGKmiIeRcE4OiMnJ1A=="
-	 * }
-	 */
-	TLSInfo: {
+			/**
+			 * @description Source location of the mount.
+			 *
+			 * For volumes, this contains the storage location of the volume (within
+			 * `/var/lib/docker/volumes/`). For bind-mounts, and `npipe`, this contains
+			 * the source (host) part of the bind-mount. For `tmpfs` mount points, this
+			 * field is empty.
+			 *
+			 * @example /var/lib/docker/volumes/myvolume/_data
+			 */
+			Source?: string;
+			/**
+			 * @description Destination is the path relative to the container root (`/`) where
+			 * the `Source` is mounted inside the container.
+			 *
+			 * @example /usr/share/nginx/html/
+			 */
+			Destination?: string;
+			/**
+			 * @description Driver is the volume driver used to create the volume (if it is a volume).
+			 *
+			 * @example local
+			 */
+			Driver?: string;
+			/**
+			 * @description Mode is a comma separated list of options supplied by the user when
+			 * creating the bind/volume mount.
+			 *
+			 * The default is platform-specific (`"z"` on Linux, empty on Windows).
+			 *
+			 * @example z
+			 */
+			Mode?: string;
+			/**
+			 * @description Whether the mount is mounted writable (read-write).
+			 *
+			 * @example true
+			 */
+			RW?: boolean;
+			/**
+			 * @description Propagation describes how mounts are propagated from the host into the
+			 * mount point, and vice-versa. Refer to the [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt)
+			 * for details. This field is not used on Windows.
+			 *
+			 * @example
+			 */
+			Propagation?: string;
+		};
 		/**
-		 * @description The root CA certificate(s) that are used to validate leaf TLS
-		 * certificates.
-		 */
-		TrustRoot?: string;
-		/** @description The base64-url-safe-encoded raw subject bytes of the issuer. */
-		CertIssuerSubject?: string;
-		/** @description The base64-url-safe-encoded raw public key bytes of the issuer. */
-		CertIssuerPublicKey?: string;
-	};
-	/**
-	 * @description NodeStatus represents the status of a node.
-	 *
-	 * It provides the current status of the node, as seen by the manager.
-	 */
-	NodeStatus: {
-		State?: definitions["NodeState"];
-		/** @example */
-		Message?: string;
-		/**
-		 * @description IP address of the node.
-		 * @example 172.17.0.2
-		 */
-		Addr?: string;
-	};
-	/**
-	 * @description NodeState represents the state of a node.
-	 * @example ready
-	 * @enum {string}
-	 */
-	NodeState: "unknown" | "down" | "ready" | "disconnected";
-	/**
-	 * @description ManagerStatus represents the status of a manager.
-	 *
-	 * It provides the current status of a node's manager component, if the node
-	 * is a manager.
-	 */
-	ManagerStatus: {
-		/**
-		 * @default false
-		 * @example true
-		 */
-		Leader?: boolean;
-		Reachability?: definitions["Reachability"];
-		/**
-		 * @description The IP address and port at which the manager is reachable.
-		 *
-		 * @example 10.0.0.46:2377
-		 */
-		Addr?: string;
-	};
-	/**
-	 * @description Reachability represents the reachability of a node.
-	 * @example reachable
-	 * @enum {string}
-	 */
-	Reachability: "unknown" | "unreachable" | "reachable";
-	/** @description User modifiable swarm configuration. */
-	SwarmSpec: {
-		/**
-		 * @description Name of the swarm.
-		 * @example default
-		 */
-		Name?: string;
-		/**
-		 * @description User-defined key/value metadata.
+		 * @description A device mapping between the host and container
 		 * @example {
-		 *   "com.example.corp.type": "production",
-		 *   "com.example.corp.department": "engineering"
+		 *   "PathOnHost": "/dev/deviceName",
+		 *   "PathInContainer": "/dev/deviceName",
+		 *   "CgroupPermissions": "mrw"
 		 * }
 		 */
-		Labels?: { [key: string]: string };
-		/** @description Orchestration configuration. */
-		Orchestration?: {
+		DeviceMapping: {
+			PathOnHost?: string;
+			PathInContainer?: string;
+			CgroupPermissions?: string;
+		};
+		/** @description A request for devices to be sent to device drivers */
+		DeviceRequest: {
+			/** @example nvidia */
+			Driver?: string;
+			/** @example -1 */
+			Count?: number;
+			/**
+			 * @example [
+			 *   "0",
+			 *   "1",
+			 *   "GPU-fef8089b-4820-abfc-e83e-94318197576e"
+			 * ]
+			 */
+			DeviceIDs?: string[];
+			/**
+			 * @description A list of capabilities; an OR list of AND lists of capabilities.
+			 *
+			 * @example [
+			 *   [
+			 *     "gpu",
+			 *     "nvidia",
+			 *     "compute"
+			 *   ]
+			 * ]
+			 */
+			Capabilities?: string[][];
+			/**
+			 * @description Driver-specific options, specified as a key/value pairs. These options
+			 * are passed directly to the driver.
+			 */
+			Options?: { [key: string]: string };
+		};
+		ThrottleDevice: {
+			/** @description Device path */
+			Path?: string;
 			/**
 			 * Format: int64
-			 * @description The number of historic tasks to keep per instance or node. If
-			 * negative, never remove completed or failed tasks.
-			 *
-			 * @example 10
+			 * @description Rate
 			 */
-			TaskHistoryRetentionLimit?: number;
+			Rate?: number;
 		};
-		/** @description Raft configuration. */
-		Raft?: {
+		Mount: {
+			/** @description Container path. */
+			Target?: string;
+			/** @description Mount source (e.g. a volume name, a host path). */
+			Source?: string;
 			/**
-			 * Format: uint64
-			 * @description The number of log entries between snapshots.
-			 * @example 10000
-			 */
-			SnapshotInterval?: number;
-			/**
-			 * Format: uint64
-			 * @description The number of snapshots to keep beyond the current snapshot.
-			 */
-			KeepOldSnapshots?: number;
-			/**
-			 * Format: uint64
-			 * @description The number of log entries to keep around to sync up slow followers
-			 * after a snapshot is created.
+			 * @description The mount type. Available types:
 			 *
-			 * @example 500
-			 */
-			LogEntriesForSlowFollowers?: number;
-			/**
-			 * @description The number of ticks that a follower will wait for a message from
-			 * the leader before becoming a candidate and starting an election.
-			 * `ElectionTick` must be greater than `HeartbeatTick`.
-			 *
-			 * A tick currently defaults to one second, so these translate
-			 * directly to seconds currently, but this is NOT guaranteed.
-			 *
-			 * @example 3
-			 */
-			ElectionTick?: number;
-			/**
-			 * @description The number of ticks between heartbeats. Every HeartbeatTick ticks,
-			 * the leader will send a heartbeat to the followers.
-			 *
-			 * A tick currently defaults to one second, so these translate
-			 * directly to seconds currently, but this is NOT guaranteed.
-			 *
-			 * @example 1
-			 */
-			HeartbeatTick?: number;
-		};
-		/** @description Dispatcher configuration. */
-		Dispatcher?: {
-			/**
-			 * Format: int64
-			 * @description The delay for an agent to send a heartbeat to the dispatcher.
-			 *
-			 * @example 5000000000
-			 */
-			HeartbeatPeriod?: number;
-		};
-		/** @description CA configuration. */
-		CAConfig?: {
-			/**
-			 * Format: int64
-			 * @description The duration node certificates are issued for.
-			 * @example 7776000000000000
-			 */
-			NodeCertExpiry?: number;
-			/**
-			 * @description Configuration for forwarding signing requests to an external
-			 * certificate authority.
-			 */
-			ExternalCAs?: {
-				/**
-				 * @description Protocol for communication with the external CA (currently
-				 * only `cfssl` is supported).
-				 *
-				 * @default cfssl
-				 * @enum {string}
-				 */
-				Protocol?: "cfssl";
-				/** @description URL where certificate signing requests should be sent. */
-				URL?: string;
-				/**
-				 * @description An object with key/value pairs that are interpreted as
-				 * protocol-specific options for the external CA driver.
-				 */
-				Options?: { [key: string]: string };
-				/**
-				 * @description The root CA certificate (in PEM format) this external CA uses
-				 * to issue TLS certificates (assumed to be to the current swarm
-				 * root CA certificate if not provided).
-				 */
-				CACert?: string;
-			}[];
-			/**
-			 * @description The desired signing CA certificate for all swarm node TLS leaf
-			 * certificates, in PEM format.
-			 */
-			SigningCACert?: string;
-			/**
-			 * @description The desired signing CA key for all swarm node TLS leaf certificates,
-			 * in PEM format.
-			 */
-			SigningCAKey?: string;
-			/**
-			 * Format: uint64
-			 * @description An integer whose purpose is to force swarm to generate a new
-			 * signing CA certificate and key, if none have been specified in
-			 * `SigningCACert` and `SigningCAKey`
-			 */
-			ForceRotate?: number;
-		};
-		/** @description Parameters related to encryption-at-rest. */
-		EncryptionConfig?: {
-			/**
-			 * @description If set, generate a key and use it to lock data stored on the
-			 * managers.
-			 *
-			 * @example false
-			 */
-			AutoLockManagers?: boolean;
-		};
-		/** @description Defaults for creating tasks in this cluster. */
-		TaskDefaults?: {
-			/**
-			 * @description The log driver to use for tasks created in the orchestrator if
-			 * unspecified by a service.
-			 *
-			 * Updating this value only affects new tasks. Existing tasks continue
-			 * to use their previously configured log driver until recreated.
-			 */
-			LogDriver?: {
-				/**
-				 * @description The log driver to use as a default for new tasks.
-				 *
-				 * @example json-file
-				 */
-				Name?: string;
-				/**
-				 * @description Driver-specific options for the selectd log driver, specified
-				 * as key/value pairs.
-				 *
-				 * @example {
-				 *   "max-file": "10",
-				 *   "max-size": "100m"
-				 * }
-				 */
-				Options?: { [key: string]: string };
-			};
-		};
-	};
-	/**
-	 * @description ClusterInfo represents information about the swarm as is returned by the
-	 * "/info" endpoint. Join-tokens are not included.
-	 */
-	ClusterInfo: {
-		/**
-		 * @description The ID of the swarm.
-		 * @example abajmipo7b4xz5ip2nrla6b11
-		 */
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the swarm was initialised in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2016-08-18T10:44:24.496525531Z
-		 */
-		CreatedAt?: string;
-		/**
-		 * Format: dateTime
-		 * @description Date and time at which the swarm was last updated in
-		 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
-		 *
-		 * @example 2017-08-09T07:09:37.632105588Z
-		 */
-		UpdatedAt?: string;
-		Spec?: definitions["SwarmSpec"];
-		TLSInfo?: definitions["TLSInfo"];
-		/**
-		 * @description Whether there is currently a root CA rotation in progress for the swarm
-		 *
-		 * @example false
-		 */
-		RootRotationInProgress?: boolean;
-		/**
-		 * Format: uint32
-		 * @description DataPathPort specifies the data path port number for data traffic.
-		 * Acceptable port range is 1024 to 49151.
-		 * If no port is set or is set to 0, the default port (4789) is used.
-		 *
-		 * @default 4789
-		 * @example 4789
-		 */
-		DataPathPort?: number;
-		/**
-		 * @description Default Address Pool specifies default subnet pools for global scope
-		 * networks.
-		 */
-		DefaultAddrPool?: string[];
-		/**
-		 * Format: uint32
-		 * @description SubnetSize specifies the subnet size of the networks created from the
-		 * default subnet pool.
-		 *
-		 * @default 24
-		 * @example 24
-		 */
-		SubnetSize?: number;
-	};
-	/** @description JoinTokens contains the tokens workers and managers need to join the swarm. */
-	JoinTokens: {
-		/**
-		 * @description The token workers can use to join the swarm.
-		 *
-		 * @example SWMTKN-1-3pu6hszjas19xyp7ghgosyx9k8atbfcr8p2is99znpy26u2lkl-1awxwuwd3z9j1z3puu7rcgdbx
-		 */
-		Worker?: string;
-		/**
-		 * @description The token managers can use to join the swarm.
-		 *
-		 * @example SWMTKN-1-3pu6hszjas19xyp7ghgosyx9k8atbfcr8p2is99znpy26u2lkl-7p73s1dx5in4tatdymyhg9hu2
-		 */
-		Manager?: string;
-	};
-	Swarm: definitions["ClusterInfo"] & {
-		JoinTokens?: definitions["JoinTokens"];
-	};
-	/** @description User modifiable task configuration. */
-	TaskSpec: {
-		/**
-		 * @description Plugin spec for the service.  *(Experimental release only.)*
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
-		 * > mutually exclusive. PluginSpec is only used when the Runtime field
-		 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
-		 * > field is set to `attachment`.
-		 */
-		PluginSpec?: {
-			/** @description The name or 'alias' to use for the plugin. */
-			Name?: string;
-			/** @description The plugin image reference to use. */
-			Remote?: string;
-			/** @description Disable the plugin once scheduled. */
-			Disabled?: boolean;
-			PluginPrivilege?: definitions["PluginPrivilege"][];
-		};
-		/**
-		 * @description Container spec for the service.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
-		 * > mutually exclusive. PluginSpec is only used when the Runtime field
-		 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
-		 * > field is set to `attachment`.
-		 */
-		ContainerSpec?: {
-			/** @description The image name to use for the container */
-			Image?: string;
-			/** @description User-defined key/value data. */
-			Labels?: { [key: string]: string };
-			/** @description The command to be run in the image. */
-			Command?: string[];
-			/** @description Arguments to the command. */
-			Args?: string[];
-			/**
-			 * @description The hostname to use for the container, as a valid
-			 * [RFC 1123](https://tools.ietf.org/html/rfc1123) hostname.
-			 */
-			Hostname?: string;
-			/** @description A list of environment variables in the form `VAR=value`. */
-			Env?: string[];
-			/** @description The working directory for commands to run in. */
-			Dir?: string;
-			/** @description The user inside the container. */
-			User?: string;
-			/** @description A list of additional groups that the container process will run as. */
-			Groups?: string[];
-			/** @description Security options for the container */
-			Privileges?: {
-				/** @description CredentialSpec for managed service account (Windows only) */
-				CredentialSpec?: {
-					/**
-					 * @description Load credential spec from a Swarm Config with the given ID.
-					 * The specified config must also be present in the Configs
-					 * field with the Runtime property set.
-					 *
-					 * <p><br /></p>
-					 *
-					 *
-					 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
-					 * > and `CredentialSpec.Config` are mutually exclusive.
-					 *
-					 * @example 0bt9dmxjvjiqermk6xrop3ekq
-					 */
-					Config?: string;
-					/**
-					 * @description Load credential spec from this file. The file is read by
-					 * the daemon, and must be present in the `CredentialSpecs`
-					 * subdirectory in the docker data directory, which defaults
-					 * to `C:\ProgramData\Docker\` on Windows.
-					 *
-					 * For example, specifying `spec.json` loads
-					 * `C:\ProgramData\Docker\CredentialSpecs\spec.json`.
-					 *
-					 * <p><br /></p>
-					 *
-					 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
-					 * > and `CredentialSpec.Config` are mutually exclusive.
-					 *
-					 * @example spec.json
-					 */
-					File?: string;
-					/**
-					 * @description Load credential spec from this value in the Windows
-					 * registry. The specified registry value must be located in:
-					 *
-					 * `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers\CredentialSpecs`
-					 *
-					 * <p><br /></p>
-					 *
-					 *
-					 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
-					 * > and `CredentialSpec.Config` are mutually exclusive.
-					 */
-					Registry?: string;
-				};
-				/** @description SELinux labels of the container */
-				SELinuxContext?: {
-					/** @description Disable SELinux */
-					Disable?: boolean;
-					/** @description SELinux user label */
-					User?: string;
-					/** @description SELinux role label */
-					Role?: string;
-					/** @description SELinux type label */
-					Type?: string;
-					/** @description SELinux level label */
-					Level?: string;
-				};
-			};
-			/** @description Whether a pseudo-TTY should be allocated. */
-			TTY?: boolean;
-			/** @description Open `stdin` */
-			OpenStdin?: boolean;
-			/** @description Mount the container's root filesystem as read only. */
-			ReadOnly?: boolean;
-			/**
-			 * @description Specification for mounts to be added to containers created as part
-			 * of the service.
-			 */
-			Mounts?: definitions["Mount"][];
-			/** @description Signal to stop the container. */
-			StopSignal?: string;
-			/**
-			 * Format: int64
-			 * @description Amount of time to wait for the container to terminate before
-			 * forcefully killing it.
-			 */
-			StopGracePeriod?: number;
-			HealthCheck?: definitions["HealthConfig"];
-			/**
-			 * @description A list of hostname/IP mappings to add to the container's `hosts`
-			 * file. The format of extra hosts is specified in the
-			 * [hosts(5)](http://man7.org/linux/man-pages/man5/hosts.5.html)
-			 * man page:
-			 *
-			 *     IP_address canonical_hostname [aliases...]
-			 */
-			Hosts?: string[];
-			/**
-			 * @description Specification for DNS related configurations in resolver configuration
-			 * file (`resolv.conf`).
-			 */
-			DNSConfig?: {
-				/** @description The IP addresses of the name servers. */
-				Nameservers?: string[];
-				/** @description A search list for host-name lookup. */
-				Search?: string[];
-				/**
-				 * @description A list of internal resolver variables to be modified (e.g.,
-				 * `debug`, `ndots:3`, etc.).
-				 */
-				Options?: string[];
-			};
-			/**
-			 * @description Secrets contains references to zero or more secrets that will be
-			 * exposed to the service.
-			 */
-			Secrets?: {
-				/** @description File represents a specific target that is backed by a file. */
-				File?: {
-					/** @description Name represents the final filename in the filesystem. */
-					Name?: string;
-					/** @description UID represents the file UID. */
-					UID?: string;
-					/** @description GID represents the file GID. */
-					GID?: string;
-					/**
-					 * Format: uint32
-					 * @description Mode represents the FileMode of the file.
-					 */
-					Mode?: number;
-				};
-				/**
-				 * @description SecretID represents the ID of the specific secret that we're
-				 * referencing.
-				 */
-				SecretID?: string;
-				/**
-				 * @description SecretName is the name of the secret that this references,
-				 * but this is just provided for lookup/display purposes. The
-				 * secret in the reference will be identified by its ID.
-				 */
-				SecretName?: string;
-			}[];
-			/**
-			 * @description Configs contains references to zero or more configs that will be
-			 * exposed to the service.
-			 */
-			Configs?: {
-				/**
-				 * @description File represents a specific target that is backed by a file.
-				 *
-				 * <p><br /><p>
-				 *
-				 * > **Note**: `Configs.File` and `Configs.Runtime` are mutually exclusive
-				 */
-				File?: {
-					/** @description Name represents the final filename in the filesystem. */
-					Name?: string;
-					/** @description UID represents the file UID. */
-					UID?: string;
-					/** @description GID represents the file GID. */
-					GID?: string;
-					/**
-					 * Format: uint32
-					 * @description Mode represents the FileMode of the file.
-					 */
-					Mode?: number;
-				};
-				/**
-				 * @description Runtime represents a target that is not mounted into the
-				 * container but is used by the task
-				 *
-				 * <p><br /><p>
-				 *
-				 * > **Note**: `Configs.File` and `Configs.Runtime` are mutually
-				 * > exclusive
-				 */
-				Runtime?: { [key: string]: unknown };
-				/**
-				 * @description ConfigID represents the ID of the specific config that we're
-				 * referencing.
-				 */
-				ConfigID?: string;
-				/**
-				 * @description ConfigName is the name of the config that this references,
-				 * but this is just provided for lookup/display purposes. The
-				 * config in the reference will be identified by its ID.
-				 */
-				ConfigName?: string;
-			}[];
-			/**
-			 * @description Isolation technology of the containers running the service.
-			 * (Windows only)
+			 * - `bind` Mounts a file or directory from the host into the container. Must exist prior to creating the container.
+			 * - `volume` Creates a volume with the given name and options (or uses a pre-existing volume with the same name and options). These are **not** removed when the container is removed.
+			 * - `tmpfs` Create a tmpfs with the given options. The mount source cannot be specified for tmpfs.
+			 * - `npipe` Mounts a named pipe from the host into the container. Must exist prior to creating the container.
+			 * - `cluster` a Swarm cluster volume
 			 *
 			 * @enum {string}
 			 */
-			Isolation?: "default" | "process" | "hyperv";
+			Type?: "bind" | "volume" | "tmpfs" | "npipe" | "cluster";
+			/** @description Whether the mount should be read-only. */
+			ReadOnly?: boolean;
+			/** @description The consistency requirement for the mount: `default`, `consistent`, `cached`, or `delegated`. */
+			Consistency?: string;
+			/** @description Optional configuration for the `bind` type. */
+			BindOptions?: {
+				/**
+				 * @description A propagation mode with the value `[r]private`, `[r]shared`, or `[r]slave`.
+				 * @enum {string}
+				 */
+				Propagation?: "private" | "rprivate" | "shared" | "rshared" | "slave" | "rslave";
+				/**
+				 * @description Disable recursive bind mount.
+				 * @default false
+				 */
+				NonRecursive?: boolean;
+				/**
+				 * @description Create mount point on host if missing
+				 * @default false
+				 */
+				CreateMountpoint?: boolean;
+			};
+			/** @description Optional configuration for the `volume` type. */
+			VolumeOptions?: {
+				/**
+				 * @description Populate volume with data from the target.
+				 * @default false
+				 */
+				NoCopy?: boolean;
+				/** @description User-defined key/value metadata. */
+				Labels?: { [key: string]: string };
+				/** @description Map of driver specific options */
+				DriverConfig?: {
+					/** @description Name of the driver to use to create the volume. */
+					Name?: string;
+					/** @description key/value map of driver specific options. */
+					Options?: { [key: string]: string };
+				};
+			};
+			/** @description Optional configuration for the `tmpfs` type. */
+			TmpfsOptions?: {
+				/**
+				 * Format: int64
+				 * @description The size for the tmpfs mount in bytes.
+				 */
+				SizeBytes?: number;
+				/** @description The permission mode for the tmpfs mount in an integer. */
+				Mode?: number;
+			};
+		};
+		/**
+		 * @description The behavior to apply when the container exits. The default is not to
+		 * restart.
+		 *
+		 * An ever increasing delay (double the previous delay, starting at 100ms) is
+		 * added before each restart to prevent flooding the server.
+		 */
+		RestartPolicy: {
+			/**
+			 * @description - Empty string means not to restart
+			 * - `no` Do not automatically restart
+			 * - `always` Always restart
+			 * - `unless-stopped` Restart always except when the user has manually stopped the container
+			 * - `on-failure` Restart only when the container exit code is non-zero
+			 *
+			 * @enum {string}
+			 */
+			Name?: "" | "no" | "always" | "unless-stopped" | "on-failure";
+			/** @description If `on-failure` is used, the number of times to retry before giving up. */
+			MaximumRetryCount?: number;
+		};
+		/** @description A container's resources (cgroups config, ulimits, etc) */
+		Resources: {
+			/**
+			 * @description An integer value representing this container's relative CPU weight
+			 * versus other containers.
+			 */
+			CpuShares?: number;
+			/**
+			 * Format: int64
+			 * @description Memory limit in bytes.
+			 * @default 0
+			 */
+			Memory?: number;
+			/**
+			 * @description Path to `cgroups` under which the container's `cgroup` is created. If
+			 * the path is not absolute, the path is considered to be relative to the
+			 * `cgroups` path of the init process. Cgroups are created if they do not
+			 * already exist.
+			 */
+			CgroupParent?: string;
+			/** @description Block IO weight (relative weight). */
+			BlkioWeight?: number;
+			/**
+			 * @description Block IO weight (relative device weight) in the form:
+			 *
+			 * ```
+			 * [{"Path": "device_path", "Weight": weight}]
+			 * ```
+			 */
+			BlkioWeightDevice?: {
+				Path?: string;
+				Weight?: number;
+			}[];
+			/**
+			 * @description Limit read rate (bytes per second) from a device, in the form:
+			 *
+			 * ```
+			 * [{"Path": "device_path", "Rate": rate}]
+			 * ```
+			 */
+			BlkioDeviceReadBps?: components["schemas"]["ThrottleDevice"][];
+			/**
+			 * @description Limit write rate (bytes per second) to a device, in the form:
+			 *
+			 * ```
+			 * [{"Path": "device_path", "Rate": rate}]
+			 * ```
+			 */
+			BlkioDeviceWriteBps?: components["schemas"]["ThrottleDevice"][];
+			/**
+			 * @description Limit read rate (IO per second) from a device, in the form:
+			 *
+			 * ```
+			 * [{"Path": "device_path", "Rate": rate}]
+			 * ```
+			 */
+			BlkioDeviceReadIOps?: components["schemas"]["ThrottleDevice"][];
+			/**
+			 * @description Limit write rate (IO per second) to a device, in the form:
+			 *
+			 * ```
+			 * [{"Path": "device_path", "Rate": rate}]
+			 * ```
+			 */
+			BlkioDeviceWriteIOps?: components["schemas"]["ThrottleDevice"][];
+			/**
+			 * Format: int64
+			 * @description The length of a CPU period in microseconds.
+			 */
+			CpuPeriod?: number;
+			/**
+			 * Format: int64
+			 * @description Microseconds of CPU time that the container can get in a CPU period.
+			 */
+			CpuQuota?: number;
+			/**
+			 * Format: int64
+			 * @description The length of a CPU real-time period in microseconds. Set to 0 to
+			 * allocate no time allocated to real-time tasks.
+			 */
+			CpuRealtimePeriod?: number;
+			/**
+			 * Format: int64
+			 * @description The length of a CPU real-time runtime in microseconds. Set to 0 to
+			 * allocate no time allocated to real-time tasks.
+			 */
+			CpuRealtimeRuntime?: number;
+			/**
+			 * @description CPUs in which to allow execution (e.g., `0-3`, `0,1`).
+			 *
+			 * @example 0-3
+			 */
+			CpusetCpus?: string;
+			/**
+			 * @description Memory nodes (MEMs) in which to allow execution (0-3, 0,1). Only
+			 * effective on NUMA systems.
+			 */
+			CpusetMems?: string;
+			/** @description A list of devices to add to the container. */
+			Devices?: components["schemas"]["DeviceMapping"][];
+			/** @description a list of cgroup rules to apply to the container */
+			DeviceCgroupRules?: string[];
+			/** @description A list of requests for devices to be sent to device drivers. */
+			DeviceRequests?: components["schemas"]["DeviceRequest"][];
+			/**
+			 * Format: int64
+			 * @description Hard limit for kernel TCP buffer memory (in bytes). Depending on the
+			 * OCI runtime in use, this option may be ignored. It is no longer supported
+			 * by the default (runc) runtime.
+			 *
+			 * This field is omitted when empty.
+			 */
+			KernelMemoryTCP?: number;
+			/**
+			 * Format: int64
+			 * @description Memory soft limit in bytes.
+			 */
+			MemoryReservation?: number;
+			/**
+			 * Format: int64
+			 * @description Total memory limit (memory + swap). Set as `-1` to enable unlimited
+			 * swap.
+			 */
+			MemorySwap?: number;
+			/**
+			 * Format: int64
+			 * @description Tune a container's memory swappiness behavior. Accepts an integer
+			 * between 0 and 100.
+			 */
+			MemorySwappiness?: number;
+			/**
+			 * Format: int64
+			 * @description CPU quota in units of 10<sup>-9</sup> CPUs.
+			 */
+			NanoCpus?: number;
+			/** @description Disable OOM Killer for the container. */
+			OomKillDisable?: boolean;
 			/**
 			 * @description Run an init inside the container that forwards signals and reaps
 			 * processes. This field is omitted if empty, and the default (as
 			 * configured on the daemon) is used.
 			 */
-			Init?: boolean;
+			Init?: boolean | null;
 			/**
-			 * @description Set kernel namedspaced parameters (sysctls) in the container.
-			 * The Sysctls option on services accepts the same sysctls as the
-			 * are supported on containers. Note that while the same sysctls are
-			 * supported, no guarantees or checks are made about their
-			 * suitability for a clustered environment, and it's up to the user
-			 * to determine whether a given sysctl will work properly in a
-			 * Service.
+			 * Format: int64
+			 * @description Tune a container's PIDs limit. Set `0` or `-1` for unlimited, or `null`
+			 * to not change.
 			 */
-			Sysctls?: { [key: string]: string };
+			PidsLimit?: number | null;
 			/**
-			 * @description A list of kernel capabilities to add to the default set
-			 * for the container.
+			 * @description A list of resource limits to set in the container. For example:
 			 *
-			 * @example [
-			 *   "CAP_NET_RAW",
-			 *   "CAP_SYS_ADMIN",
-			 *   "CAP_SYS_CHROOT",
-			 *   "CAP_SYSLOG"
-			 * ]
+			 * ```
+			 * {"Name": "nofile", "Soft": 1024, "Hard": 2048}
+			 * ```
 			 */
-			CapabilityAdd?: string[];
-			/**
-			 * @description A list of kernel capabilities to drop from the default set
-			 * for the container.
-			 *
-			 * @example [
-			 *   "CAP_NET_RAW"
-			 * ]
-			 */
-			CapabilityDrop?: string[];
-			/** @description A list of resource limits to set in the container. For example: `{"Name": "nofile", "Soft": 1024, "Hard": 2048}`" */
 			Ulimits?: {
 				/** @description Name of ulimit */
 				Name?: string;
@@ -3678,2184 +1069,4772 @@ export interface definitions {
 				/** @description Hard limit */
 				Hard?: number;
 			}[];
+			/**
+			 * Format: int64
+			 * @description The number of usable CPUs (Windows only).
+			 *
+			 * On Windows Server containers, the processor resource controls are
+			 * mutually exclusive. The order of precedence is `CPUCount` first, then
+			 * `CPUShares`, and `CPUPercent` last.
+			 */
+			CpuCount?: number;
+			/**
+			 * Format: int64
+			 * @description The usable percentage of the available CPUs (Windows only).
+			 *
+			 * On Windows Server containers, the processor resource controls are
+			 * mutually exclusive. The order of precedence is `CPUCount` first, then
+			 * `CPUShares`, and `CPUPercent` last.
+			 */
+			CpuPercent?: number;
+			/**
+			 * Format: int64
+			 * @description Maximum IOps for the container system drive (Windows only)
+			 */
+			IOMaximumIOps?: number;
+			/**
+			 * Format: int64
+			 * @description Maximum IO in bytes per second for the container system drive
+			 * (Windows only).
+			 */
+			IOMaximumBandwidth?: number;
+		};
+		/** @description An object describing a limit on resources which can be requested by a task. */
+		Limit: {
+			/**
+			 * Format: int64
+			 * @example 4000000000
+			 */
+			NanoCPUs?: number;
+			/**
+			 * Format: int64
+			 * @example 8272408576
+			 */
+			MemoryBytes?: number;
+			/**
+			 * Format: int64
+			 * @description Limits the maximum number of PIDs in the container. Set `0` for unlimited.
+			 *
+			 * @default 0
+			 * @example 100
+			 */
+			Pids?: number;
 		};
 		/**
-		 * @description Read-only spec type for non-swarm containers attached to swarm overlay
-		 * networks.
+		 * @description An object describing the resources which can be advertised by a node and
+		 * requested by a task.
+		 */
+		ResourceObject: {
+			/**
+			 * Format: int64
+			 * @example 4000000000
+			 */
+			NanoCPUs?: number;
+			/**
+			 * Format: int64
+			 * @example 8272408576
+			 */
+			MemoryBytes?: number;
+			GenericResources?: components["schemas"]["GenericResources"];
+		};
+		/**
+		 * @description User-defined resources can be either Integer resources (e.g, `SSD=3`) or
+		 * String resources (e.g, `GPU=UUID1`).
 		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
-		 * > mutually exclusive. PluginSpec is only used when the Runtime field
-		 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
-		 * > field is set to `attachment`.
+		 * @example [
+		 *   {
+		 *     "DiscreteResourceSpec": {
+		 *       "Kind": "SSD",
+		 *       "Value": 3
+		 *     }
+		 *   },
+		 *   {
+		 *     "NamedResourceSpec": {
+		 *       "Kind": "GPU",
+		 *       "Value": "UUID1"
+		 *     }
+		 *   },
+		 *   {
+		 *     "NamedResourceSpec": {
+		 *       "Kind": "GPU",
+		 *       "Value": "UUID2"
+		 *     }
+		 *   }
+		 * ]
 		 */
-		NetworkAttachmentSpec?: {
-			/** @description ID of the container represented by this task */
-			ContainerID?: string;
-		};
-		/**
-		 * @description Resource requirements which apply to each individual container created
-		 * as part of the service.
-		 */
-		Resources?: {
-			/** @description Define resources limits. */
-			Limits?: definitions["Limit"];
-			/** @description Define resources reservation. */
-			Reservations?: definitions["ResourceObject"];
-		};
-		/**
-		 * @description Specification for the restart policy which applies to containers
-		 * created as part of this service.
-		 */
-		RestartPolicy?: {
-			/**
-			 * @description Condition for restart.
-			 * @enum {string}
-			 */
-			Condition?: "none" | "on-failure" | "any";
-			/**
-			 * Format: int64
-			 * @description Delay between restart attempts.
-			 */
-			Delay?: number;
-			/**
-			 * Format: int64
-			 * @description Maximum attempts to restart a given container before giving up
-			 * (default value is 0, which is ignored).
-			 *
-			 * @default 0
-			 */
-			MaxAttempts?: number;
-			/**
-			 * Format: int64
-			 * @description Windows is the time window used to evaluate the restart policy
-			 * (default value is 0, which is unbounded).
-			 *
-			 * @default 0
-			 */
-			Window?: number;
-		};
-		Placement?: {
-			/**
-			 * @description An array of constraint expressions to limit the set of nodes where
-			 * a task can be scheduled. Constraint expressions can either use a
-			 * _match_ (`==`) or _exclude_ (`!=`) rule. Multiple constraints find
-			 * nodes that satisfy every expression (AND match). Constraints can
-			 * match node or Docker Engine labels as follows:
-			 *
-			 * node attribute       | matches                        | example
-			 * ---------------------|--------------------------------|-----------------------------------------------
-			 * `node.id`            | Node ID                        | `node.id==2ivku8v2gvtg4`
-			 * `node.hostname`      | Node hostname                  | `node.hostname!=node-2`
-			 * `node.role`          | Node role (`manager`/`worker`) | `node.role==manager`
-			 * `node.platform.os`   | Node operating system          | `node.platform.os==windows`
-			 * `node.platform.arch` | Node architecture              | `node.platform.arch==x86_64`
-			 * `node.labels`        | User-defined node labels       | `node.labels.security==high`
-			 * `engine.labels`      | Docker Engine's labels         | `engine.labels.operatingsystem==ubuntu-14.04`
-			 *
-			 * `engine.labels` apply to Docker Engine labels like operating system,
-			 * drivers, etc. Swarm administrators add `node.labels` for operational
-			 * purposes by using the [`node update endpoint`](#operation/NodeUpdate).
-			 *
-			 * @example [
-			 *   "node.hostname!=node3.corp.example.com",
-			 *   "node.role!=manager",
-			 *   "node.labels.type==production",
-			 *   "node.platform.os==linux",
-			 *   "node.platform.arch==x86_64"
-			 * ]
-			 */
-			Constraints?: string[];
-			/**
-			 * @description Preferences provide a way to make the scheduler aware of factors
-			 * such as topology. They are provided in order from highest to
-			 * lowest precedence.
-			 *
-			 * @example [
-			 *   {
-			 *     "Spread": {
-			 *       "SpreadDescriptor": "node.labels.datacenter"
-			 *     }
-			 *   },
-			 *   {
-			 *     "Spread": {
-			 *       "SpreadDescriptor": "node.labels.rack"
-			 *     }
-			 *   }
-			 * ]
-			 */
-			Preferences?: {
-				Spread?: {
-					/** @description label descriptor, such as `engine.labels.az`. */
-					SpreadDescriptor?: string;
-				};
-			}[];
-			/**
-			 * Format: int64
-			 * @description Maximum number of replicas for per node (default value is 0, which
-			 * is unlimited)
-			 *
-			 * @default 0
-			 */
-			MaxReplicas?: number;
-			/**
-			 * @description Platforms stores all the platforms that the service's image can
-			 * run on. This field is used in the platform filter for scheduling.
-			 * If empty, then the platform filter is off, meaning there are no
-			 * scheduling restrictions.
-			 */
-			Platforms?: definitions["Platform"][];
-		};
-		/**
-		 * @description A counter that triggers an update even if no relevant parameters have
-		 * been changed.
-		 */
-		ForceUpdate?: number;
-		/** @description Runtime is the type of runtime specified for the task executor. */
-		Runtime?: string;
-		/** @description Specifies which networks the service should attach to. */
-		Networks?: definitions["NetworkAttachmentConfig"][];
-		/**
-		 * @description Specifies the log driver to use for tasks created from this spec. If
-		 * not present, the default one for the swarm will be used, finally
-		 * falling back to the engine default if not specified.
-		 */
-		LogDriver?: {
-			Name?: string;
-			Options?: { [key: string]: string };
-		};
-	};
-	/** @enum {string} */
-	TaskState:
-		| "new"
-		| "allocated"
-		| "pending"
-		| "assigned"
-		| "accepted"
-		| "preparing"
-		| "ready"
-		| "starting"
-		| "running"
-		| "complete"
-		| "shutdown"
-		| "failed"
-		| "rejected"
-		| "remove"
-		| "orphaned";
-	/**
-	 * @example {
-	 *   "ID": "0kzzo1i0y4jz6027t0k7aezc7",
-	 *   "Version": {
-	 *     "Index": 71
-	 *   },
-	 *   "CreatedAt": "2016-06-07T21:07:31.171892745Z",
-	 *   "UpdatedAt": "2016-06-07T21:07:31.376370513Z",
-	 *   "Spec": {
-	 *     "ContainerSpec": {
-	 *       "Image": "redis"
-	 *     },
-	 *     "Resources": {
-	 *       "Limits": {},
-	 *       "Reservations": {}
-	 *     },
-	 *     "RestartPolicy": {
-	 *       "Condition": "any",
-	 *       "MaxAttempts": 0
-	 *     },
-	 *     "Placement": {}
-	 *   },
-	 *   "ServiceID": "9mnpnzenvg8p8tdbtq4wvbkcz",
-	 *   "Slot": 1,
-	 *   "NodeID": "60gvrl6tm78dmak4yl7srz94v",
-	 *   "Status": {
-	 *     "Timestamp": "2016-06-07T21:07:31.290032978Z",
-	 *     "State": "running",
-	 *     "Message": "started",
-	 *     "ContainerStatus": {
-	 *       "ContainerID": "e5d62702a1b48d01c3e02ca1e0212a250801fa8d67caca0b6f35919ebc12f035",
-	 *       "PID": 677
-	 *     }
-	 *   },
-	 *   "DesiredState": "running",
-	 *   "NetworksAttachments": [
-	 *     {
-	 *       "Network": {
-	 *         "ID": "4qvuz4ko70xaltuqbt8956gd1",
-	 *         "Version": {
-	 *           "Index": 18
-	 *         },
-	 *         "CreatedAt": "2016-06-07T20:31:11.912919752Z",
-	 *         "UpdatedAt": "2016-06-07T21:07:29.955277358Z",
-	 *         "Spec": {
-	 *           "Name": "ingress",
-	 *           "Labels": {
-	 *             "com.docker.swarm.internal": "true"
-	 *           },
-	 *           "DriverConfiguration": {},
-	 *           "IPAMOptions": {
-	 *             "Driver": {},
-	 *             "Configs": [
-	 *               {
-	 *                 "Subnet": "10.255.0.0/16",
-	 *                 "Gateway": "10.255.0.1"
-	 *               }
-	 *             ]
-	 *           }
-	 *         },
-	 *         "DriverState": {
-	 *           "Name": "overlay",
-	 *           "Options": {
-	 *             "com.docker.network.driver.overlay.vxlanid_list": "256"
-	 *           }
-	 *         },
-	 *         "IPAMOptions": {
-	 *           "Driver": {
-	 *             "Name": "default"
-	 *           },
-	 *           "Configs": [
-	 *             {
-	 *               "Subnet": "10.255.0.0/16",
-	 *               "Gateway": "10.255.0.1"
-	 *             }
-	 *           ]
-	 *         }
-	 *       },
-	 *       "Addresses": [
-	 *         "10.255.0.10/16"
-	 *       ]
-	 *     }
-	 *   ],
-	 *   "AssignedGenericResources": [
-	 *     {
-	 *       "DiscreteResourceSpec": {
-	 *         "Kind": "SSD",
-	 *         "Value": 3
-	 *       }
-	 *     },
-	 *     {
-	 *       "NamedResourceSpec": {
-	 *         "Kind": "GPU",
-	 *         "Value": "UUID1"
-	 *       }
-	 *     },
-	 *     {
-	 *       "NamedResourceSpec": {
-	 *         "Kind": "GPU",
-	 *         "Value": "UUID2"
-	 *       }
-	 *     }
-	 *   ]
-	 * }
-	 */
-	Task: {
-		/** @description The ID of the task. */
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/** Format: dateTime */
-		CreatedAt?: string;
-		/** Format: dateTime */
-		UpdatedAt?: string;
-		/** @description Name of the task. */
-		Name?: string;
-		/** @description User-defined key/value metadata. */
-		Labels?: { [key: string]: string };
-		Spec?: definitions["TaskSpec"];
-		/** @description The ID of the service this task is part of. */
-		ServiceID?: string;
-		Slot?: number;
-		/** @description The ID of the node that this task is on. */
-		NodeID?: string;
-		AssignedGenericResources?: definitions["GenericResources"];
-		Status?: {
-			/** Format: dateTime */
-			Timestamp?: string;
-			State?: definitions["TaskState"];
-			Message?: string;
-			Err?: string;
-			ContainerStatus?: {
-				ContainerID?: string;
-				PID?: number;
-				ExitCode?: number;
+		GenericResources: {
+			NamedResourceSpec?: {
+				Kind?: string;
+				Value?: string;
 			};
-		};
-		DesiredState?: definitions["TaskState"];
-		/**
-		 * @description If the Service this Task belongs to is a job-mode service, contains
-		 * the JobIteration of the Service this Task was created for. Absent if
-		 * the Task was created for a Replicated or Global Service.
-		 */
-		JobIteration?: definitions["ObjectVersion"];
-	};
-	/** @description User modifiable configuration for a service. */
-	ServiceSpec: {
-		/** @description Name of the service. */
-		Name?: string;
-		/** @description User-defined key/value metadata. */
-		Labels?: { [key: string]: string };
-		TaskTemplate?: definitions["TaskSpec"];
-		/** @description Scheduling mode for the service. */
-		Mode?: {
-			Replicated?: {
+			DiscreteResourceSpec?: {
+				Kind?: string;
 				/** Format: int64 */
-				Replicas?: number;
+				Value?: number;
 			};
-			Global?: { [key: string]: unknown };
+		}[];
+		/** @description A test to perform to check that the container is healthy. */
+		HealthConfig: {
 			/**
-			 * @description The mode used for services with a finite number of tasks that run
-			 * to a completed state.
-			 */
-			ReplicatedJob?: {
-				/**
-				 * Format: int64
-				 * @description The maximum number of replicas to run simultaneously.
-				 *
-				 * @default 1
-				 */
-				MaxConcurrent?: number;
-				/**
-				 * Format: int64
-				 * @description The total number of replicas desired to reach the Completed
-				 * state. If unset, will default to the value of `MaxConcurrent`
-				 */
-				TotalCompletions?: number;
-			};
-			/**
-			 * @description The mode used for services which run a task to the completed state
-			 * on each valid node.
-			 */
-			GlobalJob?: { [key: string]: unknown };
-		};
-		/** @description Specification for the update strategy of the service. */
-		UpdateConfig?: {
-			/**
-			 * Format: int64
-			 * @description Maximum number of tasks to be updated in one iteration (0 means
-			 * unlimited parallelism).
-			 */
-			Parallelism?: number;
-			/**
-			 * Format: int64
-			 * @description Amount of time between updates, in nanoseconds.
-			 */
-			Delay?: number;
-			/**
-			 * @description Action to take if an updated task fails to run, or stops running
-			 * during the update.
+			 * @description The test to perform. Possible values are:
 			 *
+			 * - `[]` inherit healthcheck from image or parent image
+			 * - `["NONE"]` disable healthcheck
+			 * - `["CMD", args...]` exec arguments directly
+			 * - `["CMD-SHELL", command]` run command with system's default shell
+			 */
+			Test?: string[];
+			/**
+			 * Format: int64
+			 * @description The time to wait between checks in nanoseconds. It should be 0 or at
+			 * least 1000000 (1 ms). 0 means inherit.
+			 */
+			Interval?: number;
+			/**
+			 * Format: int64
+			 * @description The time to wait before considering the check to have hung. It should
+			 * be 0 or at least 1000000 (1 ms). 0 means inherit.
+			 */
+			Timeout?: number;
+			/**
+			 * @description The number of consecutive failures needed to consider a container as
+			 * unhealthy. 0 means inherit.
+			 */
+			Retries?: number;
+			/**
+			 * Format: int64
+			 * @description Start period for the container to initialize before starting
+			 * health-retries countdown in nanoseconds. It should be 0 or at least
+			 * 1000000 (1 ms). 0 means inherit.
+			 */
+			StartPeriod?: number;
+		};
+		/** @description Health stores information about the container's healthcheck results. */
+		Health: {
+			/**
+			 * @description Status is one of `none`, `starting`, `healthy` or `unhealthy`
+			 *
+			 * - "none"      Indicates there is no healthcheck
+			 * - "starting"  Starting indicates that the container is not yet ready
+			 * - "healthy"   Healthy indicates that the container is running correctly
+			 * - "unhealthy" Unhealthy indicates that the container has a problem
+			 *
+			 * @example healthy
 			 * @enum {string}
 			 */
-			FailureAction?: "continue" | "pause" | "rollback";
+			Status?: "none" | "starting" | "healthy" | "unhealthy";
 			/**
-			 * Format: int64
-			 * @description Amount of time to monitor each updated task for failures, in
-			 * nanoseconds.
+			 * @description FailingStreak is the number of consecutive failures
+			 * @example 0
 			 */
-			Monitor?: number;
+			FailingStreak?: number;
+			/** @description Log contains the last few results (oldest first) */
+			Log?: components["schemas"]["HealthcheckResult"][];
+		} | null;
+		/** @description HealthcheckResult stores information about a single run of a healthcheck probe */
+		HealthcheckResult: {
 			/**
-			 * @description The fraction of tasks that may fail during an update before the
-			 * failure action is invoked, specified as a floating point number
-			 * between 0 and 1.
+			 * Format: date-time
+			 * @description Date and time at which this check started in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
 			 *
-			 * @default 0
+			 * @example 2020-01-04T10:44:24.496Z
 			 */
-			MaxFailureRatio?: number;
-			/**
-			 * @description The order of operations when rolling out an updated task. Either
-			 * the old task is shut down before the new task is started, or the
-			 * new task is started before the old task is shut down.
-			 *
-			 * @enum {string}
-			 */
-			Order?: "stop-first" | "start-first";
-		};
-		/** @description Specification for the rollback strategy of the service. */
-		RollbackConfig?: {
-			/**
-			 * Format: int64
-			 * @description Maximum number of tasks to be rolled back in one iteration (0 means
-			 * unlimited parallelism).
-			 */
-			Parallelism?: number;
-			/**
-			 * Format: int64
-			 * @description Amount of time between rollback iterations, in nanoseconds.
-			 */
-			Delay?: number;
-			/**
-			 * @description Action to take if an rolled back task fails to run, or stops
-			 * running during the rollback.
-			 *
-			 * @enum {string}
-			 */
-			FailureAction?: "continue" | "pause";
-			/**
-			 * Format: int64
-			 * @description Amount of time to monitor each rolled back task for failures, in
-			 * nanoseconds.
-			 */
-			Monitor?: number;
-			/**
-			 * @description The fraction of tasks that may fail during a rollback before the
-			 * failure action is invoked, specified as a floating point number
-			 * between 0 and 1.
-			 *
-			 * @default 0
-			 */
-			MaxFailureRatio?: number;
-			/**
-			 * @description The order of operations when rolling back a task. Either the old
-			 * task is shut down before the new task is started, or the new task
-			 * is started before the old task is shut down.
-			 *
-			 * @enum {string}
-			 */
-			Order?: "stop-first" | "start-first";
-		};
-		/** @description Specifies which networks the service should attach to. */
-		Networks?: definitions["NetworkAttachmentConfig"][];
-		EndpointSpec?: definitions["EndpointSpec"];
-	};
-	EndpointPortConfig: {
-		Name?: string;
-		/** @enum {string} */
-		Protocol?: "tcp" | "udp" | "sctp";
-		/** @description The port inside the container. */
-		TargetPort?: number;
-		/** @description The port on the swarm hosts. */
-		PublishedPort?: number;
-		/**
-		 * @description The mode in which port is published.
-		 *
-		 * <p><br /></p>
-		 *
-		 * - "ingress" makes the target port accessible on every node,
-		 *   regardless of whether there is a task for the service running on
-		 *   that node or not.
-		 * - "host" bypasses the routing mesh and publish the port directly on
-		 *   the swarm node where that service is running.
-		 *
-		 * @default ingress
-		 * @example ingress
-		 * @enum {string}
-		 */
-		PublishMode?: "ingress" | "host";
-	};
-	/** @description Properties that can be configured to access and load balance a service. */
-	EndpointSpec: {
-		/**
-		 * @description The mode of resolution to use for internal load balancing between tasks.
-		 *
-		 * @default vip
-		 * @enum {string}
-		 */
-		Mode?: "vip" | "dnsrr";
-		/**
-		 * @description List of exposed ports that this service is accessible on from the
-		 * outside. Ports can only be provided if `vip` resolution mode is used.
-		 */
-		Ports?: definitions["EndpointPortConfig"][];
-	};
-	/**
-	 * @example {
-	 *   "ID": "9mnpnzenvg8p8tdbtq4wvbkcz",
-	 *   "Version": {
-	 *     "Index": 19
-	 *   },
-	 *   "CreatedAt": "2016-06-07T21:05:51.880065305Z",
-	 *   "UpdatedAt": "2016-06-07T21:07:29.962229872Z",
-	 *   "Spec": {
-	 *     "Name": "hopeful_cori",
-	 *     "TaskTemplate": {
-	 *       "ContainerSpec": {
-	 *         "Image": "redis"
-	 *       },
-	 *       "Resources": {
-	 *         "Limits": {},
-	 *         "Reservations": {}
-	 *       },
-	 *       "RestartPolicy": {
-	 *         "Condition": "any",
-	 *         "MaxAttempts": 0
-	 *       },
-	 *       "Placement": {},
-	 *       "ForceUpdate": 0
-	 *     },
-	 *     "Mode": {
-	 *       "Replicated": {
-	 *         "Replicas": 1
-	 *       }
-	 *     },
-	 *     "UpdateConfig": {
-	 *       "Parallelism": 1,
-	 *       "Delay": 1000000000,
-	 *       "FailureAction": "pause",
-	 *       "Monitor": 15000000000,
-	 *       "MaxFailureRatio": 0.15
-	 *     },
-	 *     "RollbackConfig": {
-	 *       "Parallelism": 1,
-	 *       "Delay": 1000000000,
-	 *       "FailureAction": "pause",
-	 *       "Monitor": 15000000000,
-	 *       "MaxFailureRatio": 0.15
-	 *     },
-	 *     "EndpointSpec": {
-	 *       "Mode": "vip",
-	 *       "Ports": [
-	 *         {
-	 *           "Protocol": "tcp",
-	 *           "TargetPort": 6379,
-	 *           "PublishedPort": 30001
-	 *         }
-	 *       ]
-	 *     }
-	 *   },
-	 *   "Endpoint": {
-	 *     "Spec": {
-	 *       "Mode": "vip",
-	 *       "Ports": [
-	 *         {
-	 *           "Protocol": "tcp",
-	 *           "TargetPort": 6379,
-	 *           "PublishedPort": 30001
-	 *         }
-	 *       ]
-	 *     },
-	 *     "Ports": [
-	 *       {
-	 *         "Protocol": "tcp",
-	 *         "TargetPort": 6379,
-	 *         "PublishedPort": 30001
-	 *       }
-	 *     ],
-	 *     "VirtualIPs": [
-	 *       {
-	 *         "NetworkID": "4qvuz4ko70xaltuqbt8956gd1",
-	 *         "Addr": "10.255.0.2/16"
-	 *       },
-	 *       {
-	 *         "NetworkID": "4qvuz4ko70xaltuqbt8956gd1",
-	 *         "Addr": "10.255.0.3/16"
-	 *       }
-	 *     ]
-	 *   }
-	 * }
-	 */
-	Service: {
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/** Format: dateTime */
-		CreatedAt?: string;
-		/** Format: dateTime */
-		UpdatedAt?: string;
-		Spec?: definitions["ServiceSpec"];
-		Endpoint?: {
-			Spec?: definitions["EndpointSpec"];
-			Ports?: definitions["EndpointPortConfig"][];
-			VirtualIPs?: {
-				NetworkID?: string;
-				Addr?: string;
-			}[];
-		};
-		/** @description The status of a service update. */
-		UpdateStatus?: {
-			/** @enum {string} */
-			State?: "updating" | "paused" | "completed";
-			/** Format: dateTime */
-			StartedAt?: string;
-			/** Format: dateTime */
-			CompletedAt?: string;
-			Message?: string;
-		};
-		/**
-		 * @description The status of the service's tasks. Provided only when requested as
-		 * part of a ServiceList operation.
-		 */
-		ServiceStatus?: {
-			/**
-			 * Format: uint64
-			 * @description The number of tasks for the service currently in the Running state.
-			 *
-			 * @example 7
-			 */
-			RunningTasks?: number;
-			/**
-			 * Format: uint64
-			 * @description The number of tasks for the service desired to be running.
-			 * For replicated services, this is the replica count from the
-			 * service spec. For global services, this is computed by taking
-			 * count of all tasks for the service with a Desired State other
-			 * than Shutdown.
-			 *
-			 * @example 10
-			 */
-			DesiredTasks?: number;
-			/**
-			 * Format: uint64
-			 * @description The number of tasks for a job that are in the Completed state.
-			 * This field must be cross-referenced with the service type, as the
-			 * value of 0 may mean the service is not in a job mode, or it may
-			 * mean the job-mode service has no tasks yet Completed.
-			 */
-			CompletedTasks?: number;
-		};
-		/**
-		 * @description The status of the service when it is in one of ReplicatedJob or
-		 * GlobalJob modes. Absent on Replicated and Global mode services. The
-		 * JobIteration is an ObjectVersion, but unlike the Service's version,
-		 * does not need to be sent with an update request.
-		 */
-		JobStatus?: {
-			/**
-			 * @description JobIteration is a value increased each time a Job is executed,
-			 * successfully or otherwise. "Executed", in this case, means the
-			 * job as a whole has been started, not that an individual Task has
-			 * been launched. A job is "Executed" when its ServiceSpec is
-			 * updated. JobIteration can be used to disambiguate Tasks belonging
-			 * to different executions of a job.  Though JobIteration will
-			 * increase with each subsequent execution, it may not necessarily
-			 * increase by 1, and so JobIteration should not be used to
-			 */
-			JobIteration?: definitions["ObjectVersion"];
+			Start?: string;
 			/**
 			 * Format: dateTime
-			 * @description The last time, as observed by the server, that this job was
-			 * started.
+			 * @description Date and time at which this check ended in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2020-01-04T10:45:21.364Z
 			 */
-			LastExecution?: string;
-		};
-	};
-	ImageDeleteResponseItem: {
-		/** @description The image ID of an image that was untagged */
-		Untagged?: string;
-		/** @description The image ID of an image that was deleted */
-		Deleted?: string;
-	};
-	/**
-	 * @example {
-	 *   "Warning": "unable to pin image doesnotexist:latest to digest: image library/doesnotexist:latest not found"
-	 * }
-	 */
-	ServiceUpdateResponse: {
-		/** @description Optional warning messages */
-		Warnings?: string[];
-	};
-	ContainerSummary: {
-		/** @description The ID of this container */
-		Id?: string;
-		/** @description The names that this container has been given */
-		Names?: string[];
-		/** @description The name of the image used when creating this container */
-		Image?: string;
-		/** @description The ID of the image that this container was created from */
-		ImageID?: string;
-		/** @description Command to run when starting the container */
-		Command?: string;
-		/**
-		 * Format: int64
-		 * @description When the container was created
-		 */
-		Created?: number;
-		/** @description The ports exposed by this container */
-		Ports?: definitions["Port"][];
-		/**
-		 * Format: int64
-		 * @description The size of files that have been created or changed by this container
-		 */
-		SizeRw?: number;
-		/**
-		 * Format: int64
-		 * @description The total size of all the files in this container
-		 */
-		SizeRootFs?: number;
-		/** @description User-defined key/value metadata. */
-		Labels?: { [key: string]: string };
-		/** @description The state of this container (e.g. `Exited`) */
-		State?: string;
-		/** @description Additional human-readable status of this container (e.g. `Exit 0`) */
-		Status?: string;
-		HostConfig?: {
+			End?: string;
+			/**
+			 * @description ExitCode meanings:
+			 *
+			 * - `0` healthy
+			 * - `1` unhealthy
+			 * - `2` reserved (considered unhealthy)
+			 * - other values: error running probe
+			 *
+			 * @example 0
+			 */
+			ExitCode?: number;
+			/** @description Output from last check */
+			Output?: string;
+		} | null;
+		/** @description Container configuration that depends on the host we are running on */
+		HostConfig: components["schemas"]["Resources"] & {
+			/**
+			 * @description A list of volume bindings for this container. Each volume binding
+			 * is a string in one of these forms:
+			 *
+			 * - `host-src:container-dest[:options]` to bind-mount a host path
+			 *   into the container. Both `host-src`, and `container-dest` must
+			 *   be an _absolute_ path.
+			 * - `volume-name:container-dest[:options]` to bind-mount a volume
+			 *   managed by a volume driver into the container. `container-dest`
+			 *   must be an _absolute_ path.
+			 *
+			 * `options` is an optional, comma-delimited list of:
+			 *
+			 * - `nocopy` disables automatic copying of data from the container
+			 *   path to the volume. The `nocopy` flag only applies to named volumes.
+			 * - `[ro|rw]` mounts a volume read-only or read-write, respectively.
+			 *   If omitted or set to `rw`, volumes are mounted read-write.
+			 * - `[z|Z]` applies SELinux labels to allow or deny multiple containers
+			 *   to read and write to the same volume.
+			 *     - `z`: a _shared_ content label is applied to the content. This
+			 *       label indicates that multiple containers can share the volume
+			 *       content, for both reading and writing.
+			 *     - `Z`: a _private unshared_ label is applied to the content.
+			 *       This label indicates that only the current container can use
+			 *       a private volume. Labeling systems such as SELinux require
+			 *       proper labels to be placed on volume content that is mounted
+			 *       into a container. Without a label, the security system can
+			 *       prevent a container's processes from using the content. By
+			 *       default, the labels set by the host operating system are not
+			 *       modified.
+			 * - `[[r]shared|[r]slave|[r]private]` specifies mount
+			 *   [propagation behavior](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt).
+			 *   This only applies to bind-mounted volumes, not internal volumes
+			 *   or named volumes. Mount propagation requires the source mount
+			 *   point (the location where the source directory is mounted in the
+			 *   host operating system) to have the correct propagation properties.
+			 *   For shared volumes, the source mount point must be set to `shared`.
+			 *   For slave volumes, the mount must be set to either `shared` or
+			 *   `slave`.
+			 */
+			Binds?: string[];
+			/** @description Path to a file where the container ID is written */
+			ContainerIDFile?: string;
+			/** @description The logging configuration for this container */
+			LogConfig?: {
+				/** @enum {string} */
+				Type?: "json-file" | "syslog" | "journald" | "gelf" | "fluentd" | "awslogs" | "splunk" | "etwlogs" | "none";
+				Config?: { [key: string]: string };
+			};
+			/**
+			 * @description Network mode to use for this container. Supported standard values
+			 * are: `bridge`, `host`, `none`, and `container:<name|id>`. Any
+			 * other value is taken as a custom network's name to which this
+			 * container should connect to.
+			 */
 			NetworkMode?: string;
-		};
-		/** @description A summary of the container's network settings */
-		NetworkSettings?: {
-			Networks?: { [key: string]: definitions["EndpointSettings"] };
-		};
-		Mounts?: definitions["MountPoint"][];
-	};
-	/** @description Driver represents a driver (network, logging, secrets). */
-	Driver: {
-		/**
-		 * @description Name of the driver.
-		 * @example some-driver
-		 */
-		Name: string;
-		/**
-		 * @description Key/value map of driver-specific options.
-		 * @example {
-		 *   "OptionA": "value for driver-specific option A",
-		 *   "OptionB": "value for driver-specific option B"
-		 * }
-		 */
-		Options?: { [key: string]: string };
-	};
-	SecretSpec: {
-		/** @description User-defined name of the secret. */
-		Name?: string;
-		/**
-		 * @description User-defined key/value metadata.
-		 * @example {
-		 *   "com.example.some-label": "some-value",
-		 *   "com.example.some-other-label": "some-other-value"
-		 * }
-		 */
-		Labels?: { [key: string]: string };
-		/**
-		 * @description Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-		 * data to store as secret.
-		 *
-		 * This field is only used to _create_ a secret, and is not returned by
-		 * other endpoints.
-		 *
-		 * @example
-		 */
-		Data?: string;
-		/**
-		 * @description Name of the secrets driver used to fetch the secret's value from an
-		 * external secret store.
-		 */
-		Driver?: definitions["Driver"];
-		/**
-		 * @description Templating driver, if applicable
-		 *
-		 * Templating controls whether and how to evaluate the config payload as
-		 * a template. If no driver is set, no templating is used.
-		 */
-		Templating?: definitions["Driver"];
-	};
-	Secret: {
-		/** @example blt1owaxmitz71s9v5zh81zun */
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/**
-		 * Format: dateTime
-		 * @example 2017-07-20T13:55:28.678958722Z
-		 */
-		CreatedAt?: string;
-		/**
-		 * Format: dateTime
-		 * @example 2017-07-20T13:55:28.678958722Z
-		 */
-		UpdatedAt?: string;
-		Spec?: definitions["SecretSpec"];
-	};
-	ConfigSpec: {
-		/** @description User-defined name of the config. */
-		Name?: string;
-		/** @description User-defined key/value metadata. */
-		Labels?: { [key: string]: string };
-		/**
-		 * @description Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-		 * config data.
-		 */
-		Data?: string;
-		/**
-		 * @description Templating driver, if applicable
-		 *
-		 * Templating controls whether and how to evaluate the config payload as
-		 * a template. If no driver is set, no templating is used.
-		 */
-		Templating?: definitions["Driver"];
-	};
-	Config: {
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/** Format: dateTime */
-		CreatedAt?: string;
-		/** Format: dateTime */
-		UpdatedAt?: string;
-		Spec?: definitions["ConfigSpec"];
-	};
-	/**
-	 * @description ContainerState stores container's running state. It's part of ContainerJSONBase
-	 * and will be returned by the "inspect" command.
-	 */
-	ContainerState: {
-		/**
-		 * @description String representation of the container state. Can be one of "created",
-		 * "running", "paused", "restarting", "removing", "exited", or "dead".
-		 *
-		 * @example running
-		 * @enum {string}
-		 */
-		Status?: "created" | "running" | "paused" | "restarting" | "removing" | "exited" | "dead";
-		/**
-		 * @description Whether this container is running.
-		 *
-		 * Note that a running container can be _paused_. The `Running` and `Paused`
-		 * booleans are not mutually exclusive:
-		 *
-		 * When pausing a container (on Linux), the freezer cgroup is used to suspend
-		 * all processes in the container. Freezing the process requires the process to
-		 * be running. As a result, paused containers are both `Running` _and_ `Paused`.
-		 *
-		 * Use the `Status` field instead to determine if a container's state is "running".
-		 *
-		 * @example true
-		 */
-		Running?: boolean;
-		/**
-		 * @description Whether this container is paused.
-		 * @example false
-		 */
-		Paused?: boolean;
-		/**
-		 * @description Whether this container is restarting.
-		 * @example false
-		 */
-		Restarting?: boolean;
-		/**
-		 * @description Whether a process within this container has been killed because it ran
-		 * out of memory since the container was last started.
-		 *
-		 * @example false
-		 */
-		OOMKilled?: boolean;
-		/** @example false */
-		Dead?: boolean;
-		/**
-		 * @description The process ID of this container
-		 * @example 1234
-		 */
-		Pid?: number;
-		/**
-		 * @description The last exit code of this container
-		 * @example 0
-		 */
-		ExitCode?: number;
-		Error?: string;
-		/**
-		 * @description The time when this container was last started.
-		 * @example 2020-01-06T09:06:59.461876391Z
-		 */
-		StartedAt?: string;
-		/**
-		 * @description The time when this container last exited.
-		 * @example 2020-01-06T09:07:59.461876391Z
-		 */
-		FinishedAt?: string;
-		Health?: definitions["Health"];
-	};
-	/**
-	 * ContainerCreateResponse
-	 * @description OK response to ContainerCreate operation
-	 */
-	ContainerCreateResponse: {
-		/**
-		 * @description The ID of the created container
-		 * @example ede54ee1afda366ab42f824e8a5ffd195155d853ceaec74a927f249ea270c743
-		 */
-		Id: string;
-		/**
-		 * @description Warnings encountered when creating the container
-		 * @example []
-		 */
-		Warnings: string[];
-	};
-	/**
-	 * ContainerWaitResponse
-	 * @description OK response to ContainerWait operation
-	 */
-	ContainerWaitResponse: {
-		/**
-		 * Format: int64
-		 * @description Exit code of the container
-		 */
-		StatusCode: number;
-		Error?: definitions["ContainerWaitExitError"];
-	};
-	/** @description container waiting error, if any */
-	ContainerWaitExitError: {
-		/** @description Details of an error */
-		Message?: string;
-	};
-	/** @description Response of Engine API: GET "/version" */
-	SystemVersion: {
-		Platform?: {
-			Name: string;
-		};
-		/** @description Information about system components */
-		Components?: {
+			PortBindings?: components["schemas"]["PortMap"];
+			RestartPolicy?: components["schemas"]["RestartPolicy"];
 			/**
-			 * @description Name of the component
+			 * @description Automatically remove the container when the container's process
+			 * exits. This has no effect if `RestartPolicy` is set.
+			 */
+			AutoRemove?: boolean;
+			/** @description Driver that this container uses to mount volumes. */
+			VolumeDriver?: string;
+			/**
+			 * @description A list of volumes to inherit from another container, specified in
+			 * the form `<container name>[:<ro|rw>]`.
+			 */
+			VolumesFrom?: string[];
+			/** @description Specification for mounts to be added to the container. */
+			Mounts?: components["schemas"]["Mount"][];
+			/** @description Initial console size, as an `[height, width]` array. */
+			ConsoleSize?: number[] | null;
+			/**
+			 * @description Arbitrary non-identifying metadata attached to container and
+			 * provided to the runtime when the container is started.
+			 */
+			Annotations?: { [key: string]: string };
+			/**
+			 * @description A list of kernel capabilities to add to the container. Conflicts
+			 * with option 'Capabilities'.
+			 */
+			CapAdd?: string[];
+			/**
+			 * @description A list of kernel capabilities to drop from the container. Conflicts
+			 * with option 'Capabilities'.
+			 */
+			CapDrop?: string[];
+			/**
+			 * @description cgroup namespace mode for the container. Possible values are:
 			 *
-			 * @example Engine
-			 */
-			Name: string;
-			/**
-			 * @description Version of the component
+			 * - `"private"`: the container runs in its own private cgroup namespace
+			 * - `"host"`: use the host system's cgroup namespace
 			 *
-			 * @example 19.03.12
-			 */
-			Version: string;
-			/**
-			 * @description Key/value pairs of strings with additional information about the
-			 * component. These values are intended for informational purposes
-			 * only, and their content is not defined, and not part of the API
-			 * specification.
+			 * If not specified, the daemon default is used, which can either be `"private"`
+			 * or `"host"`, depending on daemon version, kernel support and configuration.
 			 *
-			 * These messages can be printed by the client as information to the user.
+			 * @enum {string}
 			 */
-			Details?: { [key: string]: unknown };
-		}[];
-		/**
-		 * @description The version of the daemon
-		 * @example 19.03.12
-		 */
-		Version?: string;
-		/**
-		 * @description The default (and highest) API version that is supported by the daemon
-		 *
-		 * @example 1.40
-		 */
-		ApiVersion?: string;
-		/**
-		 * @description The minimum API version that is supported by the daemon
-		 *
-		 * @example 1.12
-		 */
-		MinAPIVersion?: string;
-		/**
-		 * @description The Git commit of the source code that was used to build the daemon
-		 *
-		 * @example 48a66213fe
-		 */
-		GitCommit?: string;
-		/**
-		 * @description The version Go used to compile the daemon, and the version of the Go
-		 * runtime in use.
-		 *
-		 * @example go1.13.14
-		 */
-		GoVersion?: string;
-		/**
-		 * @description The operating system that the daemon is running on ("linux" or "windows")
-		 *
-		 * @example linux
-		 */
-		Os?: string;
-		/**
-		 * @description The architecture that the daemon is running on
-		 *
-		 * @example amd64
-		 */
-		Arch?: string;
-		/**
-		 * @description The kernel version (`uname -r`) that the daemon is running on.
-		 *
-		 * This field is omitted when empty.
-		 *
-		 * @example 4.19.76-linuxkit
-		 */
-		KernelVersion?: string;
-		/**
-		 * @description Indicates if the daemon is started with experimental features enabled.
-		 *
-		 * This field is omitted when empty / false.
-		 *
-		 * @example true
-		 */
-		Experimental?: boolean;
-		/**
-		 * @description The date and time that the daemon was compiled.
-		 *
-		 * @example 2020-06-22T15:49:27.000000000+00:00
-		 */
-		BuildTime?: string;
-	};
-	SystemInfo: {
-		/**
-		 * @description Unique identifier of the daemon.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: The format of the ID itself is not part of the API, and
-		 * > should not be considered stable.
-		 *
-		 * @example 7TRN:IPZB:QYBB:VPBQ:UMPP:KARE:6ZNR:XE6T:7EWV:PKF4:ZOJD:TPYS
-		 */
-		ID?: string;
-		/**
-		 * @description Total number of containers on the host.
-		 * @example 14
-		 */
-		Containers?: number;
-		/**
-		 * @description Number of containers with status `"running"`.
-		 *
-		 * @example 3
-		 */
-		ContainersRunning?: number;
-		/**
-		 * @description Number of containers with status `"paused"`.
-		 *
-		 * @example 1
-		 */
-		ContainersPaused?: number;
-		/**
-		 * @description Number of containers with status `"stopped"`.
-		 *
-		 * @example 10
-		 */
-		ContainersStopped?: number;
-		/**
-		 * @description Total number of images on the host.
-		 *
-		 * Both _tagged_ and _untagged_ (dangling) images are counted.
-		 *
-		 * @example 508
-		 */
-		Images?: number;
-		/**
-		 * @description Name of the storage driver in use.
-		 * @example overlay2
-		 */
-		Driver?: string;
-		/**
-		 * @description Information specific to the storage driver, provided as
-		 * "label" / "value" pairs.
-		 *
-		 * This information is provided by the storage driver, and formatted
-		 * in a way consistent with the output of `docker info` on the command
-		 * line.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: The information returned in this field, including the
-		 * > formatting of values and labels, should not be considered stable,
-		 * > and may change without notice.
-		 *
-		 * @example [
-		 *   [
-		 *     "Backing Filesystem",
-		 *     "extfs"
-		 *   ],
-		 *   [
-		 *     "Supports d_type",
-		 *     "true"
-		 *   ],
-		 *   [
-		 *     "Native Overlay Diff",
-		 *     "true"
-		 *   ]
-		 * ]
-		 */
-		DriverStatus?: string[][];
-		/**
-		 * @description Root directory of persistent Docker state.
-		 *
-		 * Defaults to `/var/lib/docker` on Linux, and `C:\ProgramData\docker`
-		 * on Windows.
-		 *
-		 * @example /var/lib/docker
-		 */
-		DockerRootDir?: string;
-		Plugins?: definitions["PluginsInfo"];
-		/**
-		 * @description Indicates if the host has memory limit support enabled.
-		 * @example true
-		 */
-		MemoryLimit?: boolean;
-		/**
-		 * @description Indicates if the host has memory swap limit support enabled.
-		 * @example true
-		 */
-		SwapLimit?: boolean;
-		/**
-		 * @description Indicates if the host has kernel memory TCP limit support enabled. This
-		 * field is omitted if not supported.
-		 *
-		 * Kernel memory TCP limits are not supported when using cgroups v2, which
-		 * does not support the corresponding `memory.kmem.tcp.limit_in_bytes` cgroup.
-		 *
-		 * @example true
-		 */
-		KernelMemoryTCP?: boolean;
-		/**
-		 * @description Indicates if CPU CFS(Completely Fair Scheduler) period is supported by
-		 * the host.
-		 *
-		 * @example true
-		 */
-		CpuCfsPeriod?: boolean;
-		/**
-		 * @description Indicates if CPU CFS(Completely Fair Scheduler) quota is supported by
-		 * the host.
-		 *
-		 * @example true
-		 */
-		CpuCfsQuota?: boolean;
-		/**
-		 * @description Indicates if CPU Shares limiting is supported by the host.
-		 *
-		 * @example true
-		 */
-		CPUShares?: boolean;
-		/**
-		 * @description Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.
-		 *
-		 * See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt)
-		 *
-		 * @example true
-		 */
-		CPUSet?: boolean;
-		/**
-		 * @description Indicates if the host kernel has PID limit support enabled.
-		 * @example true
-		 */
-		PidsLimit?: boolean;
-		/** @description Indicates if OOM killer disable is supported on the host. */
-		OomKillDisable?: boolean;
-		/**
-		 * @description Indicates IPv4 forwarding is enabled.
-		 * @example true
-		 */
-		IPv4Forwarding?: boolean;
-		/**
-		 * @description Indicates if `bridge-nf-call-iptables` is available on the host.
-		 * @example true
-		 */
-		BridgeNfIptables?: boolean;
-		/**
-		 * @description Indicates if `bridge-nf-call-ip6tables` is available on the host.
-		 * @example true
-		 */
-		BridgeNfIp6tables?: boolean;
-		/**
-		 * @description Indicates if the daemon is running in debug-mode / with debug-level
-		 * logging enabled.
-		 *
-		 * @example true
-		 */
-		Debug?: boolean;
-		/**
-		 * @description The total number of file Descriptors in use by the daemon process.
-		 *
-		 * This information is only returned if debug-mode is enabled.
-		 *
-		 * @example 64
-		 */
-		NFd?: number;
-		/**
-		 * @description The  number of goroutines that currently exist.
-		 *
-		 * This information is only returned if debug-mode is enabled.
-		 *
-		 * @example 174
-		 */
-		NGoroutines?: number;
-		/**
-		 * @description Current system-time in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-		 * format with nano-seconds.
-		 *
-		 * @example 2017-08-08T20:28:29.06202363Z
-		 */
-		SystemTime?: string;
-		/** @description The logging driver to use as a default for new containers. */
-		LoggingDriver?: string;
-		/**
-		 * @description The driver to use for managing cgroups.
-		 *
-		 * @default cgroupfs
-		 * @example cgroupfs
-		 * @enum {string}
-		 */
-		CgroupDriver?: "cgroupfs" | "systemd" | "none";
-		/**
-		 * @description The version of the cgroup.
-		 *
-		 * @default 1
-		 * @example 1
-		 * @enum {string}
-		 */
-		CgroupVersion?: "1" | "2";
-		/**
-		 * @description Number of event listeners subscribed.
-		 * @example 30
-		 */
-		NEventsListener?: number;
-		/**
-		 * @description Kernel version of the host.
-		 *
-		 * On Linux, this information obtained from `uname`. On Windows this
-		 * information is queried from the <kbd>HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\</kbd>
-		 * registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_.
-		 *
-		 * @example 4.9.38-moby
-		 */
-		KernelVersion?: string;
-		/**
-		 * @description Name of the host's operating system, for example: "Ubuntu 16.04.2 LTS"
-		 * or "Windows Server 2016 Datacenter"
-		 *
-		 * @example Alpine Linux v3.5
-		 */
-		OperatingSystem?: string;
-		/**
-		 * @description Version of the host's operating system
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: The information returned in this field, including its
-		 * > very existence, and the formatting of values, should not be considered
-		 * > stable, and may change without notice.
-		 *
-		 * @example 16.04
-		 */
-		OSVersion?: string;
-		/**
-		 * @description Generic type of the operating system of the host, as returned by the
-		 * Go runtime (`GOOS`).
-		 *
-		 * Currently returned values are "linux" and "windows". A full list of
-		 * possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment).
-		 *
-		 * @example linux
-		 */
-		OSType?: string;
-		/**
-		 * @description Hardware architecture of the host, as returned by the Go runtime
-		 * (`GOARCH`).
-		 *
-		 * A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment).
-		 *
-		 * @example x86_64
-		 */
-		Architecture?: string;
-		/**
-		 * @description The number of logical CPUs usable by the daemon.
-		 *
-		 * The number of available CPUs is checked by querying the operating
-		 * system when the daemon starts. Changes to operating system CPU
-		 * allocation after the daemon is started are not reflected.
-		 *
-		 * @example 4
-		 */
-		NCPU?: number;
-		/**
-		 * Format: int64
-		 * @description Total amount of physical memory available on the host, in bytes.
-		 *
-		 * @example 2095882240
-		 */
-		MemTotal?: number;
-		/**
-		 * @description Address / URL of the index server that is used for image search,
-		 * and as a default for user authentication for Docker Hub and Docker Cloud.
-		 *
-		 * @default https://index.docker.io/v1/
-		 * @example https://index.docker.io/v1/
-		 */
-		IndexServerAddress?: string;
-		RegistryConfig?: definitions["RegistryServiceConfig"];
-		GenericResources?: definitions["GenericResources"];
-		/**
-		 * @description HTTP-proxy configured for the daemon. This value is obtained from the
-		 * [`HTTP_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.
-		 * Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL
-		 * are masked in the API response.
-		 *
-		 * Containers do not automatically inherit this configuration.
-		 *
-		 * @example http://xxxxx:xxxxx@proxy.corp.example.com:8080
-		 */
-		HttpProxy?: string;
-		/**
-		 * @description HTTPS-proxy configured for the daemon. This value is obtained from the
-		 * [`HTTPS_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.
-		 * Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL
-		 * are masked in the API response.
-		 *
-		 * Containers do not automatically inherit this configuration.
-		 *
-		 * @example https://xxxxx:xxxxx@proxy.corp.example.com:4443
-		 */
-		HttpsProxy?: string;
-		/**
-		 * @description Comma-separated list of domain extensions for which no proxy should be
-		 * used. This value is obtained from the [`NO_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html)
-		 * environment variable.
-		 *
-		 * Containers do not automatically inherit this configuration.
-		 *
-		 * @example *.local, 169.254/16
-		 */
-		NoProxy?: string;
-		/**
-		 * @description Hostname of the host.
-		 * @example node5.corp.example.com
-		 */
-		Name?: string;
-		/**
-		 * @description User-defined labels (key/value metadata) as set on the daemon.
-		 *
-		 * <p><br /></p>
-		 *
-		 * > **Note**: When part of a Swarm, nodes can both have _daemon_ labels,
-		 * > set through the daemon configuration, and _node_ labels, set from a
-		 * > manager node in the Swarm. Node labels are not included in this
-		 * > field. Node labels can be retrieved using the `/nodes/(id)` endpoint
-		 * > on a manager node in the Swarm.
-		 *
-		 * @example [
-		 *   "storage=ssd",
-		 *   "production"
-		 * ]
-		 */
-		Labels?: string[];
-		/**
-		 * @description Indicates if experimental features are enabled on the daemon.
-		 *
-		 * @example true
-		 */
-		ExperimentalBuild?: boolean;
-		/**
-		 * @description Version string of the daemon.
-		 *
-		 * @example 24.0.2
-		 */
-		ServerVersion?: string;
-		/**
-		 * @description List of [OCI compliant](https://github.com/opencontainers/runtime-spec)
-		 * runtimes configured on the daemon. Keys hold the "name" used to
-		 * reference the runtime.
-		 *
-		 * The Docker daemon relies on an OCI compliant runtime (invoked via the
-		 * `containerd` daemon) as its interface to the Linux kernel namespaces,
-		 * cgroups, and SELinux.
-		 *
-		 * The default runtime is `runc`, and automatically configured. Additional
-		 * runtimes can be configured by the user and will be listed here.
-		 *
-		 * @default {
-		 *   "runc": {
-		 *     "path": "runc"
-		 *   }
-		 * }
-		 * @example {
-		 *   "runc": {
-		 *     "path": "runc"
-		 *   },
-		 *   "runc-master": {
-		 *     "path": "/go/bin/runc"
-		 *   },
-		 *   "custom": {
-		 *     "path": "/usr/local/bin/my-oci-runtime",
-		 *     "runtimeArgs": [
-		 *       "--debug",
-		 *       "--systemd-cgroup=false"
-		 *     ]
-		 *   }
-		 * }
-		 */
-		Runtimes?: { [key: string]: definitions["Runtime"] };
-		/**
-		 * @description Name of the default OCI runtime that is used when starting containers.
-		 *
-		 * The default can be overridden per-container at create time.
-		 *
-		 * @default runc
-		 * @example runc
-		 */
-		DefaultRuntime?: string;
-		Swarm?: definitions["SwarmInfo"];
-		/**
-		 * @description Indicates if live restore is enabled.
-		 *
-		 * If enabled, containers are kept running when the daemon is shutdown
-		 * or upon daemon start if running containers are detected.
-		 *
-		 * @default false
-		 * @example false
-		 */
-		LiveRestoreEnabled?: boolean;
-		/**
-		 * @description Represents the isolation technology to use as a default for containers.
-		 * The supported values are platform-specific.
-		 *
-		 * If no isolation value is specified on daemon start, on Windows client,
-		 * the default is `hyperv`, and on Windows server, the default is `process`.
-		 *
-		 * This option is currently not used on other platforms.
-		 *
-		 * @default default
-		 * @enum {string}
-		 */
-		Isolation?: "default" | "hyperv" | "process";
-		/**
-		 * @description Name and, optional, path of the `docker-init` binary.
-		 *
-		 * If the path is omitted, the daemon searches the host's `$PATH` for the
-		 * binary and uses the first result.
-		 *
-		 * @example docker-init
-		 */
-		InitBinary?: string;
-		ContainerdCommit?: definitions["Commit"];
-		RuncCommit?: definitions["Commit"];
-		InitCommit?: definitions["Commit"];
-		/**
-		 * @description List of security features that are enabled on the daemon, such as
-		 * apparmor, seccomp, SELinux, user-namespaces (userns), rootless and
-		 * no-new-privileges.
-		 *
-		 * Additional configuration options for each security feature may
-		 * be present, and are included as a comma-separated list of key/value
-		 * pairs.
-		 *
-		 * @example [
-		 *   "name=apparmor",
-		 *   "name=seccomp,profile=default",
-		 *   "name=selinux",
-		 *   "name=userns",
-		 *   "name=rootless"
-		 * ]
-		 */
-		SecurityOptions?: string[];
-		/**
-		 * @description Reports a summary of the product license on the daemon.
-		 *
-		 * If a commercial license has been applied to the daemon, information
-		 * such as number of nodes, and expiration are included.
-		 *
-		 * @example Community Engine
-		 */
-		ProductLicense?: string;
-		/**
-		 * @description List of custom default address pools for local networks, which can be
-		 * specified in the daemon.json file or dockerd option.
-		 *
-		 * Example: a Base "10.10.0.0/16" with Size 24 will define the set of 256
-		 * 10.10.[0-255].0/24 address pools.
-		 */
-		DefaultAddressPools?: {
+			CgroupnsMode?: "private" | "host";
+			/** @description A list of DNS servers for the container to use. */
+			Dns?: string[];
+			/** @description A list of DNS options. */
+			DnsOptions?: string[];
+			/** @description A list of DNS search domains. */
+			DnsSearch?: string[];
 			/**
-			 * @description The network address in CIDR format
-			 * @example 10.10.0.0/16
+			 * @description A list of hostnames/IP mappings to add to the container's `/etc/hosts`
+			 * file. Specified in the form `["hostname:IP"]`.
 			 */
-			Base?: string;
+			ExtraHosts?: string[];
+			/** @description A list of additional groups that the container process will run as. */
+			GroupAdd?: string[];
 			/**
-			 * @description The network pool size
-			 * @example 24
+			 * @description IPC sharing mode for the container. Possible values are:
+			 *
+			 * - `"none"`: own private IPC namespace, with /dev/shm not mounted
+			 * - `"private"`: own private IPC namespace
+			 * - `"shareable"`: own private IPC namespace, with a possibility to share it with other containers
+			 * - `"container:<name|id>"`: join another (shareable) container's IPC namespace
+			 * - `"host"`: use the host system's IPC namespace
+			 *
+			 * If not specified, daemon default is used, which can either be `"private"`
+			 * or `"shareable"`, depending on daemon version and configuration.
 			 */
-			Size?: number;
-		}[];
-		/**
-		 * @description List of warnings / informational messages about missing features, or
-		 * issues related to the daemon configuration.
-		 *
-		 * These messages can be printed by the client as information to the user.
-		 *
-		 * @example [
-		 *   "WARNING: No memory limit support",
-		 *   "WARNING: bridge-nf-call-iptables is disabled",
-		 *   "WARNING: bridge-nf-call-ip6tables is disabled"
-		 * ]
-		 */
-		Warnings?: string[];
-	};
-	/**
-	 * @description Available plugins per type.
-	 *
-	 * <p><br /></p>
-	 *
-	 * > **Note**: Only unmanaged (V1) plugins are included in this list.
-	 * > V1 plugins are "lazily" loaded, and are not returned in this list
-	 * > if there is no resource using the plugin.
-	 */
-	PluginsInfo: {
-		/**
-		 * @description Names of available volume-drivers, and network-driver plugins.
-		 * @example [
-		 *   "local"
-		 * ]
-		 */
-		Volume?: string[];
-		/**
-		 * @description Names of available network-drivers, and network-driver plugins.
-		 * @example [
-		 *   "bridge",
-		 *   "host",
-		 *   "ipvlan",
-		 *   "macvlan",
-		 *   "null",
-		 *   "overlay"
-		 * ]
-		 */
-		Network?: string[];
-		/**
-		 * @description Names of available authorization plugins.
-		 * @example [
-		 *   "img-authz-plugin",
-		 *   "hbm"
-		 * ]
-		 */
-		Authorization?: string[];
-		/**
-		 * @description Names of available logging-drivers, and logging-driver plugins.
-		 * @example [
-		 *   "awslogs",
-		 *   "fluentd",
-		 *   "gcplogs",
-		 *   "gelf",
-		 *   "journald",
-		 *   "json-file",
-		 *   "logentries",
-		 *   "splunk",
-		 *   "syslog"
-		 * ]
-		 */
-		Log?: string[];
-	};
-	/** @description RegistryServiceConfig stores daemon registry services configuration. */
-	RegistryServiceConfig: {
-		/**
-		 * @description List of IP ranges to which nondistributable artifacts can be pushed,
-		 * using the CIDR syntax [RFC 4632](https://tools.ietf.org/html/4632).
-		 *
-		 * Some images (for example, Windows base images) contain artifacts
-		 * whose distribution is restricted by license. When these images are
-		 * pushed to a registry, restricted artifacts are not included.
-		 *
-		 * This configuration override this behavior, and enables the daemon to
-		 * push nondistributable artifacts to all registries whose resolved IP
-		 * address is within the subnet described by the CIDR syntax.
-		 *
-		 * This option is useful when pushing images containing
-		 * nondistributable artifacts to a registry on an air-gapped network so
-		 * hosts on that network can pull the images without connecting to
-		 * another server.
-		 *
-		 * > **Warning**: Nondistributable artifacts typically have restrictions
-		 * > on how and where they can be distributed and shared. Only use this
-		 * > feature to push artifacts to private registries and ensure that you
-		 * > are in compliance with any terms that cover redistributing
-		 * > nondistributable artifacts.
-		 *
-		 * @example [
-		 *   "::1/128",
-		 *   "127.0.0.0/8"
-		 * ]
-		 */
-		AllowNondistributableArtifactsCIDRs?: string[];
-		/**
-		 * @description List of registry hostnames to which nondistributable artifacts can be
-		 * pushed, using the format `<hostname>[:<port>]` or `<IP address>[:<port>]`.
-		 *
-		 * Some images (for example, Windows base images) contain artifacts
-		 * whose distribution is restricted by license. When these images are
-		 * pushed to a registry, restricted artifacts are not included.
-		 *
-		 * This configuration override this behavior for the specified
-		 * registries.
-		 *
-		 * This option is useful when pushing images containing
-		 * nondistributable artifacts to a registry on an air-gapped network so
-		 * hosts on that network can pull the images without connecting to
-		 * another server.
-		 *
-		 * > **Warning**: Nondistributable artifacts typically have restrictions
-		 * > on how and where they can be distributed and shared. Only use this
-		 * > feature to push artifacts to private registries and ensure that you
-		 * > are in compliance with any terms that cover redistributing
-		 * > nondistributable artifacts.
-		 *
-		 * @example [
-		 *   "registry.internal.corp.example.com:3000",
-		 *   "[2001:db8:a0b:12f0::1]:443"
-		 * ]
-		 */
-		AllowNondistributableArtifactsHostnames?: string[];
-		/**
-		 * @description List of IP ranges of insecure registries, using the CIDR syntax
-		 * ([RFC 4632](https://tools.ietf.org/html/4632)). Insecure registries
-		 * accept un-encrypted (HTTP) and/or untrusted (HTTPS with certificates
-		 * from unknown CAs) communication.
-		 *
-		 * By default, local registries (`127.0.0.0/8`) are configured as
-		 * insecure. All other registries are secure. Communicating with an
-		 * insecure registry is not possible if the daemon assumes that registry
-		 * is secure.
-		 *
-		 * This configuration override this behavior, insecure communication with
-		 * registries whose resolved IP address is within the subnet described by
-		 * the CIDR syntax.
-		 *
-		 * Registries can also be marked insecure by hostname. Those registries
-		 * are listed under `IndexConfigs` and have their `Secure` field set to
-		 * `false`.
-		 *
-		 * > **Warning**: Using this option can be useful when running a local
-		 * > registry, but introduces security vulnerabilities. This option
-		 * > should therefore ONLY be used for testing purposes. For increased
-		 * > security, users should add their CA to their system's list of trusted
-		 * > CAs instead of enabling this option.
-		 *
-		 * @example [
-		 *   "::1/128",
-		 *   "127.0.0.0/8"
-		 * ]
-		 */
-		InsecureRegistryCIDRs?: string[];
-		/**
-		 * @example {
-		 *   "127.0.0.1:5000": {
-		 *     "Name": "127.0.0.1:5000",
-		 *     "Mirrors": [],
-		 *     "Secure": false,
-		 *     "Official": false
-		 *   },
-		 *   "[2001:db8:a0b:12f0::1]:80": {
-		 *     "Name": "[2001:db8:a0b:12f0::1]:80",
-		 *     "Mirrors": [],
-		 *     "Secure": false,
-		 *     "Official": false
-		 *   },
-		 *   "docker.io": {
-		 *     "Name": "docker.io",
-		 *     "Mirrors": [
-		 *       "https://hub-mirror.corp.example.com:5000/"
-		 *     ],
-		 *     "Secure": true,
-		 *     "Official": true
-		 *   },
-		 *   "registry.internal.corp.example.com:3000": {
-		 *     "Name": "registry.internal.corp.example.com:3000",
-		 *     "Mirrors": [],
-		 *     "Secure": false,
-		 *     "Official": false
-		 *   }
-		 * }
-		 */
-		IndexConfigs?: { [key: string]: definitions["IndexInfo"] };
-		/**
-		 * @description List of registry URLs that act as a mirror for the official
-		 * (`docker.io`) registry.
-		 *
-		 * @example [
-		 *   "https://hub-mirror.corp.example.com:5000/",
-		 *   "https://[2001:db8:a0b:12f0::1]/"
-		 * ]
-		 */
-		Mirrors?: string[];
-	};
-	/** @description IndexInfo contains information about a registry. */
-	IndexInfo: {
-		/**
-		 * @description Name of the registry, such as "docker.io".
-		 *
-		 * @example docker.io
-		 */
-		Name?: string;
-		/**
-		 * @description List of mirrors, expressed as URIs.
-		 *
-		 * @example [
-		 *   "https://hub-mirror.corp.example.com:5000/",
-		 *   "https://registry-2.docker.io/",
-		 *   "https://registry-3.docker.io/"
-		 * ]
-		 */
-		Mirrors?: string[];
-		/**
-		 * @description Indicates if the registry is part of the list of insecure
-		 * registries.
-		 *
-		 * If `false`, the registry is insecure. Insecure registries accept
-		 * un-encrypted (HTTP) and/or untrusted (HTTPS with certificates from
-		 * unknown CAs) communication.
-		 *
-		 * > **Warning**: Insecure registries can be useful when running a local
-		 * > registry. However, because its use creates security vulnerabilities
-		 * > it should ONLY be enabled for testing purposes. For increased
-		 * > security, users should add their CA to their system's list of
-		 * > trusted CAs instead of enabling this option.
-		 *
-		 * @example true
-		 */
-		Secure?: boolean;
-		/**
-		 * @description Indicates whether this is an official registry (i.e., Docker Hub / docker.io)
-		 *
-		 * @example true
-		 */
-		Official?: boolean;
-	};
-	/**
-	 * @description Runtime describes an [OCI compliant](https://github.com/opencontainers/runtime-spec)
-	 * runtime.
-	 *
-	 * The runtime is invoked by the daemon via the `containerd` daemon. OCI
-	 * runtimes act as an interface to the Linux kernel namespaces, cgroups,
-	 * and SELinux.
-	 */
-	Runtime: {
-		/**
-		 * @description Name and, optional, path, of the OCI executable binary.
-		 *
-		 * If the path is omitted, the daemon searches the host's `$PATH` for the
-		 * binary and uses the first result.
-		 *
-		 * @example /usr/local/bin/my-oci-runtime
-		 */
-		path?: string;
-		/**
-		 * @description List of command-line arguments to pass to the runtime when invoked.
-		 *
-		 * @example [
-		 *   "--debug",
-		 *   "--systemd-cgroup=false"
-		 * ]
-		 */
-		runtimeArgs?: string[];
-	};
-	/**
-	 * @description Commit holds the Git-commit (SHA1) that a binary was built from, as
-	 * reported in the version-string of external tools, such as `containerd`,
-	 * or `runC`.
-	 */
-	Commit: {
-		/**
-		 * @description Actual commit ID of external tool.
-		 * @example cfb82a876ecc11b5ca0977d1733adbe58599088a
-		 */
-		ID?: string;
-		/**
-		 * @description Commit ID of external tool expected by dockerd as set at build time.
-		 *
-		 * @example 2d41c047c83e09a6d61d464906feb2a2f3c52aa4
-		 */
-		Expected?: string;
-	};
-	/** @description Represents generic information about swarm. */
-	SwarmInfo: {
-		/**
-		 * @description Unique identifier of for this node in the swarm.
-		 * @default
-		 * @example k67qz4598weg5unwwffg6z1m1
-		 */
-		NodeID?: string;
-		/**
-		 * @description IP address at which this node can be reached by other nodes in the
-		 * swarm.
-		 *
-		 * @default
-		 * @example 10.0.0.46
-		 */
-		NodeAddr?: string;
-		LocalNodeState?: definitions["LocalNodeState"];
-		/**
-		 * @default false
-		 * @example true
-		 */
-		ControlAvailable?: boolean;
-		/** @default */
-		Error?: string;
-		/**
-		 * @description List of ID's and addresses of other managers in the swarm.
-		 *
-		 * @default null
-		 * @example [
-		 *   {
-		 *     "NodeID": "71izy0goik036k48jg985xnds",
-		 *     "Addr": "10.0.0.158:2377"
-		 *   },
-		 *   {
-		 *     "NodeID": "79y6h1o4gv8n120drcprv5nmc",
-		 *     "Addr": "10.0.0.159:2377"
-		 *   },
-		 *   {
-		 *     "NodeID": "k67qz4598weg5unwwffg6z1m1",
-		 *     "Addr": "10.0.0.46:2377"
-		 *   }
-		 * ]
-		 */
-		RemoteManagers?: definitions["PeerNode"][];
-		/**
-		 * @description Total number of nodes in the swarm.
-		 * @example 4
-		 */
-		Nodes?: number;
-		/**
-		 * @description Total number of managers in the swarm.
-		 * @example 3
-		 */
-		Managers?: number;
-		Cluster?: definitions["ClusterInfo"];
-	};
-	/**
-	 * @description Current local status of this node.
-	 * @default
-	 * @example active
-	 * @enum {string}
-	 */
-	LocalNodeState: "" | "inactive" | "pending" | "active" | "error" | "locked";
-	/** @description Represents a peer-node in the swarm */
-	PeerNode: {
-		/** @description Unique identifier of for this node in the swarm. */
-		NodeID?: string;
-		/** @description IP address and ports at which this node can be reached. */
-		Addr?: string;
-	};
-	/** @description Specifies how a service should be attached to a particular network. */
-	NetworkAttachmentConfig: {
-		/** @description The target network for attachment. Must be a network name or ID. */
-		Target?: string;
-		/** @description Discoverable alternate names for the service on this network. */
-		Aliases?: string[];
-		/** @description Driver attachment options for the network target. */
-		DriverOpts?: { [key: string]: string };
-	};
-	/**
-	 * @description Actor describes something that generates events, like a container, network,
-	 * or a volume.
-	 */
-	EventActor: {
-		/**
-		 * @description The ID of the object emitting the event
-		 * @example ede54ee1afda366ab42f824e8a5ffd195155d853ceaec74a927f249ea270c743
-		 */
-		ID?: string;
-		/**
-		 * @description Various key/value attributes of the object, depending on its type.
-		 *
-		 * @example {
-		 *   "com.example.some-label": "some-label-value",
-		 *   "image": "alpine:latest",
-		 *   "name": "my-container"
-		 * }
-		 */
-		Attributes?: { [key: string]: string };
-	};
-	/**
-	 * SystemEventsResponse
-	 * @description EventMessage represents the information an event contains.
-	 */
-	EventMessage: {
-		/**
-		 * @description The type of object emitting the event
-		 * @example container
-		 * @enum {string}
-		 */
-		Type?:
-			| "builder"
-			| "config"
-			| "container"
-			| "daemon"
-			| "image"
-			| "network"
-			| "node"
-			| "plugin"
-			| "secret"
-			| "service"
-			| "volume";
-		/**
-		 * @description The type of event
-		 * @example create
-		 */
-		Action?: string;
-		Actor?: definitions["EventActor"];
-		/**
-		 * @description Scope of the event. Engine events are `local` scope. Cluster (Swarm)
-		 * events are `swarm` scope.
-		 *
-		 * @enum {string}
-		 */
-		scope?: "local" | "swarm";
-		/**
-		 * Format: int64
-		 * @description Timestamp of event
-		 * @example 1629574695
-		 */
-		time?: number;
-		/**
-		 * Format: int64
-		 * @description Timestamp of event, with nanosecond accuracy
-		 * @example 1629574695515050000
-		 */
-		timeNano?: number;
-	};
-	/**
-	 * @description A descriptor struct containing digest, media type, and size, as defined in
-	 * the [OCI Content Descriptors Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md).
-	 */
-	OCIDescriptor: {
-		/**
-		 * @description The media type of the object this schema refers to.
-		 *
-		 * @example application/vnd.docker.distribution.manifest.v2+json
-		 */
-		mediaType?: string;
-		/**
-		 * @description The digest of the targeted content.
-		 *
-		 * @example sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96
-		 */
-		digest?: string;
-		/**
-		 * Format: int64
-		 * @description The size in bytes of the blob.
-		 *
-		 * @example 3987495
-		 */
-		size?: number;
-	};
-	/**
-	 * @description Describes the platform which the image in the manifest runs on, as defined
-	 * in the [OCI Image Index Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-index.md).
-	 */
-	OCIPlatform: {
-		/**
-		 * @description The CPU architecture, for example `amd64` or `ppc64`.
-		 *
-		 * @example arm
-		 */
-		architecture?: string;
-		/**
-		 * @description The operating system, for example `linux` or `windows`.
-		 *
-		 * @example windows
-		 */
-		os?: string;
-		/**
-		 * @description Optional field specifying the operating system version, for example on
-		 * Windows `10.0.19041.1165`.
-		 *
-		 * @example 10.0.19041.1165
-		 */
-		"os.version"?: string;
-		/**
-		 * @description Optional field specifying an array of strings, each listing a required
-		 * OS feature (for example on Windows `win32k`).
-		 *
-		 * @example [
-		 *   "win32k"
-		 * ]
-		 */
-		"os.features"?: string[];
-		/**
-		 * @description Optional field specifying a variant of the CPU, for example `v7` to
-		 * specify ARMv7 when architecture is `arm`.
-		 *
-		 * @example v7
-		 */
-		variant?: string;
-	};
-	/**
-	 * DistributionInspectResponse
-	 * @description Describes the result obtained from contacting the registry to retrieve
-	 * image metadata.
-	 */
-	DistributionInspect: {
-		Descriptor: definitions["OCIDescriptor"];
-		/** @description An array containing all platforms supported by the image. */
-		Platforms: definitions["OCIPlatform"][];
-	};
-	/**
-	 * @description Options and information specific to, and only present on, Swarm CSI
-	 * cluster volumes.
-	 */
-	ClusterVolume: {
-		/**
-		 * @description The Swarm ID of this volume. Because cluster volumes are Swarm
-		 * objects, they have an ID, unlike non-cluster volumes. This ID can
-		 * be used to refer to the Volume instead of the name.
-		 */
-		ID?: string;
-		Version?: definitions["ObjectVersion"];
-		/** Format: dateTime */
-		CreatedAt?: string;
-		/** Format: dateTime */
-		UpdatedAt?: string;
-		Spec?: definitions["ClusterVolumeSpec"];
-		/** @description Information about the global status of the volume. */
-		Info?: {
+			IpcMode?: string;
+			/** @description Cgroup to use for the container. */
+			Cgroup?: string;
+			/** @description A list of links for the container in the form `container_name:alias`. */
+			Links?: string[];
+			/**
+			 * @description An integer value containing the score given to the container in
+			 * order to tune OOM killer preferences.
+			 *
+			 * @example 500
+			 */
+			OomScoreAdj?: number;
+			/**
+			 * @description Set the PID (Process) Namespace mode for the container. It can be
+			 * either:
+			 *
+			 * - `"container:<name|id>"`: joins another container's PID namespace
+			 * - `"host"`: use the host's PID namespace inside the container
+			 */
+			PidMode?: string;
+			/** @description Gives the container full access to the host. */
+			Privileged?: boolean;
+			/**
+			 * @description Allocates an ephemeral host port for all of a container's
+			 * exposed ports.
+			 *
+			 * Ports are de-allocated when the container stops and allocated when
+			 * the container starts. The allocated port might be changed when
+			 * restarting the container.
+			 *
+			 * The port is selected from the ephemeral port range that depends on
+			 * the kernel. For example, on Linux the range is defined by
+			 * `/proc/sys/net/ipv4/ip_local_port_range`.
+			 */
+			PublishAllPorts?: boolean;
+			/** @description Mount the container's root filesystem as read only. */
+			ReadonlyRootfs?: boolean;
+			/**
+			 * @description A list of string values to customize labels for MLS systems, such
+			 * as SELinux.
+			 */
+			SecurityOpt?: string[];
+			/** @description Storage driver options for this container, in the form `{"size": "120G"}`. */
+			StorageOpt?: { [key: string]: string };
+			/**
+			 * @description A map of container directories which should be replaced by tmpfs
+			 * mounts, and their corresponding mount options. For example:
+			 *
+			 * ```
+			 * { "/run": "rw,noexec,nosuid,size=65536k" }
+			 * ```
+			 */
+			Tmpfs?: { [key: string]: string };
+			/** @description UTS namespace to use for the container. */
+			UTSMode?: string;
+			/**
+			 * @description Sets the usernamespace mode for the container when usernamespace
+			 * remapping option is enabled.
+			 */
+			UsernsMode?: string;
 			/**
 			 * Format: int64
-			 * @description The capacity of the volume in bytes. A value of 0 indicates that
-			 * the capacity is unknown.
+			 * @description Size of `/dev/shm` in bytes. If omitted, the system uses 64MB.
 			 */
-			CapacityBytes?: number;
+			ShmSize?: number;
 			/**
-			 * @description A map of strings to strings returned from the storage plugin when
-			 * the volume is created.
+			 * @description A list of kernel parameters (sysctls) to set in the container.
+			 * For example:
+			 *
+			 * ```
+			 * {"net.ipv4.ip_forward": "1"}
+			 * ```
 			 */
-			VolumeContext?: { [key: string]: string };
+			Sysctls?: { [key: string]: string };
+			/** @description Runtime to use with this container. */
+			Runtime?: string;
 			/**
-			 * @description The ID of the volume as returned by the CSI storage plugin. This
-			 * is distinct from the volume's ID as provided by Docker. This ID
-			 * is never used by the user when communicating with Docker to refer
-			 * to this volume. If the ID is blank, then the Volume has not been
-			 * successfully created in the plugin yet.
+			 * @description Isolation technology of the container. (Windows only)
+			 *
+			 * @enum {string}
 			 */
-			VolumeID?: string;
-			/** @description The topology this volume is actually accessible from. */
-			AccessibleTopology?: definitions["Topology"][];
+			Isolation?: "default" | "process" | "hyperv";
+			/**
+			 * @description The list of paths to be masked inside the container (this overrides
+			 * the default set of paths).
+			 */
+			MaskedPaths?: string[];
+			/**
+			 * @description The list of paths to be set as read-only inside the container
+			 * (this overrides the default set of paths).
+			 */
+			ReadonlyPaths?: string[];
 		};
 		/**
-		 * @description The status of the volume as it pertains to its publishing and use on
-		 * specific nodes
+		 * @description Configuration for a container that is portable between hosts.
+		 *
+		 * When used as `ContainerConfig` field in an image, `ContainerConfig` is an
+		 * optional field containing the configuration of the container that was last
+		 * committed when creating the image.
+		 *
+		 * Previous versions of Docker builder used this field to store build cache,
+		 * and it is not in active use anymore.
 		 */
-		PublishStatus?: {
-			/** @description The ID of the Swarm node the volume is published on. */
-			NodeID?: string;
+		ContainerConfig: {
 			/**
-			 * @description The published state of the volume.
-			 * * `pending-publish` The volume should be published to this node, but the call to the controller plugin to do so has not yet been successfully completed.
-			 * * `published` The volume is published successfully to the node.
-			 * * `pending-node-unpublish` The volume should be unpublished from the node, and the manager is awaiting confirmation from the worker that it has done so.
-			 * * `pending-controller-unpublish` The volume is successfully unpublished from the node, but has not yet been successfully unpublished on the controller.
+			 * @description The hostname to use for the container, as a valid RFC 1123 hostname.
 			 *
-			 * @enum {string}
+			 * @example 439f4e91bd1d
 			 */
-			State?: "pending-publish" | "published" | "pending-node-unpublish" | "pending-controller-unpublish";
+			Hostname?: string;
+			/** @description The domain name to use for the container. */
+			Domainname?: string;
+			/** @description The user that commands are run as inside the container. */
+			User?: string;
 			/**
-			 * @description A map of strings to strings returned by the CSI controller
-			 * plugin when a volume is published.
+			 * @description Whether to attach to `stdin`.
+			 * @default false
 			 */
-			PublishContext?: { [key: string]: string };
-		}[];
-	};
-	/** @description Cluster-specific options used to create the volume. */
-	ClusterVolumeSpec: {
+			AttachStdin?: boolean;
+			/**
+			 * @description Whether to attach to `stdout`.
+			 * @default true
+			 */
+			AttachStdout?: boolean;
+			/**
+			 * @description Whether to attach to `stderr`.
+			 * @default true
+			 */
+			AttachStderr?: boolean;
+			/**
+			 * @description An object mapping ports to an empty object in the form:
+			 *
+			 * `{"<port>/<tcp|udp|sctp>": {}}`
+			 *
+			 * @example {
+			 *   "80/tcp": {},
+			 *   "443/tcp": {}
+			 * }
+			 */
+			ExposedPorts?: { [key: string]: {} } | null;
+			/**
+			 * @description Attach standard streams to a TTY, including `stdin` if it is not closed.
+			 *
+			 * @default false
+			 */
+			Tty?: boolean;
+			/**
+			 * @description Open `stdin`
+			 * @default false
+			 */
+			OpenStdin?: boolean;
+			/**
+			 * @description Close `stdin` after one attached client disconnects
+			 * @default false
+			 */
+			StdinOnce?: boolean;
+			/**
+			 * @description A list of environment variables to set inside the container in the
+			 * form `["VAR=value", ...]`. A variable without `=` is removed from the
+			 * environment, rather than to have an empty value.
+			 *
+			 * @example [
+			 *   "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+			 * ]
+			 */
+			Env?: string[];
+			/**
+			 * @description Command to run specified as a string or an array of strings.
+			 *
+			 * @example [
+			 *   "/bin/sh"
+			 * ]
+			 */
+			Cmd?: string[];
+			Healthcheck?: components["schemas"]["HealthConfig"];
+			/**
+			 * @description Command is already escaped (Windows only)
+			 * @default false
+			 * @example false
+			 */
+			ArgsEscaped?: boolean | null;
+			/**
+			 * @description The name (or reference) of the image to use when creating the container,
+			 * or which was used when the container was created.
+			 *
+			 * @example example-image:1.0
+			 */
+			Image?: string;
+			/**
+			 * @description An object mapping mount point paths inside the container to empty
+			 * objects.
+			 */
+			Volumes?: { [key: string]: {} };
+			/**
+			 * @description The working directory for commands to run in.
+			 * @example /public/
+			 */
+			WorkingDir?: string;
+			/**
+			 * @description The entry point for the container as a string or an array of strings.
+			 *
+			 * If the array consists of exactly one empty string (`[""]`) then the
+			 * entry point is reset to system default (i.e., the entry point used by
+			 * docker when there is no `ENTRYPOINT` instruction in the `Dockerfile`).
+			 *
+			 * @example []
+			 */
+			Entrypoint?: string[];
+			/** @description Disable networking for the container. */
+			NetworkDisabled?: boolean | null;
+			/** @description MAC address of the container. */
+			MacAddress?: string | null;
+			/**
+			 * @description `ONBUILD` metadata that were defined in the image's `Dockerfile`.
+			 *
+			 * @example []
+			 */
+			OnBuild?: string[] | null;
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			Labels?: { [key: string]: string };
+			/**
+			 * @description Signal to stop a container as a string or unsigned integer.
+			 *
+			 * @example SIGTERM
+			 */
+			StopSignal?: string | null;
+			/**
+			 * @description Timeout to stop a container in seconds.
+			 * @default 10
+			 */
+			StopTimeout?: number | null;
+			/**
+			 * @description Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell.
+			 *
+			 * @example [
+			 *   "/bin/sh",
+			 *   "-c"
+			 * ]
+			 */
+			Shell?: string[] | null;
+		};
 		/**
-		 * @description Group defines the volume group of this volume. Volumes belonging to
-		 * the same group can be referred to by group name when creating
-		 * Services.  Referring to a volume by group instructs Swarm to treat
-		 * volumes in that group interchangeably for the purpose of scheduling.
-		 * Volumes with an empty string for a group technically all belong to
-		 * the same, emptystring group.
+		 * @description NetworkingConfig represents the container's networking configuration for
+		 * each of its interfaces.
+		 * It is used for the networking configs specified in the `docker create`
+		 * and `docker network connect` commands.
+		 *
+		 * @example {
+		 *   "EndpointsConfig": {
+		 *     "isolated_nw": {
+		 *       "IPAMConfig": {
+		 *         "IPv4Address": "172.20.30.33",
+		 *         "IPv6Address": "2001:db8:abcd::3033",
+		 *         "LinkLocalIPs": [
+		 *           "169.254.34.68",
+		 *           "fe80::3468"
+		 *         ]
+		 *       },
+		 *       "Links": [
+		 *         "container_1",
+		 *         "container_2"
+		 *       ],
+		 *       "Aliases": [
+		 *         "server_x",
+		 *         "server_y"
+		 *       ]
+		 *     }
+		 *   }
+		 * }
 		 */
-		Group?: string;
-		/** @description Defines how the volume is used by tasks. */
-		AccessMode?: {
+		NetworkingConfig: {
+			/** @description A mapping of network name to endpoint configuration for that network. */
+			EndpointsConfig?: {
+				[key: string]: components["schemas"]["EndpointSettings"];
+			};
+		};
+		/** @description NetworkSettings exposes the network settings in the API */
+		NetworkSettings: {
 			/**
-			 * @description The set of nodes this volume can be used on at one time.
-			 * - `single` The volume may only be scheduled to one node at a time.
-			 * - `multi` the volume may be scheduled to any supported number of nodes at a time.
+			 * @description Name of the network's bridge (for example, `docker0`).
+			 * @example docker0
+			 */
+			Bridge?: string;
+			/**
+			 * @description SandboxID uniquely represents a container's network stack.
+			 * @example 9d12daf2c33f5959c8bf90aa513e4f65b561738661003029ec84830cd503a0c3
+			 */
+			SandboxID?: string;
+			/**
+			 * @description Indicates if hairpin NAT should be enabled on the virtual interface.
 			 *
-			 * @default single
-			 * @enum {string}
+			 * @example false
 			 */
-			Scope?: "single" | "multi";
+			HairpinMode?: boolean;
 			/**
-			 * @description The number and way that different tasks can use this volume
-			 * at one time.
-			 * - `none` The volume may only be used by one task at a time.
-			 * - `readonly` The volume may be used by any number of tasks, but they all must mount the volume as readonly
-			 * - `onewriter` The volume may be used by any number of tasks, but only one may mount it as read/write.
-			 * - `all` The volume may have any number of readers and writers.
+			 * @description IPv6 unicast address using the link-local prefix.
+			 * @example fe80::42:acff:fe11:1
+			 */
+			LinkLocalIPv6Address?: string;
+			/**
+			 * @description Prefix length of the IPv6 unicast address.
+			 * @example 64
+			 */
+			LinkLocalIPv6PrefixLen?: number;
+			Ports?: components["schemas"]["PortMap"];
+			/**
+			 * @description SandboxKey identifies the sandbox
+			 * @example /var/run/docker/netns/8ab54b426c38
+			 */
+			SandboxKey?: string;
+			SecondaryIPAddresses?: components["schemas"]["Address"][] | null;
+			SecondaryIPv6Addresses?: components["schemas"]["Address"][] | null;
+			/**
+			 * @description EndpointID uniquely represents a service endpoint in a Sandbox.
 			 *
-			 * @default none
-			 * @enum {string}
-			 */
-			Sharing?: "none" | "readonly" | "onewriter" | "all";
-			/**
-			 * @description Options for using this volume as a Mount-type volume.
+			 * <p><br /></p>
 			 *
-			 *     Either MountVolume or BlockVolume, but not both, must be
-			 *     present.
-			 *   properties:
-			 *     FsType:
-			 *       type: "string"
-			 *       description: |
-			 *         Specifies the filesystem type for the mount volume.
-			 *         Optional.
-			 *     MountFlags:
-			 *       type: "array"
-			 *       description: |
-			 *         Flags to pass when mounting the volume. Optional.
-			 *       items:
-			 *         type: "string"
-			 * BlockVolume:
-			 *   type: "object"
-			 *   description: |
-			 *     Options for using this volume as a Block-type volume.
-			 *     Intentionally empty.
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b
 			 */
-			MountVolume?: { [key: string]: unknown };
+			EndpointID?: string;
 			/**
-			 * @description Swarm Secrets that are passed to the CSI storage plugin when
-			 * operating on this volume.
+			 * @description Gateway address for the default "bridge" network.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 172.17.0.1
 			 */
-			Secrets?: {
-				/**
-				 * @description Key is the name of the key of the key-value pair passed to
-				 * the plugin.
-				 */
-				Key?: string;
-				/**
-				 * @description Secret is the swarm Secret object from which to read data.
-				 * This can be a Secret name or ID. The Secret data is
-				 * retrieved by swarm and used as the value of the key-value
-				 * pair passed to the plugin.
-				 */
-				Secret?: string;
-			}[];
+			Gateway?: string;
 			/**
-			 * @description Requirements for the accessible topology of the volume. These
-			 * fields are optional. For an in-depth description of what these
-			 * fields mean, see the CSI specification.
+			 * @description Global IPv6 address for the default "bridge" network.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 2001:db8::5689
 			 */
-			AccessibilityRequirements?: {
+			GlobalIPv6Address?: string;
+			/**
+			 * @description Mask length of the global IPv6 address.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 64
+			 */
+			GlobalIPv6PrefixLen?: number;
+			/**
+			 * @description IPv4 address for the default "bridge" network.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 172.17.0.4
+			 */
+			IPAddress?: string;
+			/**
+			 * @description Mask length of the IPv4 address.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 16
+			 */
+			IPPrefixLen?: number;
+			/**
+			 * @description IPv6 gateway address for this network.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 2001:db8:2::100
+			 */
+			IPv6Gateway?: string;
+			/**
+			 * @description MAC address for the container on the default "bridge" network.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Deprecated**: This field is only propagated when attached to the
+			 * > default "bridge" network. Use the information from the "bridge"
+			 * > network inside the `Networks` map instead, which contains the same
+			 * > information. This field was deprecated in Docker 1.9 and is scheduled
+			 * > to be removed in Docker 17.12.0
+			 *
+			 * @example 02:42:ac:11:00:04
+			 */
+			MacAddress?: string;
+			/** @description Information about all networks that the container is connected to. */
+			Networks?: { [key: string]: components["schemas"]["EndpointSettings"] };
+		};
+		/** @description Address represents an IPv4 or IPv6 IP address. */
+		Address: {
+			/** @description IP address. */
+			Addr?: string;
+			/** @description Mask length of the IP address. */
+			PrefixLen?: number;
+		};
+		/**
+		 * @description PortMap describes the mapping of container ports to host ports, using the
+		 * container's port-number and protocol as key in the format `<port>/<protocol>`,
+		 * for example, `80/udp`.
+		 *
+		 * If a container's port is mapped for multiple protocols, separate entries
+		 * are added to the mapping table.
+		 *
+		 * @example {
+		 *   "443/tcp": [
+		 *     {
+		 *       "HostIp": "127.0.0.1",
+		 *       "HostPort": "4443"
+		 *     }
+		 *   ],
+		 *   "80/tcp": [
+		 *     {
+		 *       "HostIp": "0.0.0.0",
+		 *       "HostPort": "80"
+		 *     },
+		 *     {
+		 *       "HostIp": "0.0.0.0",
+		 *       "HostPort": "8080"
+		 *     }
+		 *   ],
+		 *   "80/udp": [
+		 *     {
+		 *       "HostIp": "0.0.0.0",
+		 *       "HostPort": "80"
+		 *     }
+		 *   ],
+		 *   "53/udp": [
+		 *     {
+		 *       "HostIp": "0.0.0.0",
+		 *       "HostPort": "53"
+		 *     }
+		 *   ],
+		 *   "2377/tcp": null
+		 * }
+		 */
+		PortMap: { [key: string]: components["schemas"]["PortBinding"][] | null };
+		/**
+		 * @description PortBinding represents a binding between a host IP address and a host
+		 * port.
+		 */
+		PortBinding: {
+			/**
+			 * @description Host IP address that the container's port is mapped to.
+			 * @example 127.0.0.1
+			 */
+			HostIp?: string;
+			/**
+			 * @description Host port number that the container's port is mapped to.
+			 * @example 4443
+			 */
+			HostPort?: string;
+		};
+		/**
+		 * @description Information about the storage driver used to store the container's and
+		 * image's filesystem.
+		 */
+		GraphDriverData: {
+			/**
+			 * @description Name of the storage driver.
+			 * @example overlay2
+			 */
+			Name: string;
+			/**
+			 * @description Low-level storage metadata, provided as key/value pairs.
+			 *
+			 * This information is driver-specific, and depends on the storage-driver
+			 * in use, and should be used for informational purposes only.
+			 *
+			 * @example {
+			 *   "MergedDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/merged",
+			 *   "UpperDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/diff",
+			 *   "WorkDir": "/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/work"
+			 * }
+			 */
+			Data: { [key: string]: string };
+		};
+		/** @description Change in the container's filesystem. */
+		FilesystemChange: {
+			/** @description Path to file or directory that has changed. */
+			Path: string;
+			Kind: components["schemas"]["ChangeType"];
+		};
+		/**
+		 * Format: uint8
+		 * @description Kind of change
+		 *
+		 * Can be one of:
+		 *
+		 * - `0`: Modified ("C")
+		 * - `1`: Added ("A")
+		 * - `2`: Deleted ("D")
+		 *
+		 * @enum {integer}
+		 */
+		ChangeType: 0 | 1 | 2;
+		/** @description Information about an image in the local image cache. */
+		ImageInspect: {
+			/**
+			 * @description ID is the content-addressable ID of an image.
+			 *
+			 * This identifier is a content-addressable digest calculated from the
+			 * image's configuration (which includes the digests of layers used by
+			 * the image).
+			 *
+			 * Note that this digest differs from the `RepoDigests` below, which
+			 * holds digests of image manifests that reference the image.
+			 *
+			 * @example sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710
+			 */
+			Id?: string;
+			/**
+			 * @description List of image names/tags in the local image cache that reference this
+			 * image.
+			 *
+			 * Multiple image tags can refer to the same image, and this list may be
+			 * empty if no tags reference the image, in which case the image is
+			 * "untagged", in which case it can still be referenced by its ID.
+			 *
+			 * @example [
+			 *   "example:1.0",
+			 *   "example:latest",
+			 *   "example:stable",
+			 *   "internal.registry.example.com:5000/example:1.0"
+			 * ]
+			 */
+			RepoTags?: string[];
+			/**
+			 * @description List of content-addressable digests of locally available image manifests
+			 * that the image is referenced from. Multiple manifests can refer to the
+			 * same image.
+			 *
+			 * These digests are usually only available if the image was either pulled
+			 * from a registry, or if the image was pushed to a registry, which is when
+			 * the manifest is generated and its digest calculated.
+			 *
+			 * @example [
+			 *   "example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb",
+			 *   "internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578"
+			 * ]
+			 */
+			RepoDigests?: string[];
+			/**
+			 * @description ID of the parent image.
+			 *
+			 * Depending on how the image was created, this field may be empty and
+			 * is only set for images that were built/created locally. This field
+			 * is empty if the image was pulled from an image registry.
+			 *
+			 * @example
+			 */
+			Parent?: string;
+			/**
+			 * @description Optional message that was set when committing or importing the image.
+			 *
+			 * @example
+			 */
+			Comment?: string;
+			/**
+			 * @description Date and time at which the image was created, formatted in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2022-02-04T21:20:12.497Z
+			 */
+			Created?: string;
+			/**
+			 * @description The ID of the container that was used to create the image.
+			 *
+			 * Depending on how the image was created, this field may be empty.
+			 *
+			 * @example 65974bc86f1770ae4bff79f651ebdbce166ae9aada632ee3fa9af3a264911735
+			 */
+			Container?: string;
+			ContainerConfig?: components["schemas"]["ContainerConfig"];
+			/**
+			 * @description The version of Docker that was used to build the image.
+			 *
+			 * Depending on how the image was created, this field may be empty.
+			 *
+			 * @example 20.10.7
+			 */
+			DockerVersion?: string;
+			/**
+			 * @description Name of the author that was specified when committing the image, or as
+			 * specified through MAINTAINER (deprecated) in the Dockerfile.
+			 *
+			 * @example
+			 */
+			Author?: string;
+			Config?: components["schemas"]["ContainerConfig"];
+			/**
+			 * @description Hardware CPU architecture that the image runs on.
+			 *
+			 * @example arm
+			 */
+			Architecture?: string;
+			/**
+			 * @description CPU architecture variant (presently ARM-only).
+			 *
+			 * @example v7
+			 */
+			Variant?: string | null;
+			/**
+			 * @description Operating System the image is built to run on.
+			 *
+			 * @example linux
+			 */
+			Os?: string;
+			/**
+			 * @description Operating System version the image is built to run on (especially
+			 * for Windows).
+			 *
+			 * @example
+			 */
+			OsVersion?: string | null;
+			/**
+			 * Format: int64
+			 * @description Total size of the image including all layers it is composed of.
+			 *
+			 * @example 1239828
+			 */
+			Size?: number;
+			/**
+			 * Format: int64
+			 * @description Total size of the image including all layers it is composed of.
+			 *
+			 * In versions of Docker before v1.10, this field was calculated from
+			 * the image itself and all of its parent images. Images are now stored
+			 * self-contained, and no longer use a parent-chain, making this field
+			 * an equivalent of the Size field.
+			 *
+			 * > **Deprecated**: this field is kept for backward compatibility, but
+			 * > will be removed in API v1.44.
+			 *
+			 * @example 1239828
+			 */
+			VirtualSize?: number;
+			GraphDriver?: components["schemas"]["GraphDriverData"];
+			/** @description Information about the image's RootFS, including the layer IDs. */
+			RootFS?: {
+				/** @example layers */
+				Type: string;
 				/**
-				 * @description A list of required topologies, at least one of which the
-				 * volume must be accessible from.
+				 * @example [
+				 *   "sha256:1834950e52ce4d5a88a1bbd131c537f4d0e56d10ff0dd69e66be3b7dfa9df7e6",
+				 *   "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+				 * ]
 				 */
-				Requisite?: definitions["Topology"][];
-				/**
-				 * @description A list of topologies that the volume should attempt to be
-				 * provisioned in.
-				 */
-				Preferred?: definitions["Topology"][];
+				Layers?: string[];
 			};
 			/**
-			 * @description The desired capacity that the volume should be created with. If
-			 * empty, the plugin will decide the capacity.
+			 * @description Additional metadata of the image in the local cache. This information
+			 * is local to the daemon, and not part of the image itself.
 			 */
-			CapacityRange?: {
+			Metadata?: {
+				/**
+				 * Format: dateTime
+				 * @description Date and time at which the image was last tagged in
+				 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+				 *
+				 * This information is only available if the image was tagged locally,
+				 * and omitted otherwise.
+				 *
+				 * @example 2022-02-28T14:40:02.623Z
+				 */
+				LastTagTime?: string | null;
+			};
+		};
+		ImageSummary: {
+			/**
+			 * @description ID is the content-addressable ID of an image.
+			 *
+			 * This identifier is a content-addressable digest calculated from the
+			 * image's configuration (which includes the digests of layers used by
+			 * the image).
+			 *
+			 * Note that this digest differs from the `RepoDigests` below, which
+			 * holds digests of image manifests that reference the image.
+			 *
+			 * @example sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710
+			 */
+			Id: string;
+			/**
+			 * @description ID of the parent image.
+			 *
+			 * Depending on how the image was created, this field may be empty and
+			 * is only set for images that were built/created locally. This field
+			 * is empty if the image was pulled from an image registry.
+			 *
+			 * @example
+			 */
+			ParentId: string;
+			/**
+			 * @description List of image names/tags in the local image cache that reference this
+			 * image.
+			 *
+			 * Multiple image tags can refer to the same image, and this list may be
+			 * empty if no tags reference the image, in which case the image is
+			 * "untagged", in which case it can still be referenced by its ID.
+			 *
+			 * @example [
+			 *   "example:1.0",
+			 *   "example:latest",
+			 *   "example:stable",
+			 *   "internal.registry.example.com:5000/example:1.0"
+			 * ]
+			 */
+			RepoTags: string[];
+			/**
+			 * @description List of content-addressable digests of locally available image manifests
+			 * that the image is referenced from. Multiple manifests can refer to the
+			 * same image.
+			 *
+			 * These digests are usually only available if the image was either pulled
+			 * from a registry, or if the image was pushed to a registry, which is when
+			 * the manifest is generated and its digest calculated.
+			 *
+			 * @example [
+			 *   "example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb",
+			 *   "internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578"
+			 * ]
+			 */
+			RepoDigests: string[];
+			/**
+			 * @description Date and time at which the image was created as a Unix timestamp
+			 * (number of seconds sinds EPOCH).
+			 *
+			 * @example 1644009612
+			 */
+			Created: number;
+			/**
+			 * Format: int64
+			 * @description Total size of the image including all layers it is composed of.
+			 *
+			 * @example 172064416
+			 */
+			Size: number;
+			/**
+			 * Format: int64
+			 * @description Total size of image layers that are shared between this image and other
+			 * images.
+			 *
+			 * This size is not calculated by default. `-1` indicates that the value
+			 * has not been set / calculated.
+			 *
+			 * @example 1239828
+			 */
+			SharedSize: number;
+			/**
+			 * Format: int64
+			 * @description Total size of the image including all layers it is composed of.
+			 *
+			 * In versions of Docker before v1.10, this field was calculated from
+			 * the image itself and all of its parent images. Images are now stored
+			 * self-contained, and no longer use a parent-chain, making this field
+			 * an equivalent of the Size field.
+			 *
+			 * Deprecated: this field is kept for backward compatibility, and will be removed in API v1.44.
+			 * @example 172064416
+			 */
+			VirtualSize?: number;
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			Labels: { [key: string]: string };
+			/**
+			 * @description Number of containers using this image. Includes both stopped and running
+			 * containers.
+			 *
+			 * This size is not calculated by default, and depends on which API endpoint
+			 * is used. `-1` indicates that the value has not been set / calculated.
+			 *
+			 * @example 2
+			 */
+			Containers: number;
+		};
+		/**
+		 * @example {
+		 *   "username": "hannibal",
+		 *   "password": "xxxx",
+		 *   "serveraddress": "https://index.docker.io/v1/"
+		 * }
+		 */
+		AuthConfig: {
+			username?: string;
+			password?: string;
+			email?: string;
+			serveraddress?: string;
+		};
+		ProcessConfig: {
+			privileged?: boolean;
+			user?: string;
+			tty?: boolean;
+			entrypoint?: string;
+			arguments?: string[];
+		};
+		Volume: {
+			/**
+			 * @description Name of the volume.
+			 * @example tardis
+			 */
+			Name: string;
+			/**
+			 * @description Name of the volume driver used by the volume.
+			 * @example custom
+			 */
+			Driver: string;
+			/**
+			 * @description Mount path of the volume on the host.
+			 * @example /var/lib/docker/volumes/tardis
+			 */
+			Mountpoint: string;
+			/**
+			 * Format: dateTime
+			 * @description Date/Time the volume was created.
+			 * @example 2016-06-07T20:31:11.853Z
+			 */
+			CreatedAt?: string;
+			/**
+			 * @description Low-level details about the volume, provided by the volume driver.
+			 * Details are returned as a map with key/value pairs:
+			 * `{"key":"value","key2":"value2"}`.
+			 *
+			 * The `Status` field is optional, and is omitted if the volume driver
+			 * does not support this feature.
+			 *
+			 * @example {
+			 *   "hello": "world"
+			 * }
+			 */
+			Status?: { [key: string]: { [key: string]: unknown } };
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			Labels: { [key: string]: string };
+			/**
+			 * @description The level at which the volume exists. Either `global` for cluster-wide,
+			 * or `local` for machine level.
+			 *
+			 * @default local
+			 * @example local
+			 * @enum {string}
+			 */
+			Scope: "local" | "global";
+			ClusterVolume?: components["schemas"]["ClusterVolume"];
+			/**
+			 * @description The driver specific options used when creating the volume.
+			 *
+			 * @example {
+			 *   "device": "tmpfs",
+			 *   "o": "size=100m,uid=1000",
+			 *   "type": "tmpfs"
+			 * }
+			 */
+			Options: { [key: string]: string };
+			/**
+			 * @description Usage details about the volume. This information is used by the
+			 * `GET /system/df` endpoint, and omitted in other endpoints.
+			 */
+			UsageData?: {
 				/**
 				 * Format: int64
-				 * @description The volume must be at least this big. The value of 0
-				 * indicates an unspecified minimum
+				 * @description Amount of disk space used by the volume (in bytes). This information
+				 * is only available for volumes created with the `"local"` volume
+				 * driver. For volumes created with other volume drivers, this field
+				 * is set to `-1` ("not available")
+				 *
+				 * @default -1
 				 */
-				RequiredBytes?: number;
+				Size: number;
 				/**
 				 * Format: int64
-				 * @description The volume must not be bigger than this. The value of 0
-				 * indicates an unspecified maximum.
+				 * @description The number of containers referencing this volume. This field
+				 * is set to `-1` if the reference-count is not available.
+				 *
+				 * @default -1
 				 */
-				LimitBytes?: number;
+				RefCount: number;
+			} | null;
+		};
+		/**
+		 * VolumeConfig
+		 * @description Volume configuration
+		 */
+		VolumeCreateOptions: {
+			/**
+			 * @description The new volume's name. If not specified, Docker generates a name.
+			 *
+			 * @example tardis
+			 */
+			Name?: string;
+			/**
+			 * @description Name of the volume driver to use.
+			 * @default local
+			 * @example custom
+			 */
+			Driver?: string;
+			/**
+			 * @description A mapping of driver options and values. These options are
+			 * passed directly to the driver and are driver specific.
+			 *
+			 * @example {
+			 *   "device": "tmpfs",
+			 *   "o": "size=100m,uid=1000",
+			 *   "type": "tmpfs"
+			 * }
+			 */
+			DriverOpts?: { [key: string]: string };
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			Labels?: { [key: string]: string };
+			ClusterVolumeSpec?: components["schemas"]["ClusterVolumeSpec"];
+		};
+		/**
+		 * VolumeListResponse
+		 * @description Volume list response
+		 */
+		VolumeListResponse: {
+			/** @description List of volumes */
+			Volumes?: components["schemas"]["Volume"][];
+			/**
+			 * @description Warnings that occurred when fetching the list of volumes.
+			 *
+			 * @example []
+			 */
+			Warnings?: string[];
+		};
+		/**
+		 * @example {
+		 *   "Name": "net01",
+		 *   "Id": "7d86d31b1478e7cca9ebed7e73aa0fdeec46c5ca29497431d3007d2d9e15ed99",
+		 *   "Created": "2016-10-19T04:33:30.360Z",
+		 *   "Scope": "local",
+		 *   "Driver": "bridge",
+		 *   "EnableIPv6": false,
+		 *   "IPAM": {
+		 *     "Driver": "default",
+		 *     "Config": [
+		 *       {
+		 *         "Subnet": "172.19.0.0/16",
+		 *         "Gateway": "172.19.0.1"
+		 *       }
+		 *     ],
+		 *     "Options": {
+		 *       "foo": "bar"
+		 *     }
+		 *   },
+		 *   "Internal": false,
+		 *   "Attachable": false,
+		 *   "Ingress": false,
+		 *   "Containers": {
+		 *     "19a4d5d687db25203351ed79d478946f861258f018fe384f229f2efa4b23513c": {
+		 *       "Name": "test",
+		 *       "EndpointID": "628cadb8bcb92de107b2a1e516cbffe463e321f548feb37697cce00ad694f21a",
+		 *       "MacAddress": "02:42:ac:13:00:02",
+		 *       "IPv4Address": "172.19.0.2/16",
+		 *       "IPv6Address": ""
+		 *     }
+		 *   },
+		 *   "Options": {
+		 *     "com.docker.network.bridge.default_bridge": "true",
+		 *     "com.docker.network.bridge.enable_icc": "true",
+		 *     "com.docker.network.bridge.enable_ip_masquerade": "true",
+		 *     "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+		 *     "com.docker.network.bridge.name": "docker0",
+		 *     "com.docker.network.driver.mtu": "1500"
+		 *   },
+		 *   "Labels": {
+		 *     "com.example.some-label": "some-value",
+		 *     "com.example.some-other-label": "some-other-value"
+		 *   }
+		 * }
+		 */
+		Network: {
+			Name?: string;
+			Id?: string;
+			/** Format: dateTime */
+			Created?: string;
+			Scope?: string;
+			Driver?: string;
+			EnableIPv6?: boolean;
+			IPAM?: components["schemas"]["IPAM"];
+			Internal?: boolean;
+			Attachable?: boolean;
+			Ingress?: boolean;
+			Containers?: { [key: string]: components["schemas"]["NetworkContainer"] };
+			Options?: { [key: string]: string };
+			Labels?: { [key: string]: string };
+		};
+		IPAM: {
+			/**
+			 * @description Name of the IPAM driver to use.
+			 * @default default
+			 */
+			Driver?: string;
+			/**
+			 * @description List of IPAM configuration options, specified as a map:
+			 *
+			 * ```
+			 * {"Subnet": <CIDR>, "IPRange": <CIDR>, "Gateway": <IP address>, "AuxAddress": <device_name:IP address>}
+			 * ```
+			 */
+			Config?: components["schemas"]["IPAMConfig"][];
+			/** @description Driver-specific options, specified as a map. */
+			Options?: { [key: string]: string };
+		};
+		IPAMConfig: {
+			Subnet?: string;
+			IPRange?: string;
+			Gateway?: string;
+			AuxiliaryAddresses?: { [key: string]: string };
+		};
+		NetworkContainer: {
+			Name?: string;
+			EndpointID?: string;
+			MacAddress?: string;
+			IPv4Address?: string;
+			IPv6Address?: string;
+		};
+		BuildInfo: {
+			id?: string;
+			stream?: string;
+			error?: string;
+			errorDetail?: components["schemas"]["ErrorDetail"];
+			status?: string;
+			progress?: string;
+			progressDetail?: components["schemas"]["ProgressDetail"];
+			aux?: components["schemas"]["ImageID"];
+		};
+		/** @description BuildCache contains information about a build cache record. */
+		BuildCache: {
+			/**
+			 * @description Unique ID of the build cache record.
+			 *
+			 * @example ndlpt0hhvkqcdfkputsk4cq9c
+			 */
+			ID?: string;
+			/**
+			 * @description ID of the parent build cache record.
+			 *
+			 * > **Deprecated**: This field is deprecated, and omitted if empty.
+			 *
+			 * @example
+			 */
+			Parent?: string | null;
+			/**
+			 * @description List of parent build cache record IDs.
+			 *
+			 * @example [
+			 *   "hw53o5aio51xtltp5xjp8v7fx"
+			 * ]
+			 */
+			Parents?: string[] | null;
+			/**
+			 * @description Cache record type.
+			 *
+			 * @example regular
+			 * @enum {string}
+			 */
+			Type?: "internal" | "frontend" | "source.local" | "source.git.checkout" | "exec.cachemount" | "regular";
+			/**
+			 * @description Description of the build-step that produced the build cache.
+			 *
+			 * @example mount / from exec /bin/sh -c echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+			 */
+			Description?: string;
+			/**
+			 * @description Indicates if the build cache is in use.
+			 *
+			 * @example false
+			 */
+			InUse?: boolean;
+			/**
+			 * @description Indicates if the build cache is shared.
+			 *
+			 * @example true
+			 */
+			Shared?: boolean;
+			/**
+			 * @description Amount of disk space used by the build cache (in bytes).
+			 *
+			 * @example 51
+			 */
+			Size?: number;
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the build cache was created in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2016-08-18T10:44:24.496Z
+			 */
+			CreatedAt?: string;
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the build cache was last used in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2017-08-09T07:09:37.632Z
+			 */
+			LastUsedAt?: string | null;
+			/** @example 26 */
+			UsageCount?: number;
+		};
+		/**
+		 * @description Image ID or Digest
+		 * @example {
+		 *   "ID": "sha256:85f05633ddc1c50679be2b16a0479ab6f7637f8884e0cfe0f4d20e1ebb3d6e7c"
+		 * }
+		 */
+		ImageID: {
+			ID?: string;
+		};
+		CreateImageInfo: {
+			id?: string;
+			error?: string;
+			errorDetail?: components["schemas"]["ErrorDetail"];
+			status?: string;
+			progress?: string;
+			progressDetail?: components["schemas"]["ProgressDetail"];
+		};
+		PushImageInfo: {
+			error?: string;
+			status?: string;
+			progress?: string;
+			progressDetail?: components["schemas"]["ProgressDetail"];
+		};
+		ErrorDetail: {
+			code?: number;
+			message?: string;
+		};
+		ProgressDetail: {
+			current?: number;
+			total?: number;
+		};
+		/**
+		 * @description Represents an error.
+		 * @example {
+		 *   "message": "Something went wrong."
+		 * }
+		 */
+		ErrorResponse: {
+			/** @description The error message. */
+			message: string;
+		};
+		/** @description Response to an API call that returns just an Id */
+		IdResponse: {
+			/** @description The id of the newly created object. */
+			Id: string;
+		};
+		/** @description Configuration for a network endpoint. */
+		EndpointSettings: {
+			IPAMConfig?: components["schemas"]["EndpointIPAMConfig"];
+			/**
+			 * @example [
+			 *   "container_1",
+			 *   "container_2"
+			 * ]
+			 */
+			Links?: string[];
+			/**
+			 * @example [
+			 *   "server_x",
+			 *   "server_y"
+			 * ]
+			 */
+			Aliases?: string[];
+			/**
+			 * @description Unique ID of the network.
+			 *
+			 * @example 08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a
+			 */
+			NetworkID?: string;
+			/**
+			 * @description Unique ID for the service endpoint in a Sandbox.
+			 *
+			 * @example b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b
+			 */
+			EndpointID?: string;
+			/**
+			 * @description Gateway address for this network.
+			 *
+			 * @example 172.17.0.1
+			 */
+			Gateway?: string;
+			/**
+			 * @description IPv4 address.
+			 *
+			 * @example 172.17.0.4
+			 */
+			IPAddress?: string;
+			/**
+			 * @description Mask length of the IPv4 address.
+			 *
+			 * @example 16
+			 */
+			IPPrefixLen?: number;
+			/**
+			 * @description IPv6 gateway address.
+			 *
+			 * @example 2001:db8:2::100
+			 */
+			IPv6Gateway?: string;
+			/**
+			 * @description Global IPv6 address.
+			 *
+			 * @example 2001:db8::5689
+			 */
+			GlobalIPv6Address?: string;
+			/**
+			 * Format: int64
+			 * @description Mask length of the global IPv6 address.
+			 *
+			 * @example 64
+			 */
+			GlobalIPv6PrefixLen?: number;
+			/**
+			 * @description MAC address for the endpoint on this network.
+			 *
+			 * @example 02:42:ac:11:00:04
+			 */
+			MacAddress?: string;
+			/**
+			 * @description DriverOpts is a mapping of driver options and values. These options
+			 * are passed directly to the driver and are driver specific.
+			 *
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			DriverOpts?: { [key: string]: string } | null;
+		};
+		/** @description EndpointIPAMConfig represents an endpoint's IPAM configuration. */
+		EndpointIPAMConfig: {
+			/** @example 172.20.30.33 */
+			IPv4Address?: string;
+			/** @example 2001:db8:abcd::3033 */
+			IPv6Address?: string;
+			/**
+			 * @example [
+			 *   "169.254.34.68",
+			 *   "fe80::3468"
+			 * ]
+			 */
+			LinkLocalIPs?: string[];
+		} | null;
+		PluginMount: {
+			/** @example some-mount */
+			Name: string;
+			/** @example This is a mount that's used by the plugin. */
+			Description: string;
+			Settable: string[];
+			/** @example /var/lib/docker/plugins/ */
+			Source: string;
+			/** @example /mnt/state */
+			Destination: string;
+			/** @example bind */
+			Type: string;
+			/**
+			 * @example [
+			 *   "rbind",
+			 *   "rw"
+			 * ]
+			 */
+			Options: string[];
+		};
+		PluginDevice: {
+			Name: string;
+			Description: string;
+			Settable: string[];
+			/** @example /dev/fuse */
+			Path: string;
+		};
+		PluginEnv: {
+			Name: string;
+			Description: string;
+			Settable: string[];
+			Value: string;
+		};
+		PluginInterfaceType: {
+			Prefix: string;
+			Capability: string;
+			Version: string;
+		};
+		/**
+		 * @description Describes a permission the user has to accept upon installing
+		 * the plugin.
+		 */
+		PluginPrivilege: {
+			/** @example network */
+			Name?: string;
+			Description?: string;
+			/**
+			 * @example [
+			 *   "host"
+			 * ]
+			 */
+			Value?: string[];
+		};
+		/** @description A plugin for the Engine API */
+		Plugin: {
+			/** @example 5724e2c8652da337ab2eedd19fc6fc0ec908e4bd907c7421bf6a8dfc70c4c078 */
+			Id?: string;
+			/** @example tiborvass/sample-volume-plugin */
+			Name: string;
+			/**
+			 * @description True if the plugin is running. False if the plugin is not running, only installed.
+			 * @example true
+			 */
+			Enabled: boolean;
+			/** @description Settings that can be modified by users. */
+			Settings: {
+				Mounts: components["schemas"]["PluginMount"][];
+				/**
+				 * @example [
+				 *   "DEBUG=0"
+				 * ]
+				 */
+				Env: string[];
+				Args: string[];
+				Devices: components["schemas"]["PluginDevice"][];
 			};
 			/**
-			 * @description The availability of the volume for use in tasks.
-			 * - `active` The volume is fully available for scheduling on the cluster
-			 * - `pause` No new workloads should use the volume, but existing workloads are not stopped.
-			 * - `drain` All workloads using this volume should be stopped and rescheduled, and no new ones should be started.
-			 *
-			 * @default active
+			 * @description plugin remote reference used to push/pull the plugin
+			 * @example localhost:5000/tiborvass/sample-volume-plugin:latest
+			 */
+			PluginReference?: string;
+			/** @description The config of a plugin. */
+			Config: {
+				/**
+				 * @description Docker Version used to create the plugin
+				 * @example 17.06.0-ce
+				 */
+				DockerVersion?: string;
+				/** @example A sample volume plugin for Docker */
+				Description: string;
+				/** @example /engine/extend/plugins/ */
+				Documentation: string;
+				/** @description The interface between Docker and the plugin */
+				Interface: {
+					/**
+					 * @example [
+					 *   "docker.volumedriver/1.0"
+					 * ]
+					 */
+					Types: components["schemas"]["PluginInterfaceType"][];
+					/** @example plugins.sock */
+					Socket: string;
+					/**
+					 * @description Protocol to use for clients connecting to the plugin.
+					 * @example some.protocol/v1.0
+					 * @enum {string}
+					 */
+					ProtocolScheme?: "" | "moby.plugins.http/v1";
+				};
+				/**
+				 * @example [
+				 *   "/usr/bin/sample-volume-plugin",
+				 *   "/data"
+				 * ]
+				 */
+				Entrypoint: string[];
+				/** @example /bin/ */
+				WorkDir: string;
+				User?: {
+					/**
+					 * Format: uint32
+					 * @example 1000
+					 */
+					UID?: number;
+					/**
+					 * Format: uint32
+					 * @example 1000
+					 */
+					GID?: number;
+				};
+				Network: {
+					/** @example host */
+					Type: string;
+				};
+				Linux: {
+					/**
+					 * @example [
+					 *   "CAP_SYS_ADMIN",
+					 *   "CAP_SYSLOG"
+					 * ]
+					 */
+					Capabilities: string[];
+					/** @example false */
+					AllowAllDevices: boolean;
+					Devices: components["schemas"]["PluginDevice"][];
+				};
+				/** @example /mnt/volumes */
+				PropagatedMount: string;
+				/** @example false */
+				IpcHost: boolean;
+				/** @example false */
+				PidHost: boolean;
+				Mounts: components["schemas"]["PluginMount"][];
+				/**
+				 * @example [
+				 *   {
+				 *     "Name": "DEBUG",
+				 *     "Description": "If set, prints debug messages",
+				 *     "Settable": null,
+				 *     "Value": "0"
+				 *   }
+				 * ]
+				 */
+				Env: components["schemas"]["PluginEnv"][];
+				Args: {
+					/** @example args */
+					Name: string;
+					/** @example command line arguments */
+					Description: string;
+					Settable: string[];
+					Value: string[];
+				};
+				rootfs?: {
+					/** @example layers */
+					type?: string;
+					/**
+					 * @example [
+					 *   "sha256:675532206fbf3030b8458f88d6e26d4eb1577688a25efec97154c94e8b6b4887",
+					 *   "sha256:e216a057b1cb1efc11f8a268f37ef62083e70b1b38323ba252e25ac88904a7e8"
+					 * ]
+					 */
+					diff_ids?: string[];
+				};
+			};
+		};
+		/**
+		 * @description The version number of the object such as node, service, etc. This is needed
+		 * to avoid conflicting writes. The client must send the version number along
+		 * with the modified specification when updating these objects.
+		 *
+		 * This approach ensures safe concurrency and determinism in that the change
+		 * on the object may not be applied if the version number has changed from the
+		 * last read. In other words, if two update requests specify the same base
+		 * version, only one of the requests can succeed. As a result, two separate
+		 * update requests that happen at the same time will not unintentionally
+		 * overwrite each other.
+		 */
+		ObjectVersion: {
+			/**
+			 * Format: uint64
+			 * @example 373531
+			 */
+			Index?: number;
+		};
+		/**
+		 * @example {
+		 *   "Availability": "active",
+		 *   "Name": "node-name",
+		 *   "Role": "manager",
+		 *   "Labels": {
+		 *     "foo": "bar"
+		 *   }
+		 * }
+		 */
+		NodeSpec: {
+			/**
+			 * @description Name for the node.
+			 * @example my-node
+			 */
+			Name?: string;
+			/** @description User-defined key/value metadata. */
+			Labels?: { [key: string]: string };
+			/**
+			 * @description Role of the node.
+			 * @example manager
+			 * @enum {string}
+			 */
+			Role?: "worker" | "manager";
+			/**
+			 * @description Availability of the node.
+			 * @example active
 			 * @enum {string}
 			 */
 			Availability?: "active" | "pause" | "drain";
 		};
+		Node: {
+			/** @example 24ifsmvkjbyhk */
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the node was added to the swarm in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2016-08-18T10:44:24.496Z
+			 */
+			CreatedAt?: string;
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the node was last updated in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2017-08-09T07:09:37.632Z
+			 */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["NodeSpec"];
+			Description?: components["schemas"]["NodeDescription"];
+			Status?: components["schemas"]["NodeStatus"];
+			ManagerStatus?: components["schemas"]["ManagerStatus"];
+		};
+		/**
+		 * @description NodeDescription encapsulates the properties of the Node as reported by the
+		 * agent.
+		 */
+		NodeDescription: {
+			/** @example bf3067039e47 */
+			Hostname?: string;
+			Platform?: components["schemas"]["Platform"];
+			Resources?: components["schemas"]["ResourceObject"];
+			Engine?: components["schemas"]["EngineDescription"];
+			TLSInfo?: components["schemas"]["TLSInfo"];
+		};
+		/** @description Platform represents the platform (Arch/OS). */
+		Platform: {
+			/**
+			 * @description Architecture represents the hardware architecture (for example,
+			 * `x86_64`).
+			 *
+			 * @example x86_64
+			 */
+			Architecture?: string;
+			/**
+			 * @description OS represents the Operating System (for example, `linux` or `windows`).
+			 *
+			 * @example linux
+			 */
+			OS?: string;
+		};
+		/** @description EngineDescription provides information about an engine. */
+		EngineDescription: {
+			/** @example 17.06.0 */
+			EngineVersion?: string;
+			/**
+			 * @example {
+			 *   "foo": "bar"
+			 * }
+			 */
+			Labels?: { [key: string]: string };
+			/**
+			 * @example [
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "awslogs"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "fluentd"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "gcplogs"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "gelf"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "journald"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "json-file"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "logentries"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "splunk"
+			 *   },
+			 *   {
+			 *     "Type": "Log",
+			 *     "Name": "syslog"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "bridge"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "host"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "ipvlan"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "macvlan"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "null"
+			 *   },
+			 *   {
+			 *     "Type": "Network",
+			 *     "Name": "overlay"
+			 *   },
+			 *   {
+			 *     "Type": "Volume",
+			 *     "Name": "local"
+			 *   },
+			 *   {
+			 *     "Type": "Volume",
+			 *     "Name": "localhost:5000/vieux/sshfs:latest"
+			 *   },
+			 *   {
+			 *     "Type": "Volume",
+			 *     "Name": "vieux/sshfs:latest"
+			 *   }
+			 * ]
+			 */
+			Plugins?: {
+				Type?: string;
+				Name?: string;
+			}[];
+		};
+		/**
+		 * @description Information about the issuer of leaf TLS certificates and the trusted root
+		 * CA certificate.
+		 *
+		 * @example {
+		 *   "TrustRoot": "-----BEGIN CERTIFICATE-----\nMIIBajCCARCgAwIBAgIUbYqrLSOSQHoxD8CwG6Bi2PJi9c8wCgYIKoZIzj0EAwIw\nEzERMA8GA1UEAxMIc3dhcm0tY2EwHhcNMTcwNDI0MjE0MzAwWhcNMzcwNDE5MjE0\nMzAwWjATMREwDwYDVQQDEwhzd2FybS1jYTBZMBMGByqGSM49AgEGCCqGSM49AwEH\nA0IABJk/VyMPYdaqDXJb/VXh5n/1Yuv7iNrxV3Qb3l06XD46seovcDWs3IZNV1lf\n3Skyr0ofcchipoiHkXBODojJydSjQjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMB\nAf8EBTADAQH/MB0GA1UdDgQWBBRUXxuRcnFjDfR/RIAUQab8ZV/n4jAKBggqhkjO\nPQQDAgNIADBFAiAy+JTe6Uc3KyLCMiqGl2GyWGQqQDEcO3/YG36x7om65AIhAJvz\npxv6zFeVEkAEEkqIYi0omA9+CjanB/6Bz4n1uw8H\n-----END CERTIFICATE-----\n",
+		 *   "CertIssuerSubject": "MBMxETAPBgNVBAMTCHN3YXJtLWNh",
+		 *   "CertIssuerPublicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmT9XIw9h1qoNclv9VeHmf/Vi6/uI2vFXdBveXTpcPjqx6i9wNazchk1XWV/dKTKvSh9xyGKmiIeRcE4OiMnJ1A=="
+		 * }
+		 */
+		TLSInfo: {
+			/**
+			 * @description The root CA certificate(s) that are used to validate leaf TLS
+			 * certificates.
+			 */
+			TrustRoot?: string;
+			/** @description The base64-url-safe-encoded raw subject bytes of the issuer. */
+			CertIssuerSubject?: string;
+			/** @description The base64-url-safe-encoded raw public key bytes of the issuer. */
+			CertIssuerPublicKey?: string;
+		};
+		/**
+		 * @description NodeStatus represents the status of a node.
+		 *
+		 * It provides the current status of the node, as seen by the manager.
+		 */
+		NodeStatus: {
+			State?: components["schemas"]["NodeState"];
+			/** @example */
+			Message?: string;
+			/**
+			 * @description IP address of the node.
+			 * @example 172.17.0.2
+			 */
+			Addr?: string;
+		};
+		/**
+		 * @description NodeState represents the state of a node.
+		 * @example ready
+		 * @enum {string}
+		 */
+		NodeState: "unknown" | "down" | "ready" | "disconnected";
+		/**
+		 * @description ManagerStatus represents the status of a manager.
+		 *
+		 * It provides the current status of a node's manager component, if the node
+		 * is a manager.
+		 */
+		ManagerStatus: {
+			/**
+			 * @default false
+			 * @example true
+			 */
+			Leader?: boolean;
+			Reachability?: components["schemas"]["Reachability"];
+			/**
+			 * @description The IP address and port at which the manager is reachable.
+			 *
+			 * @example 10.0.0.46:2377
+			 */
+			Addr?: string;
+		} | null;
+		/**
+		 * @description Reachability represents the reachability of a node.
+		 * @example reachable
+		 * @enum {string}
+		 */
+		Reachability: "unknown" | "unreachable" | "reachable";
+		/** @description User modifiable swarm configuration. */
+		SwarmSpec: {
+			/**
+			 * @description Name of the swarm.
+			 * @example default
+			 */
+			Name?: string;
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.corp.type": "production",
+			 *   "com.example.corp.department": "engineering"
+			 * }
+			 */
+			Labels?: { [key: string]: string };
+			/** @description Orchestration configuration. */
+			Orchestration?: {
+				/**
+				 * Format: int64
+				 * @description The number of historic tasks to keep per instance or node. If
+				 * negative, never remove completed or failed tasks.
+				 *
+				 * @example 10
+				 */
+				TaskHistoryRetentionLimit?: number;
+			} | null;
+			/** @description Raft configuration. */
+			Raft?: {
+				/**
+				 * Format: uint64
+				 * @description The number of log entries between snapshots.
+				 * @example 10000
+				 */
+				SnapshotInterval?: number;
+				/**
+				 * Format: uint64
+				 * @description The number of snapshots to keep beyond the current snapshot.
+				 */
+				KeepOldSnapshots?: number;
+				/**
+				 * Format: uint64
+				 * @description The number of log entries to keep around to sync up slow followers
+				 * after a snapshot is created.
+				 *
+				 * @example 500
+				 */
+				LogEntriesForSlowFollowers?: number;
+				/**
+				 * @description The number of ticks that a follower will wait for a message from
+				 * the leader before becoming a candidate and starting an election.
+				 * `ElectionTick` must be greater than `HeartbeatTick`.
+				 *
+				 * A tick currently defaults to one second, so these translate
+				 * directly to seconds currently, but this is NOT guaranteed.
+				 *
+				 * @example 3
+				 */
+				ElectionTick?: number;
+				/**
+				 * @description The number of ticks between heartbeats. Every HeartbeatTick ticks,
+				 * the leader will send a heartbeat to the followers.
+				 *
+				 * A tick currently defaults to one second, so these translate
+				 * directly to seconds currently, but this is NOT guaranteed.
+				 *
+				 * @example 1
+				 */
+				HeartbeatTick?: number;
+			};
+			/** @description Dispatcher configuration. */
+			Dispatcher?: {
+				/**
+				 * Format: int64
+				 * @description The delay for an agent to send a heartbeat to the dispatcher.
+				 *
+				 * @example 5000000000
+				 */
+				HeartbeatPeriod?: number;
+			} | null;
+			/** @description CA configuration. */
+			CAConfig?: {
+				/**
+				 * Format: int64
+				 * @description The duration node certificates are issued for.
+				 * @example 7776000000000000
+				 */
+				NodeCertExpiry?: number;
+				/**
+				 * @description Configuration for forwarding signing requests to an external
+				 * certificate authority.
+				 */
+				ExternalCAs?: {
+					/**
+					 * @description Protocol for communication with the external CA (currently
+					 * only `cfssl` is supported).
+					 *
+					 * @default cfssl
+					 * @enum {string}
+					 */
+					Protocol?: "cfssl";
+					/** @description URL where certificate signing requests should be sent. */
+					URL?: string;
+					/**
+					 * @description An object with key/value pairs that are interpreted as
+					 * protocol-specific options for the external CA driver.
+					 */
+					Options?: { [key: string]: string };
+					/**
+					 * @description The root CA certificate (in PEM format) this external CA uses
+					 * to issue TLS certificates (assumed to be to the current swarm
+					 * root CA certificate if not provided).
+					 */
+					CACert?: string;
+				}[];
+				/**
+				 * @description The desired signing CA certificate for all swarm node TLS leaf
+				 * certificates, in PEM format.
+				 */
+				SigningCACert?: string;
+				/**
+				 * @description The desired signing CA key for all swarm node TLS leaf certificates,
+				 * in PEM format.
+				 */
+				SigningCAKey?: string;
+				/**
+				 * Format: uint64
+				 * @description An integer whose purpose is to force swarm to generate a new
+				 * signing CA certificate and key, if none have been specified in
+				 * `SigningCACert` and `SigningCAKey`
+				 */
+				ForceRotate?: number;
+			} | null;
+			/** @description Parameters related to encryption-at-rest. */
+			EncryptionConfig?: {
+				/**
+				 * @description If set, generate a key and use it to lock data stored on the
+				 * managers.
+				 *
+				 * @example false
+				 */
+				AutoLockManagers?: boolean;
+			};
+			/** @description Defaults for creating tasks in this cluster. */
+			TaskDefaults?: {
+				/**
+				 * @description The log driver to use for tasks created in the orchestrator if
+				 * unspecified by a service.
+				 *
+				 * Updating this value only affects new tasks. Existing tasks continue
+				 * to use their previously configured log driver until recreated.
+				 */
+				LogDriver?: {
+					/**
+					 * @description The log driver to use as a default for new tasks.
+					 *
+					 * @example json-file
+					 */
+					Name?: string;
+					/**
+					 * @description Driver-specific options for the selectd log driver, specified
+					 * as key/value pairs.
+					 *
+					 * @example {
+					 *   "max-file": "10",
+					 *   "max-size": "100m"
+					 * }
+					 */
+					Options?: { [key: string]: string };
+				};
+			};
+		};
+		/**
+		 * @description ClusterInfo represents information about the swarm as is returned by the
+		 * "/info" endpoint. Join-tokens are not included.
+		 */
+		ClusterInfo: {
+			/**
+			 * @description The ID of the swarm.
+			 * @example abajmipo7b4xz5ip2nrla6b11
+			 */
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the swarm was initialised in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2016-08-18T10:44:24.496Z
+			 */
+			CreatedAt?: string;
+			/**
+			 * Format: dateTime
+			 * @description Date and time at which the swarm was last updated in
+			 * [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.
+			 *
+			 * @example 2017-08-09T07:09:37.632Z
+			 */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["SwarmSpec"];
+			TLSInfo?: components["schemas"]["TLSInfo"];
+			/**
+			 * @description Whether there is currently a root CA rotation in progress for the swarm
+			 *
+			 * @example false
+			 */
+			RootRotationInProgress?: boolean;
+			/**
+			 * Format: uint32
+			 * @description DataPathPort specifies the data path port number for data traffic.
+			 * Acceptable port range is 1024 to 49151.
+			 * If no port is set or is set to 0, the default port (4789) is used.
+			 *
+			 * @default 4789
+			 * @example 4789
+			 */
+			DataPathPort?: number;
+			/**
+			 * @description Default Address Pool specifies default subnet pools for global scope
+			 * networks.
+			 */
+			DefaultAddrPool?: string[];
+			/**
+			 * Format: uint32
+			 * @description SubnetSize specifies the subnet size of the networks created from the
+			 * default subnet pool.
+			 *
+			 * @default 24
+			 * @example 24
+			 */
+			SubnetSize?: number;
+		} | null;
+		/** @description JoinTokens contains the tokens workers and managers need to join the swarm. */
+		JoinTokens: {
+			/**
+			 * @description The token workers can use to join the swarm.
+			 *
+			 * @example SWMTKN-1-3pu6hszjas19xyp7ghgosyx9k8atbfcr8p2is99znpy26u2lkl-1awxwuwd3z9j1z3puu7rcgdbx
+			 */
+			Worker?: string;
+			/**
+			 * @description The token managers can use to join the swarm.
+			 *
+			 * @example SWMTKN-1-3pu6hszjas19xyp7ghgosyx9k8atbfcr8p2is99znpy26u2lkl-7p73s1dx5in4tatdymyhg9hu2
+			 */
+			Manager?: string;
+		};
+		Swarm: components["schemas"]["ClusterInfo"] & {
+			JoinTokens?: components["schemas"]["JoinTokens"];
+		};
+		/** @description User modifiable task configuration. */
+		TaskSpec: {
+			/**
+			 * @description Plugin spec for the service.  *(Experimental release only.)*
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
+			 * > mutually exclusive. PluginSpec is only used when the Runtime field
+			 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
+			 * > field is set to `attachment`.
+			 */
+			PluginSpec?: {
+				/** @description The name or 'alias' to use for the plugin. */
+				Name?: string;
+				/** @description The plugin image reference to use. */
+				Remote?: string;
+				/** @description Disable the plugin once scheduled. */
+				Disabled?: boolean;
+				PluginPrivilege?: components["schemas"]["PluginPrivilege"][];
+			};
+			/**
+			 * @description Container spec for the service.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
+			 * > mutually exclusive. PluginSpec is only used when the Runtime field
+			 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
+			 * > field is set to `attachment`.
+			 */
+			ContainerSpec?: {
+				/** @description The image name to use for the container */
+				Image?: string;
+				/** @description User-defined key/value data. */
+				Labels?: { [key: string]: string };
+				/** @description The command to be run in the image. */
+				Command?: string[];
+				/** @description Arguments to the command. */
+				Args?: string[];
+				/**
+				 * @description The hostname to use for the container, as a valid
+				 * [RFC 1123](https://tools.ietf.org/html/rfc1123) hostname.
+				 */
+				Hostname?: string;
+				/** @description A list of environment variables in the form `VAR=value`. */
+				Env?: string[];
+				/** @description The working directory for commands to run in. */
+				Dir?: string;
+				/** @description The user inside the container. */
+				User?: string;
+				/** @description A list of additional groups that the container process will run as. */
+				Groups?: string[];
+				/** @description Security options for the container */
+				Privileges?: {
+					/** @description CredentialSpec for managed service account (Windows only) */
+					CredentialSpec?: {
+						/**
+						 * @description Load credential spec from a Swarm Config with the given ID.
+						 * The specified config must also be present in the Configs
+						 * field with the Runtime property set.
+						 *
+						 * <p><br /></p>
+						 *
+						 *
+						 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
+						 * > and `CredentialSpec.Config` are mutually exclusive.
+						 *
+						 * @example 0bt9dmxjvjiqermk6xrop3ekq
+						 */
+						Config?: string;
+						/**
+						 * @description Load credential spec from this file. The file is read by
+						 * the daemon, and must be present in the `CredentialSpecs`
+						 * subdirectory in the docker data directory, which defaults
+						 * to `C:\ProgramData\Docker\` on Windows.
+						 *
+						 * For example, specifying `spec.json` loads
+						 * `C:\ProgramData\Docker\CredentialSpecs\spec.json`.
+						 *
+						 * <p><br /></p>
+						 *
+						 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
+						 * > and `CredentialSpec.Config` are mutually exclusive.
+						 *
+						 * @example spec.json
+						 */
+						File?: string;
+						/**
+						 * @description Load credential spec from this value in the Windows
+						 * registry. The specified registry value must be located in:
+						 *
+						 * `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Virtualization\Containers\CredentialSpecs`
+						 *
+						 * <p><br /></p>
+						 *
+						 *
+						 * > **Note**: `CredentialSpec.File`, `CredentialSpec.Registry`,
+						 * > and `CredentialSpec.Config` are mutually exclusive.
+						 */
+						Registry?: string;
+					};
+					/** @description SELinux labels of the container */
+					SELinuxContext?: {
+						/** @description Disable SELinux */
+						Disable?: boolean;
+						/** @description SELinux user label */
+						User?: string;
+						/** @description SELinux role label */
+						Role?: string;
+						/** @description SELinux type label */
+						Type?: string;
+						/** @description SELinux level label */
+						Level?: string;
+					};
+				};
+				/** @description Whether a pseudo-TTY should be allocated. */
+				TTY?: boolean;
+				/** @description Open `stdin` */
+				OpenStdin?: boolean;
+				/** @description Mount the container's root filesystem as read only. */
+				ReadOnly?: boolean;
+				/**
+				 * @description Specification for mounts to be added to containers created as part
+				 * of the service.
+				 */
+				Mounts?: components["schemas"]["Mount"][];
+				/** @description Signal to stop the container. */
+				StopSignal?: string;
+				/**
+				 * Format: int64
+				 * @description Amount of time to wait for the container to terminate before
+				 * forcefully killing it.
+				 */
+				StopGracePeriod?: number;
+				HealthCheck?: components["schemas"]["HealthConfig"];
+				/**
+				 * @description A list of hostname/IP mappings to add to the container's `hosts`
+				 * file. The format of extra hosts is specified in the
+				 * [hosts(5)](http://man7.org/linux/man-pages/man5/hosts.5.html)
+				 * man page:
+				 *
+				 *     IP_address canonical_hostname [aliases...]
+				 */
+				Hosts?: string[];
+				/**
+				 * @description Specification for DNS related configurations in resolver configuration
+				 * file (`resolv.conf`).
+				 */
+				DNSConfig?: {
+					/** @description The IP addresses of the name servers. */
+					Nameservers?: string[];
+					/** @description A search list for host-name lookup. */
+					Search?: string[];
+					/**
+					 * @description A list of internal resolver variables to be modified (e.g.,
+					 * `debug`, `ndots:3`, etc.).
+					 */
+					Options?: string[];
+				};
+				/**
+				 * @description Secrets contains references to zero or more secrets that will be
+				 * exposed to the service.
+				 */
+				Secrets?: {
+					/** @description File represents a specific target that is backed by a file. */
+					File?: {
+						/** @description Name represents the final filename in the filesystem. */
+						Name?: string;
+						/** @description UID represents the file UID. */
+						UID?: string;
+						/** @description GID represents the file GID. */
+						GID?: string;
+						/**
+						 * Format: uint32
+						 * @description Mode represents the FileMode of the file.
+						 */
+						Mode?: number;
+					};
+					/**
+					 * @description SecretID represents the ID of the specific secret that we're
+					 * referencing.
+					 */
+					SecretID?: string;
+					/**
+					 * @description SecretName is the name of the secret that this references,
+					 * but this is just provided for lookup/display purposes. The
+					 * secret in the reference will be identified by its ID.
+					 */
+					SecretName?: string;
+				}[];
+				/**
+				 * @description Configs contains references to zero or more configs that will be
+				 * exposed to the service.
+				 */
+				Configs?: {
+					/**
+					 * @description File represents a specific target that is backed by a file.
+					 *
+					 * <p><br /><p>
+					 *
+					 * > **Note**: `Configs.File` and `Configs.Runtime` are mutually exclusive
+					 */
+					File?: {
+						/** @description Name represents the final filename in the filesystem. */
+						Name?: string;
+						/** @description UID represents the file UID. */
+						UID?: string;
+						/** @description GID represents the file GID. */
+						GID?: string;
+						/**
+						 * Format: uint32
+						 * @description Mode represents the FileMode of the file.
+						 */
+						Mode?: number;
+					};
+					/**
+					 * @description Runtime represents a target that is not mounted into the
+					 * container but is used by the task
+					 *
+					 * <p><br /><p>
+					 *
+					 * > **Note**: `Configs.File` and `Configs.Runtime` are mutually
+					 * > exclusive
+					 */
+					Runtime?: { [key: string]: unknown };
+					/**
+					 * @description ConfigID represents the ID of the specific config that we're
+					 * referencing.
+					 */
+					ConfigID?: string;
+					/**
+					 * @description ConfigName is the name of the config that this references,
+					 * but this is just provided for lookup/display purposes. The
+					 * config in the reference will be identified by its ID.
+					 */
+					ConfigName?: string;
+				}[];
+				/**
+				 * @description Isolation technology of the containers running the service.
+				 * (Windows only)
+				 *
+				 * @enum {string}
+				 */
+				Isolation?: "default" | "process" | "hyperv";
+				/**
+				 * @description Run an init inside the container that forwards signals and reaps
+				 * processes. This field is omitted if empty, and the default (as
+				 * configured on the daemon) is used.
+				 */
+				Init?: boolean | null;
+				/**
+				 * @description Set kernel namedspaced parameters (sysctls) in the container.
+				 * The Sysctls option on services accepts the same sysctls as the
+				 * are supported on containers. Note that while the same sysctls are
+				 * supported, no guarantees or checks are made about their
+				 * suitability for a clustered environment, and it's up to the user
+				 * to determine whether a given sysctl will work properly in a
+				 * Service.
+				 */
+				Sysctls?: { [key: string]: string };
+				/**
+				 * @description A list of kernel capabilities to add to the default set
+				 * for the container.
+				 *
+				 * @example [
+				 *   "CAP_NET_RAW",
+				 *   "CAP_SYS_ADMIN",
+				 *   "CAP_SYS_CHROOT",
+				 *   "CAP_SYSLOG"
+				 * ]
+				 */
+				CapabilityAdd?: string[];
+				/**
+				 * @description A list of kernel capabilities to drop from the default set
+				 * for the container.
+				 *
+				 * @example [
+				 *   "CAP_NET_RAW"
+				 * ]
+				 */
+				CapabilityDrop?: string[];
+				/** @description A list of resource limits to set in the container. For example: `{"Name": "nofile", "Soft": 1024, "Hard": 2048}`" */
+				Ulimits?: {
+					/** @description Name of ulimit */
+					Name?: string;
+					/** @description Soft limit */
+					Soft?: number;
+					/** @description Hard limit */
+					Hard?: number;
+				}[];
+			};
+			/**
+			 * @description Read-only spec type for non-swarm containers attached to swarm overlay
+			 * networks.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are
+			 * > mutually exclusive. PluginSpec is only used when the Runtime field
+			 * > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime
+			 * > field is set to `attachment`.
+			 */
+			NetworkAttachmentSpec?: {
+				/** @description ID of the container represented by this task */
+				ContainerID?: string;
+			};
+			/**
+			 * @description Resource requirements which apply to each individual container created
+			 * as part of the service.
+			 */
+			Resources?: {
+				Limits?: components["schemas"]["Limit"];
+				Reservations?: components["schemas"]["ResourceObject"];
+			};
+			/**
+			 * @description Specification for the restart policy which applies to containers
+			 * created as part of this service.
+			 */
+			RestartPolicy?: {
+				/**
+				 * @description Condition for restart.
+				 * @enum {string}
+				 */
+				Condition?: "none" | "on-failure" | "any";
+				/**
+				 * Format: int64
+				 * @description Delay between restart attempts.
+				 */
+				Delay?: number;
+				/**
+				 * Format: int64
+				 * @description Maximum attempts to restart a given container before giving up
+				 * (default value is 0, which is ignored).
+				 *
+				 * @default 0
+				 */
+				MaxAttempts?: number;
+				/**
+				 * Format: int64
+				 * @description Windows is the time window used to evaluate the restart policy
+				 * (default value is 0, which is unbounded).
+				 *
+				 * @default 0
+				 */
+				Window?: number;
+			};
+			Placement?: {
+				/**
+				 * @description An array of constraint expressions to limit the set of nodes where
+				 * a task can be scheduled. Constraint expressions can either use a
+				 * _match_ (`==`) or _exclude_ (`!=`) rule. Multiple constraints find
+				 * nodes that satisfy every expression (AND match). Constraints can
+				 * match node or Docker Engine labels as follows:
+				 *
+				 * node attribute       | matches                        | example
+				 * ---------------------|--------------------------------|-----------------------------------------------
+				 * `node.id`            | Node ID                        | `node.id==2ivku8v2gvtg4`
+				 * `node.hostname`      | Node hostname                  | `node.hostname!=node-2`
+				 * `node.role`          | Node role (`manager`/`worker`) | `node.role==manager`
+				 * `node.platform.os`   | Node operating system          | `node.platform.os==windows`
+				 * `node.platform.arch` | Node architecture              | `node.platform.arch==x86_64`
+				 * `node.labels`        | User-defined node labels       | `node.labels.security==high`
+				 * `engine.labels`      | Docker Engine's labels         | `engine.labels.operatingsystem==ubuntu-14.04`
+				 *
+				 * `engine.labels` apply to Docker Engine labels like operating system,
+				 * drivers, etc. Swarm administrators add `node.labels` for operational
+				 * purposes by using the [`node update endpoint`](#operation/NodeUpdate).
+				 *
+				 * @example [
+				 *   "node.hostname!=node3.corp.example.com",
+				 *   "node.role!=manager",
+				 *   "node.labels.type==production",
+				 *   "node.platform.os==linux",
+				 *   "node.platform.arch==x86_64"
+				 * ]
+				 */
+				Constraints?: string[];
+				/**
+				 * @description Preferences provide a way to make the scheduler aware of factors
+				 * such as topology. They are provided in order from highest to
+				 * lowest precedence.
+				 *
+				 * @example [
+				 *   {
+				 *     "Spread": {
+				 *       "SpreadDescriptor": "node.labels.datacenter"
+				 *     }
+				 *   },
+				 *   {
+				 *     "Spread": {
+				 *       "SpreadDescriptor": "node.labels.rack"
+				 *     }
+				 *   }
+				 * ]
+				 */
+				Preferences?: {
+					Spread?: {
+						/** @description label descriptor, such as `engine.labels.az`. */
+						SpreadDescriptor?: string;
+					};
+				}[];
+				/**
+				 * Format: int64
+				 * @description Maximum number of replicas for per node (default value is 0, which
+				 * is unlimited)
+				 *
+				 * @default 0
+				 */
+				MaxReplicas?: number;
+				/**
+				 * @description Platforms stores all the platforms that the service's image can
+				 * run on. This field is used in the platform filter for scheduling.
+				 * If empty, then the platform filter is off, meaning there are no
+				 * scheduling restrictions.
+				 */
+				Platforms?: components["schemas"]["Platform"][];
+			};
+			/**
+			 * @description A counter that triggers an update even if no relevant parameters have
+			 * been changed.
+			 */
+			ForceUpdate?: number;
+			/** @description Runtime is the type of runtime specified for the task executor. */
+			Runtime?: string;
+			/** @description Specifies which networks the service should attach to. */
+			Networks?: components["schemas"]["NetworkAttachmentConfig"][];
+			/**
+			 * @description Specifies the log driver to use for tasks created from this spec. If
+			 * not present, the default one for the swarm will be used, finally
+			 * falling back to the engine default if not specified.
+			 */
+			LogDriver?: {
+				Name?: string;
+				Options?: { [key: string]: string };
+			};
+		};
+		/** @enum {string} */
+		TaskState:
+			| "new"
+			| "allocated"
+			| "pending"
+			| "assigned"
+			| "accepted"
+			| "preparing"
+			| "ready"
+			| "starting"
+			| "running"
+			| "complete"
+			| "shutdown"
+			| "failed"
+			| "rejected"
+			| "remove"
+			| "orphaned";
+		/**
+		 * @example {
+		 *   "ID": "0kzzo1i0y4jz6027t0k7aezc7",
+		 *   "Version": {
+		 *     "Index": 71
+		 *   },
+		 *   "CreatedAt": "2016-06-07T21:07:31.171Z",
+		 *   "UpdatedAt": "2016-06-07T21:07:31.376Z",
+		 *   "Spec": {
+		 *     "ContainerSpec": {
+		 *       "Image": "redis"
+		 *     },
+		 *     "Resources": {
+		 *       "Limits": {},
+		 *       "Reservations": {}
+		 *     },
+		 *     "RestartPolicy": {
+		 *       "Condition": "any",
+		 *       "MaxAttempts": 0
+		 *     },
+		 *     "Placement": {}
+		 *   },
+		 *   "ServiceID": "9mnpnzenvg8p8tdbtq4wvbkcz",
+		 *   "Slot": 1,
+		 *   "NodeID": "60gvrl6tm78dmak4yl7srz94v",
+		 *   "Status": {
+		 *     "Timestamp": "2016-06-07T21:07:31.290Z",
+		 *     "State": "running",
+		 *     "Message": "started",
+		 *     "ContainerStatus": {
+		 *       "ContainerID": "e5d62702a1b48d01c3e02ca1e0212a250801fa8d67caca0b6f35919ebc12f035",
+		 *       "PID": 677
+		 *     }
+		 *   },
+		 *   "DesiredState": "running",
+		 *   "NetworksAttachments": [
+		 *     {
+		 *       "Network": {
+		 *         "ID": "4qvuz4ko70xaltuqbt8956gd1",
+		 *         "Version": {
+		 *           "Index": 18
+		 *         },
+		 *         "CreatedAt": "2016-06-07T20:31:11.912Z",
+		 *         "UpdatedAt": "2016-06-07T21:07:29.955Z",
+		 *         "Spec": {
+		 *           "Name": "ingress",
+		 *           "Labels": {
+		 *             "com.docker.swarm.internal": "true"
+		 *           },
+		 *           "DriverConfiguration": {},
+		 *           "IPAMOptions": {
+		 *             "Driver": {},
+		 *             "Configs": [
+		 *               {
+		 *                 "Subnet": "10.255.0.0/16",
+		 *                 "Gateway": "10.255.0.1"
+		 *               }
+		 *             ]
+		 *           }
+		 *         },
+		 *         "DriverState": {
+		 *           "Name": "overlay",
+		 *           "Options": {
+		 *             "com.docker.network.driver.overlay.vxlanid_list": "256"
+		 *           }
+		 *         },
+		 *         "IPAMOptions": {
+		 *           "Driver": {
+		 *             "Name": "default"
+		 *           },
+		 *           "Configs": [
+		 *             {
+		 *               "Subnet": "10.255.0.0/16",
+		 *               "Gateway": "10.255.0.1"
+		 *             }
+		 *           ]
+		 *         }
+		 *       },
+		 *       "Addresses": [
+		 *         "10.255.0.10/16"
+		 *       ]
+		 *     }
+		 *   ],
+		 *   "AssignedGenericResources": [
+		 *     {
+		 *       "DiscreteResourceSpec": {
+		 *         "Kind": "SSD",
+		 *         "Value": 3
+		 *       }
+		 *     },
+		 *     {
+		 *       "NamedResourceSpec": {
+		 *         "Kind": "GPU",
+		 *         "Value": "UUID1"
+		 *       }
+		 *     },
+		 *     {
+		 *       "NamedResourceSpec": {
+		 *         "Kind": "GPU",
+		 *         "Value": "UUID2"
+		 *       }
+		 *     }
+		 *   ]
+		 * }
+		 */
+		Task: {
+			/** @description The ID of the task. */
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/** Format: dateTime */
+			CreatedAt?: string;
+			/** Format: dateTime */
+			UpdatedAt?: string;
+			/** @description Name of the task. */
+			Name?: string;
+			/** @description User-defined key/value metadata. */
+			Labels?: { [key: string]: string };
+			Spec?: components["schemas"]["TaskSpec"];
+			/** @description The ID of the service this task is part of. */
+			ServiceID?: string;
+			Slot?: number;
+			/** @description The ID of the node that this task is on. */
+			NodeID?: string;
+			AssignedGenericResources?: components["schemas"]["GenericResources"];
+			Status?: {
+				/** Format: dateTime */
+				Timestamp?: string;
+				State?: components["schemas"]["TaskState"];
+				Message?: string;
+				Err?: string;
+				ContainerStatus?: {
+					ContainerID?: string;
+					PID?: number;
+					ExitCode?: number;
+				};
+			};
+			DesiredState?: components["schemas"]["TaskState"];
+			JobIteration?: components["schemas"]["ObjectVersion"];
+		};
+		/** @description User modifiable configuration for a service. */
+		ServiceSpec: {
+			/** @description Name of the service. */
+			Name?: string;
+			/** @description User-defined key/value metadata. */
+			Labels?: { [key: string]: string };
+			TaskTemplate?: components["schemas"]["TaskSpec"];
+			/** @description Scheduling mode for the service. */
+			Mode?: {
+				Replicated?: {
+					/** Format: int64 */
+					Replicas?: number;
+				};
+				Global?: { [key: string]: unknown };
+				/**
+				 * @description The mode used for services with a finite number of tasks that run
+				 * to a completed state.
+				 */
+				ReplicatedJob?: {
+					/**
+					 * Format: int64
+					 * @description The maximum number of replicas to run simultaneously.
+					 *
+					 * @default 1
+					 */
+					MaxConcurrent?: number;
+					/**
+					 * Format: int64
+					 * @description The total number of replicas desired to reach the Completed
+					 * state. If unset, will default to the value of `MaxConcurrent`
+					 */
+					TotalCompletions?: number;
+				};
+				/**
+				 * @description The mode used for services which run a task to the completed state
+				 * on each valid node.
+				 */
+				GlobalJob?: { [key: string]: unknown };
+			};
+			/** @description Specification for the update strategy of the service. */
+			UpdateConfig?: {
+				/**
+				 * Format: int64
+				 * @description Maximum number of tasks to be updated in one iteration (0 means
+				 * unlimited parallelism).
+				 */
+				Parallelism?: number;
+				/**
+				 * Format: int64
+				 * @description Amount of time between updates, in nanoseconds.
+				 */
+				Delay?: number;
+				/**
+				 * @description Action to take if an updated task fails to run, or stops running
+				 * during the update.
+				 *
+				 * @enum {string}
+				 */
+				FailureAction?: "continue" | "pause" | "rollback";
+				/**
+				 * Format: int64
+				 * @description Amount of time to monitor each updated task for failures, in
+				 * nanoseconds.
+				 */
+				Monitor?: number;
+				/**
+				 * @description The fraction of tasks that may fail during an update before the
+				 * failure action is invoked, specified as a floating point number
+				 * between 0 and 1.
+				 *
+				 * @default 0
+				 */
+				MaxFailureRatio?: number;
+				/**
+				 * @description The order of operations when rolling out an updated task. Either
+				 * the old task is shut down before the new task is started, or the
+				 * new task is started before the old task is shut down.
+				 *
+				 * @enum {string}
+				 */
+				Order?: "stop-first" | "start-first";
+			};
+			/** @description Specification for the rollback strategy of the service. */
+			RollbackConfig?: {
+				/**
+				 * Format: int64
+				 * @description Maximum number of tasks to be rolled back in one iteration (0 means
+				 * unlimited parallelism).
+				 */
+				Parallelism?: number;
+				/**
+				 * Format: int64
+				 * @description Amount of time between rollback iterations, in nanoseconds.
+				 */
+				Delay?: number;
+				/**
+				 * @description Action to take if an rolled back task fails to run, or stops
+				 * running during the rollback.
+				 *
+				 * @enum {string}
+				 */
+				FailureAction?: "continue" | "pause";
+				/**
+				 * Format: int64
+				 * @description Amount of time to monitor each rolled back task for failures, in
+				 * nanoseconds.
+				 */
+				Monitor?: number;
+				/**
+				 * @description The fraction of tasks that may fail during a rollback before the
+				 * failure action is invoked, specified as a floating point number
+				 * between 0 and 1.
+				 *
+				 * @default 0
+				 */
+				MaxFailureRatio?: number;
+				/**
+				 * @description The order of operations when rolling back a task. Either the old
+				 * task is shut down before the new task is started, or the new task
+				 * is started before the old task is shut down.
+				 *
+				 * @enum {string}
+				 */
+				Order?: "stop-first" | "start-first";
+			};
+			/** @description Specifies which networks the service should attach to. */
+			Networks?: components["schemas"]["NetworkAttachmentConfig"][];
+			EndpointSpec?: components["schemas"]["EndpointSpec"];
+		};
+		EndpointPortConfig: {
+			Name?: string;
+			/** @enum {string} */
+			Protocol?: "tcp" | "udp" | "sctp";
+			/** @description The port inside the container. */
+			TargetPort?: number;
+			/** @description The port on the swarm hosts. */
+			PublishedPort?: number;
+			/**
+			 * @description The mode in which port is published.
+			 *
+			 * <p><br /></p>
+			 *
+			 * - "ingress" makes the target port accessible on every node,
+			 *   regardless of whether there is a task for the service running on
+			 *   that node or not.
+			 * - "host" bypasses the routing mesh and publish the port directly on
+			 *   the swarm node where that service is running.
+			 *
+			 * @default ingress
+			 * @example ingress
+			 * @enum {string}
+			 */
+			PublishMode?: "ingress" | "host";
+		};
+		/** @description Properties that can be configured to access and load balance a service. */
+		EndpointSpec: {
+			/**
+			 * @description The mode of resolution to use for internal load balancing between tasks.
+			 *
+			 * @default vip
+			 * @enum {string}
+			 */
+			Mode?: "vip" | "dnsrr";
+			/**
+			 * @description List of exposed ports that this service is accessible on from the
+			 * outside. Ports can only be provided if `vip` resolution mode is used.
+			 */
+			Ports?: components["schemas"]["EndpointPortConfig"][];
+		};
+		/**
+		 * @example {
+		 *   "ID": "9mnpnzenvg8p8tdbtq4wvbkcz",
+		 *   "Version": {
+		 *     "Index": 19
+		 *   },
+		 *   "CreatedAt": "2016-06-07T21:05:51.880Z",
+		 *   "UpdatedAt": "2016-06-07T21:07:29.962Z",
+		 *   "Spec": {
+		 *     "Name": "hopeful_cori",
+		 *     "TaskTemplate": {
+		 *       "ContainerSpec": {
+		 *         "Image": "redis"
+		 *       },
+		 *       "Resources": {
+		 *         "Limits": {},
+		 *         "Reservations": {}
+		 *       },
+		 *       "RestartPolicy": {
+		 *         "Condition": "any",
+		 *         "MaxAttempts": 0
+		 *       },
+		 *       "Placement": {},
+		 *       "ForceUpdate": 0
+		 *     },
+		 *     "Mode": {
+		 *       "Replicated": {
+		 *         "Replicas": 1
+		 *       }
+		 *     },
+		 *     "UpdateConfig": {
+		 *       "Parallelism": 1,
+		 *       "Delay": 1000000000,
+		 *       "FailureAction": "pause",
+		 *       "Monitor": 15000000000,
+		 *       "MaxFailureRatio": 0.15
+		 *     },
+		 *     "RollbackConfig": {
+		 *       "Parallelism": 1,
+		 *       "Delay": 1000000000,
+		 *       "FailureAction": "pause",
+		 *       "Monitor": 15000000000,
+		 *       "MaxFailureRatio": 0.15
+		 *     },
+		 *     "EndpointSpec": {
+		 *       "Mode": "vip",
+		 *       "Ports": [
+		 *         {
+		 *           "Protocol": "tcp",
+		 *           "TargetPort": 6379,
+		 *           "PublishedPort": 30001
+		 *         }
+		 *       ]
+		 *     }
+		 *   },
+		 *   "Endpoint": {
+		 *     "Spec": {
+		 *       "Mode": "vip",
+		 *       "Ports": [
+		 *         {
+		 *           "Protocol": "tcp",
+		 *           "TargetPort": 6379,
+		 *           "PublishedPort": 30001
+		 *         }
+		 *       ]
+		 *     },
+		 *     "Ports": [
+		 *       {
+		 *         "Protocol": "tcp",
+		 *         "TargetPort": 6379,
+		 *         "PublishedPort": 30001
+		 *       }
+		 *     ],
+		 *     "VirtualIPs": [
+		 *       {
+		 *         "NetworkID": "4qvuz4ko70xaltuqbt8956gd1",
+		 *         "Addr": "10.255.0.2/16"
+		 *       },
+		 *       {
+		 *         "NetworkID": "4qvuz4ko70xaltuqbt8956gd1",
+		 *         "Addr": "10.255.0.3/16"
+		 *       }
+		 *     ]
+		 *   }
+		 * }
+		 */
+		Service: {
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/** Format: dateTime */
+			CreatedAt?: string;
+			/** Format: dateTime */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["ServiceSpec"];
+			Endpoint?: {
+				Spec?: components["schemas"]["EndpointSpec"];
+				Ports?: components["schemas"]["EndpointPortConfig"][];
+				VirtualIPs?: {
+					NetworkID?: string;
+					Addr?: string;
+				}[];
+			};
+			/** @description The status of a service update. */
+			UpdateStatus?: {
+				/** @enum {string} */
+				State?: "updating" | "paused" | "completed";
+				/** Format: dateTime */
+				StartedAt?: string;
+				/** Format: dateTime */
+				CompletedAt?: string;
+				Message?: string;
+			};
+			/**
+			 * @description The status of the service's tasks. Provided only when requested as
+			 * part of a ServiceList operation.
+			 */
+			ServiceStatus?: {
+				/**
+				 * Format: uint64
+				 * @description The number of tasks for the service currently in the Running state.
+				 *
+				 * @example 7
+				 */
+				RunningTasks?: number;
+				/**
+				 * Format: uint64
+				 * @description The number of tasks for the service desired to be running.
+				 * For replicated services, this is the replica count from the
+				 * service spec. For global services, this is computed by taking
+				 * count of all tasks for the service with a Desired State other
+				 * than Shutdown.
+				 *
+				 * @example 10
+				 */
+				DesiredTasks?: number;
+				/**
+				 * Format: uint64
+				 * @description The number of tasks for a job that are in the Completed state.
+				 * This field must be cross-referenced with the service type, as the
+				 * value of 0 may mean the service is not in a job mode, or it may
+				 * mean the job-mode service has no tasks yet Completed.
+				 */
+				CompletedTasks?: number;
+			};
+			/**
+			 * @description The status of the service when it is in one of ReplicatedJob or
+			 * GlobalJob modes. Absent on Replicated and Global mode services. The
+			 * JobIteration is an ObjectVersion, but unlike the Service's version,
+			 * does not need to be sent with an update request.
+			 */
+			JobStatus?: {
+				JobIteration?: components["schemas"]["ObjectVersion"];
+				/**
+				 * Format: dateTime
+				 * @description The last time, as observed by the server, that this job was
+				 * started.
+				 */
+				LastExecution?: string;
+			};
+		};
+		ImageDeleteResponseItem: {
+			/** @description The image ID of an image that was untagged */
+			Untagged?: string;
+			/** @description The image ID of an image that was deleted */
+			Deleted?: string;
+		};
+		/**
+		 * @example {
+		 *   "Warning": "unable to pin image doesnotexist:latest to digest: image library/doesnotexist:latest not found"
+		 * }
+		 */
+		ServiceUpdateResponse: {
+			/** @description Optional warning messages */
+			Warnings?: string[];
+		};
+		ContainerSummary: {
+			/** @description The ID of this container */
+			Id?: string;
+			/** @description The names that this container has been given */
+			Names?: string[];
+			/** @description The name of the image used when creating this container */
+			Image?: string;
+			/** @description The ID of the image that this container was created from */
+			ImageID?: string;
+			/** @description Command to run when starting the container */
+			Command?: string;
+			/**
+			 * Format: int64
+			 * @description When the container was created
+			 */
+			Created?: number;
+			/** @description The ports exposed by this container */
+			Ports?: components["schemas"]["Port"][];
+			/**
+			 * Format: int64
+			 * @description The size of files that have been created or changed by this container
+			 */
+			SizeRw?: number;
+			/**
+			 * Format: int64
+			 * @description The total size of all the files in this container
+			 */
+			SizeRootFs?: number;
+			/** @description User-defined key/value metadata. */
+			Labels?: { [key: string]: string };
+			/** @description The state of this container (e.g. `Exited`) */
+			State?: string;
+			/** @description Additional human-readable status of this container (e.g. `Exit 0`) */
+			Status?: string;
+			HostConfig?: {
+				NetworkMode?: string;
+			};
+			/** @description A summary of the container's network settings */
+			NetworkSettings?: {
+				Networks?: { [key: string]: components["schemas"]["EndpointSettings"] };
+			};
+			Mounts?: components["schemas"]["MountPoint"][];
+		};
+		/** @description Driver represents a driver (network, logging, secrets). */
+		Driver: {
+			/**
+			 * @description Name of the driver.
+			 * @example some-driver
+			 */
+			Name: string;
+			/**
+			 * @description Key/value map of driver-specific options.
+			 * @example {
+			 *   "OptionA": "value for driver-specific option A",
+			 *   "OptionB": "value for driver-specific option B"
+			 * }
+			 */
+			Options?: { [key: string]: string };
+		};
+		SecretSpec: {
+			/** @description User-defined name of the secret. */
+			Name?: string;
+			/**
+			 * @description User-defined key/value metadata.
+			 * @example {
+			 *   "com.example.some-label": "some-value",
+			 *   "com.example.some-other-label": "some-other-value"
+			 * }
+			 */
+			Labels?: { [key: string]: string };
+			/**
+			 * @description Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
+			 * data to store as secret.
+			 *
+			 * This field is only used to _create_ a secret, and is not returned by
+			 * other endpoints.
+			 *
+			 * @example
+			 */
+			Data?: string;
+			Driver?: components["schemas"]["Driver"];
+			Templating?: components["schemas"]["Driver"];
+		};
+		Secret: {
+			/** @example blt1owaxmitz71s9v5zh81zun */
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/**
+			 * Format: dateTime
+			 * @example 2017-07-20T13:55:28.678Z
+			 */
+			CreatedAt?: string;
+			/**
+			 * Format: dateTime
+			 * @example 2017-07-20T13:55:28.678Z
+			 */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["SecretSpec"];
+		};
+		ConfigSpec: {
+			/** @description User-defined name of the config. */
+			Name?: string;
+			/** @description User-defined key/value metadata. */
+			Labels?: { [key: string]: string };
+			/**
+			 * @description Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
+			 * config data.
+			 */
+			Data?: string;
+			Templating?: components["schemas"]["Driver"];
+		};
+		Config: {
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/** Format: dateTime */
+			CreatedAt?: string;
+			/** Format: dateTime */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["ConfigSpec"];
+		};
+		/**
+		 * @description ContainerState stores container's running state. It's part of ContainerJSONBase
+		 * and will be returned by the "inspect" command.
+		 */
+		ContainerState: {
+			/**
+			 * @description String representation of the container state. Can be one of "created",
+			 * "running", "paused", "restarting", "removing", "exited", or "dead".
+			 *
+			 * @example running
+			 * @enum {string}
+			 */
+			Status?: "created" | "running" | "paused" | "restarting" | "removing" | "exited" | "dead";
+			/**
+			 * @description Whether this container is running.
+			 *
+			 * Note that a running container can be _paused_. The `Running` and `Paused`
+			 * booleans are not mutually exclusive:
+			 *
+			 * When pausing a container (on Linux), the freezer cgroup is used to suspend
+			 * all processes in the container. Freezing the process requires the process to
+			 * be running. As a result, paused containers are both `Running` _and_ `Paused`.
+			 *
+			 * Use the `Status` field instead to determine if a container's state is "running".
+			 *
+			 * @example true
+			 */
+			Running?: boolean;
+			/**
+			 * @description Whether this container is paused.
+			 * @example false
+			 */
+			Paused?: boolean;
+			/**
+			 * @description Whether this container is restarting.
+			 * @example false
+			 */
+			Restarting?: boolean;
+			/**
+			 * @description Whether a process within this container has been killed because it ran
+			 * out of memory since the container was last started.
+			 *
+			 * @example false
+			 */
+			OOMKilled?: boolean;
+			/** @example false */
+			Dead?: boolean;
+			/**
+			 * @description The process ID of this container
+			 * @example 1234
+			 */
+			Pid?: number;
+			/**
+			 * @description The last exit code of this container
+			 * @example 0
+			 */
+			ExitCode?: number;
+			Error?: string;
+			/**
+			 * @description The time when this container was last started.
+			 * @example 2020-01-06T09:06:59.461Z
+			 */
+			StartedAt?: string;
+			/**
+			 * @description The time when this container last exited.
+			 * @example 2020-01-06T09:07:59.461Z
+			 */
+			FinishedAt?: string;
+			Health?: components["schemas"]["Health"];
+		} | null;
+		/**
+		 * ContainerCreateResponse
+		 * @description OK response to ContainerCreate operation
+		 */
+		ContainerCreateResponse: {
+			/**
+			 * @description The ID of the created container
+			 * @example ede54ee1afda366ab42f824e8a5ffd195155d853ceaec74a927f249ea270c743
+			 */
+			Id: string;
+			/**
+			 * @description Warnings encountered when creating the container
+			 * @example []
+			 */
+			Warnings: string[];
+		};
+		/**
+		 * ContainerWaitResponse
+		 * @description OK response to ContainerWait operation
+		 */
+		ContainerWaitResponse: {
+			/**
+			 * Format: int64
+			 * @description Exit code of the container
+			 */
+			StatusCode: number;
+			Error?: components["schemas"]["ContainerWaitExitError"];
+		};
+		/** @description container waiting error, if any */
+		ContainerWaitExitError: {
+			/** @description Details of an error */
+			Message?: string;
+		};
+		/** @description Response of Engine API: GET "/version" */
+		SystemVersion: {
+			Platform?: {
+				Name: string;
+			};
+			/** @description Information about system components */
+			Components?: {
+				/**
+				 * @description Name of the component
+				 *
+				 * @example Engine
+				 */
+				Name: string;
+				/**
+				 * @description Version of the component
+				 *
+				 * @example 19.03.12
+				 */
+				Version: string;
+				/**
+				 * @description Key/value pairs of strings with additional information about the
+				 * component. These values are intended for informational purposes
+				 * only, and their content is not defined, and not part of the API
+				 * specification.
+				 *
+				 * These messages can be printed by the client as information to the user.
+				 */
+				Details?: { [key: string]: unknown } | null;
+			}[];
+			/**
+			 * @description The version of the daemon
+			 * @example 19.03.12
+			 */
+			Version?: string;
+			/**
+			 * @description The default (and highest) API version that is supported by the daemon
+			 *
+			 * @example 1.40
+			 */
+			ApiVersion?: string;
+			/**
+			 * @description The minimum API version that is supported by the daemon
+			 *
+			 * @example 1.12
+			 */
+			MinAPIVersion?: string;
+			/**
+			 * @description The Git commit of the source code that was used to build the daemon
+			 *
+			 * @example 48a66213fe
+			 */
+			GitCommit?: string;
+			/**
+			 * @description The version Go used to compile the daemon, and the version of the Go
+			 * runtime in use.
+			 *
+			 * @example go1.13.14
+			 */
+			GoVersion?: string;
+			/**
+			 * @description The operating system that the daemon is running on ("linux" or "windows")
+			 *
+			 * @example linux
+			 */
+			Os?: string;
+			/**
+			 * @description The architecture that the daemon is running on
+			 *
+			 * @example amd64
+			 */
+			Arch?: string;
+			/**
+			 * @description The kernel version (`uname -r`) that the daemon is running on.
+			 *
+			 * This field is omitted when empty.
+			 *
+			 * @example 4.19.76-linuxkit
+			 */
+			KernelVersion?: string;
+			/**
+			 * @description Indicates if the daemon is started with experimental features enabled.
+			 *
+			 * This field is omitted when empty / false.
+			 *
+			 * @example true
+			 */
+			Experimental?: boolean;
+			/**
+			 * @description The date and time that the daemon was compiled.
+			 *
+			 * @example 2020-06-22T15:49:27.000Z
+			 */
+			BuildTime?: string;
+		};
+		SystemInfo: {
+			/**
+			 * @description Unique identifier of the daemon.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: The format of the ID itself is not part of the API, and
+			 * > should not be considered stable.
+			 *
+			 * @example 7TRN:IPZB:QYBB:VPBQ:UMPP:KARE:6ZNR:XE6T:7EWV:PKF4:ZOJD:TPYS
+			 */
+			ID?: string;
+			/**
+			 * @description Total number of containers on the host.
+			 * @example 14
+			 */
+			Containers?: number;
+			/**
+			 * @description Number of containers with status `"running"`.
+			 *
+			 * @example 3
+			 */
+			ContainersRunning?: number;
+			/**
+			 * @description Number of containers with status `"paused"`.
+			 *
+			 * @example 1
+			 */
+			ContainersPaused?: number;
+			/**
+			 * @description Number of containers with status `"stopped"`.
+			 *
+			 * @example 10
+			 */
+			ContainersStopped?: number;
+			/**
+			 * @description Total number of images on the host.
+			 *
+			 * Both _tagged_ and _untagged_ (dangling) images are counted.
+			 *
+			 * @example 508
+			 */
+			Images?: number;
+			/**
+			 * @description Name of the storage driver in use.
+			 * @example overlay2
+			 */
+			Driver?: string;
+			/**
+			 * @description Information specific to the storage driver, provided as
+			 * "label" / "value" pairs.
+			 *
+			 * This information is provided by the storage driver, and formatted
+			 * in a way consistent with the output of `docker info` on the command
+			 * line.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: The information returned in this field, including the
+			 * > formatting of values and labels, should not be considered stable,
+			 * > and may change without notice.
+			 *
+			 * @example [
+			 *   [
+			 *     "Backing Filesystem",
+			 *     "extfs"
+			 *   ],
+			 *   [
+			 *     "Supports d_type",
+			 *     "true"
+			 *   ],
+			 *   [
+			 *     "Native Overlay Diff",
+			 *     "true"
+			 *   ]
+			 * ]
+			 */
+			DriverStatus?: string[][];
+			/**
+			 * @description Root directory of persistent Docker state.
+			 *
+			 * Defaults to `/var/lib/docker` on Linux, and `C:\ProgramData\docker`
+			 * on Windows.
+			 *
+			 * @example /var/lib/docker
+			 */
+			DockerRootDir?: string;
+			Plugins?: components["schemas"]["PluginsInfo"];
+			/**
+			 * @description Indicates if the host has memory limit support enabled.
+			 * @example true
+			 */
+			MemoryLimit?: boolean;
+			/**
+			 * @description Indicates if the host has memory swap limit support enabled.
+			 * @example true
+			 */
+			SwapLimit?: boolean;
+			/**
+			 * @description Indicates if the host has kernel memory TCP limit support enabled. This
+			 * field is omitted if not supported.
+			 *
+			 * Kernel memory TCP limits are not supported when using cgroups v2, which
+			 * does not support the corresponding `memory.kmem.tcp.limit_in_bytes` cgroup.
+			 *
+			 * @example true
+			 */
+			KernelMemoryTCP?: boolean;
+			/**
+			 * @description Indicates if CPU CFS(Completely Fair Scheduler) period is supported by
+			 * the host.
+			 *
+			 * @example true
+			 */
+			CpuCfsPeriod?: boolean;
+			/**
+			 * @description Indicates if CPU CFS(Completely Fair Scheduler) quota is supported by
+			 * the host.
+			 *
+			 * @example true
+			 */
+			CpuCfsQuota?: boolean;
+			/**
+			 * @description Indicates if CPU Shares limiting is supported by the host.
+			 *
+			 * @example true
+			 */
+			CPUShares?: boolean;
+			/**
+			 * @description Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.
+			 *
+			 * See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt)
+			 *
+			 * @example true
+			 */
+			CPUSet?: boolean;
+			/**
+			 * @description Indicates if the host kernel has PID limit support enabled.
+			 * @example true
+			 */
+			PidsLimit?: boolean;
+			/** @description Indicates if OOM killer disable is supported on the host. */
+			OomKillDisable?: boolean;
+			/**
+			 * @description Indicates IPv4 forwarding is enabled.
+			 * @example true
+			 */
+			IPv4Forwarding?: boolean;
+			/**
+			 * @description Indicates if `bridge-nf-call-iptables` is available on the host.
+			 * @example true
+			 */
+			BridgeNfIptables?: boolean;
+			/**
+			 * @description Indicates if `bridge-nf-call-ip6tables` is available on the host.
+			 * @example true
+			 */
+			BridgeNfIp6tables?: boolean;
+			/**
+			 * @description Indicates if the daemon is running in debug-mode / with debug-level
+			 * logging enabled.
+			 *
+			 * @example true
+			 */
+			Debug?: boolean;
+			/**
+			 * @description The total number of file Descriptors in use by the daemon process.
+			 *
+			 * This information is only returned if debug-mode is enabled.
+			 *
+			 * @example 64
+			 */
+			NFd?: number;
+			/**
+			 * @description The  number of goroutines that currently exist.
+			 *
+			 * This information is only returned if debug-mode is enabled.
+			 *
+			 * @example 174
+			 */
+			NGoroutines?: number;
+			/**
+			 * @description Current system-time in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
+			 * format with nano-seconds.
+			 *
+			 * @example 2017-08-08T20:28:29.062Z
+			 */
+			SystemTime?: string;
+			/** @description The logging driver to use as a default for new containers. */
+			LoggingDriver?: string;
+			/**
+			 * @description The driver to use for managing cgroups.
+			 *
+			 * @default cgroupfs
+			 * @example cgroupfs
+			 * @enum {string}
+			 */
+			CgroupDriver?: "cgroupfs" | "systemd" | "none";
+			/**
+			 * @description The version of the cgroup.
+			 *
+			 * @default 1
+			 * @example 1
+			 * @enum {string}
+			 */
+			CgroupVersion?: "1" | "2";
+			/**
+			 * @description Number of event listeners subscribed.
+			 * @example 30
+			 */
+			NEventsListener?: number;
+			/**
+			 * @description Kernel version of the host.
+			 *
+			 * On Linux, this information obtained from `uname`. On Windows this
+			 * information is queried from the <kbd>HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\</kbd>
+			 * registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_.
+			 *
+			 * @example 4.9.38-moby
+			 */
+			KernelVersion?: string;
+			/**
+			 * @description Name of the host's operating system, for example: "Ubuntu 16.04.2 LTS"
+			 * or "Windows Server 2016 Datacenter"
+			 *
+			 * @example Alpine Linux v3.5
+			 */
+			OperatingSystem?: string;
+			/**
+			 * @description Version of the host's operating system
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: The information returned in this field, including its
+			 * > very existence, and the formatting of values, should not be considered
+			 * > stable, and may change without notice.
+			 *
+			 * @example 16.04
+			 */
+			OSVersion?: string;
+			/**
+			 * @description Generic type of the operating system of the host, as returned by the
+			 * Go runtime (`GOOS`).
+			 *
+			 * Currently returned values are "linux" and "windows". A full list of
+			 * possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment).
+			 *
+			 * @example linux
+			 */
+			OSType?: string;
+			/**
+			 * @description Hardware architecture of the host, as returned by the Go runtime
+			 * (`GOARCH`).
+			 *
+			 * A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment).
+			 *
+			 * @example x86_64
+			 */
+			Architecture?: string;
+			/**
+			 * @description The number of logical CPUs usable by the daemon.
+			 *
+			 * The number of available CPUs is checked by querying the operating
+			 * system when the daemon starts. Changes to operating system CPU
+			 * allocation after the daemon is started are not reflected.
+			 *
+			 * @example 4
+			 */
+			NCPU?: number;
+			/**
+			 * Format: int64
+			 * @description Total amount of physical memory available on the host, in bytes.
+			 *
+			 * @example 2095882240
+			 */
+			MemTotal?: number;
+			/**
+			 * @description Address / URL of the index server that is used for image search,
+			 * and as a default for user authentication for Docker Hub and Docker Cloud.
+			 *
+			 * @default https://index.docker.io/v1/
+			 * @example https://index.docker.io/v1/
+			 */
+			IndexServerAddress?: string;
+			RegistryConfig?: components["schemas"]["RegistryServiceConfig"];
+			GenericResources?: components["schemas"]["GenericResources"];
+			/**
+			 * @description HTTP-proxy configured for the daemon. This value is obtained from the
+			 * [`HTTP_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.
+			 * Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL
+			 * are masked in the API response.
+			 *
+			 * Containers do not automatically inherit this configuration.
+			 *
+			 * @example http://xxxxx:xxxxx@proxy.corp.example.com:8080
+			 */
+			HttpProxy?: string;
+			/**
+			 * @description HTTPS-proxy configured for the daemon. This value is obtained from the
+			 * [`HTTPS_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.
+			 * Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL
+			 * are masked in the API response.
+			 *
+			 * Containers do not automatically inherit this configuration.
+			 *
+			 * @example https://xxxxx:xxxxx@proxy.corp.example.com:4443
+			 */
+			HttpsProxy?: string;
+			/**
+			 * @description Comma-separated list of domain extensions for which no proxy should be
+			 * used. This value is obtained from the [`NO_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html)
+			 * environment variable.
+			 *
+			 * Containers do not automatically inherit this configuration.
+			 *
+			 * @example *.local, 169.254/16
+			 */
+			NoProxy?: string;
+			/**
+			 * @description Hostname of the host.
+			 * @example node5.corp.example.com
+			 */
+			Name?: string;
+			/**
+			 * @description User-defined labels (key/value metadata) as set on the daemon.
+			 *
+			 * <p><br /></p>
+			 *
+			 * > **Note**: When part of a Swarm, nodes can both have _daemon_ labels,
+			 * > set through the daemon configuration, and _node_ labels, set from a
+			 * > manager node in the Swarm. Node labels are not included in this
+			 * > field. Node labels can be retrieved using the `/nodes/(id)` endpoint
+			 * > on a manager node in the Swarm.
+			 *
+			 * @example [
+			 *   "storage=ssd",
+			 *   "production"
+			 * ]
+			 */
+			Labels?: string[];
+			/**
+			 * @description Indicates if experimental features are enabled on the daemon.
+			 *
+			 * @example true
+			 */
+			ExperimentalBuild?: boolean;
+			/**
+			 * @description Version string of the daemon.
+			 *
+			 * @example 24.0.2
+			 */
+			ServerVersion?: string;
+			/**
+			 * @description List of [OCI compliant](https://github.com/opencontainers/runtime-spec)
+			 * runtimes configured on the daemon. Keys hold the "name" used to
+			 * reference the runtime.
+			 *
+			 * The Docker daemon relies on an OCI compliant runtime (invoked via the
+			 * `containerd` daemon) as its interface to the Linux kernel namespaces,
+			 * cgroups, and SELinux.
+			 *
+			 * The default runtime is `runc`, and automatically configured. Additional
+			 * runtimes can be configured by the user and will be listed here.
+			 *
+			 * @default {
+			 *   "runc": {
+			 *     "path": "runc"
+			 *   }
+			 * }
+			 * @example {
+			 *   "runc": {
+			 *     "path": "runc"
+			 *   },
+			 *   "runc-master": {
+			 *     "path": "/go/bin/runc"
+			 *   },
+			 *   "custom": {
+			 *     "path": "/usr/local/bin/my-oci-runtime",
+			 *     "runtimeArgs": [
+			 *       "--debug",
+			 *       "--systemd-cgroup=false"
+			 *     ]
+			 *   }
+			 * }
+			 */
+			Runtimes?: { [key: string]: components["schemas"]["Runtime"] };
+			/**
+			 * @description Name of the default OCI runtime that is used when starting containers.
+			 *
+			 * The default can be overridden per-container at create time.
+			 *
+			 * @default runc
+			 * @example runc
+			 */
+			DefaultRuntime?: string;
+			Swarm?: components["schemas"]["SwarmInfo"];
+			/**
+			 * @description Indicates if live restore is enabled.
+			 *
+			 * If enabled, containers are kept running when the daemon is shutdown
+			 * or upon daemon start if running containers are detected.
+			 *
+			 * @default false
+			 * @example false
+			 */
+			LiveRestoreEnabled?: boolean;
+			/**
+			 * @description Represents the isolation technology to use as a default for containers.
+			 * The supported values are platform-specific.
+			 *
+			 * If no isolation value is specified on daemon start, on Windows client,
+			 * the default is `hyperv`, and on Windows server, the default is `process`.
+			 *
+			 * This option is currently not used on other platforms.
+			 *
+			 * @default default
+			 * @enum {string}
+			 */
+			Isolation?: "default" | "hyperv" | "process";
+			/**
+			 * @description Name and, optional, path of the `docker-init` binary.
+			 *
+			 * If the path is omitted, the daemon searches the host's `$PATH` for the
+			 * binary and uses the first result.
+			 *
+			 * @example docker-init
+			 */
+			InitBinary?: string;
+			ContainerdCommit?: components["schemas"]["Commit"];
+			RuncCommit?: components["schemas"]["Commit"];
+			InitCommit?: components["schemas"]["Commit"];
+			/**
+			 * @description List of security features that are enabled on the daemon, such as
+			 * apparmor, seccomp, SELinux, user-namespaces (userns), rootless and
+			 * no-new-privileges.
+			 *
+			 * Additional configuration options for each security feature may
+			 * be present, and are included as a comma-separated list of key/value
+			 * pairs.
+			 *
+			 * @example [
+			 *   "name=apparmor",
+			 *   "name=seccomp,profile=default",
+			 *   "name=selinux",
+			 *   "name=userns",
+			 *   "name=rootless"
+			 * ]
+			 */
+			SecurityOptions?: string[];
+			/**
+			 * @description Reports a summary of the product license on the daemon.
+			 *
+			 * If a commercial license has been applied to the daemon, information
+			 * such as number of nodes, and expiration are included.
+			 *
+			 * @example Community Engine
+			 */
+			ProductLicense?: string;
+			/**
+			 * @description List of custom default address pools for local networks, which can be
+			 * specified in the daemon.json file or dockerd option.
+			 *
+			 * Example: a Base "10.10.0.0/16" with Size 24 will define the set of 256
+			 * 10.10.[0-255].0/24 address pools.
+			 */
+			DefaultAddressPools?: {
+				/**
+				 * @description The network address in CIDR format
+				 * @example 10.10.0.0/16
+				 */
+				Base?: string;
+				/**
+				 * @description The network pool size
+				 * @example 24
+				 */
+				Size?: number;
+			}[];
+			/**
+			 * @description List of warnings / informational messages about missing features, or
+			 * issues related to the daemon configuration.
+			 *
+			 * These messages can be printed by the client as information to the user.
+			 *
+			 * @example [
+			 *   "WARNING: No memory limit support",
+			 *   "WARNING: bridge-nf-call-iptables is disabled",
+			 *   "WARNING: bridge-nf-call-ip6tables is disabled"
+			 * ]
+			 */
+			Warnings?: string[];
+		};
+		/**
+		 * @description Available plugins per type.
+		 *
+		 * <p><br /></p>
+		 *
+		 * > **Note**: Only unmanaged (V1) plugins are included in this list.
+		 * > V1 plugins are "lazily" loaded, and are not returned in this list
+		 * > if there is no resource using the plugin.
+		 */
+		PluginsInfo: {
+			/**
+			 * @description Names of available volume-drivers, and network-driver plugins.
+			 * @example [
+			 *   "local"
+			 * ]
+			 */
+			Volume?: string[];
+			/**
+			 * @description Names of available network-drivers, and network-driver plugins.
+			 * @example [
+			 *   "bridge",
+			 *   "host",
+			 *   "ipvlan",
+			 *   "macvlan",
+			 *   "null",
+			 *   "overlay"
+			 * ]
+			 */
+			Network?: string[];
+			/**
+			 * @description Names of available authorization plugins.
+			 * @example [
+			 *   "img-authz-plugin",
+			 *   "hbm"
+			 * ]
+			 */
+			Authorization?: string[];
+			/**
+			 * @description Names of available logging-drivers, and logging-driver plugins.
+			 * @example [
+			 *   "awslogs",
+			 *   "fluentd",
+			 *   "gcplogs",
+			 *   "gelf",
+			 *   "journald",
+			 *   "json-file",
+			 *   "logentries",
+			 *   "splunk",
+			 *   "syslog"
+			 * ]
+			 */
+			Log?: string[];
+		};
+		/** @description RegistryServiceConfig stores daemon registry services configuration. */
+		RegistryServiceConfig: {
+			/**
+			 * @description List of IP ranges to which nondistributable artifacts can be pushed,
+			 * using the CIDR syntax [RFC 4632](https://tools.ietf.org/html/4632).
+			 *
+			 * Some images (for example, Windows base images) contain artifacts
+			 * whose distribution is restricted by license. When these images are
+			 * pushed to a registry, restricted artifacts are not included.
+			 *
+			 * This configuration override this behavior, and enables the daemon to
+			 * push nondistributable artifacts to all registries whose resolved IP
+			 * address is within the subnet described by the CIDR syntax.
+			 *
+			 * This option is useful when pushing images containing
+			 * nondistributable artifacts to a registry on an air-gapped network so
+			 * hosts on that network can pull the images without connecting to
+			 * another server.
+			 *
+			 * > **Warning**: Nondistributable artifacts typically have restrictions
+			 * > on how and where they can be distributed and shared. Only use this
+			 * > feature to push artifacts to private registries and ensure that you
+			 * > are in compliance with any terms that cover redistributing
+			 * > nondistributable artifacts.
+			 *
+			 * @example [
+			 *   "::1/128",
+			 *   "127.0.0.0/8"
+			 * ]
+			 */
+			AllowNondistributableArtifactsCIDRs?: string[];
+			/**
+			 * @description List of registry hostnames to which nondistributable artifacts can be
+			 * pushed, using the format `<hostname>[:<port>]` or `<IP address>[:<port>]`.
+			 *
+			 * Some images (for example, Windows base images) contain artifacts
+			 * whose distribution is restricted by license. When these images are
+			 * pushed to a registry, restricted artifacts are not included.
+			 *
+			 * This configuration override this behavior for the specified
+			 * registries.
+			 *
+			 * This option is useful when pushing images containing
+			 * nondistributable artifacts to a registry on an air-gapped network so
+			 * hosts on that network can pull the images without connecting to
+			 * another server.
+			 *
+			 * > **Warning**: Nondistributable artifacts typically have restrictions
+			 * > on how and where they can be distributed and shared. Only use this
+			 * > feature to push artifacts to private registries and ensure that you
+			 * > are in compliance with any terms that cover redistributing
+			 * > nondistributable artifacts.
+			 *
+			 * @example [
+			 *   "registry.internal.corp.example.com:3000",
+			 *   "[2001:db8:a0b:12f0::1]:443"
+			 * ]
+			 */
+			AllowNondistributableArtifactsHostnames?: string[];
+			/**
+			 * @description List of IP ranges of insecure registries, using the CIDR syntax
+			 * ([RFC 4632](https://tools.ietf.org/html/4632)). Insecure registries
+			 * accept un-encrypted (HTTP) and/or untrusted (HTTPS with certificates
+			 * from unknown CAs) communication.
+			 *
+			 * By default, local registries (`127.0.0.0/8`) are configured as
+			 * insecure. All other registries are secure. Communicating with an
+			 * insecure registry is not possible if the daemon assumes that registry
+			 * is secure.
+			 *
+			 * This configuration override this behavior, insecure communication with
+			 * registries whose resolved IP address is within the subnet described by
+			 * the CIDR syntax.
+			 *
+			 * Registries can also be marked insecure by hostname. Those registries
+			 * are listed under `IndexConfigs` and have their `Secure` field set to
+			 * `false`.
+			 *
+			 * > **Warning**: Using this option can be useful when running a local
+			 * > registry, but introduces security vulnerabilities. This option
+			 * > should therefore ONLY be used for testing purposes. For increased
+			 * > security, users should add their CA to their system's list of trusted
+			 * > CAs instead of enabling this option.
+			 *
+			 * @example [
+			 *   "::1/128",
+			 *   "127.0.0.0/8"
+			 * ]
+			 */
+			InsecureRegistryCIDRs?: string[];
+			/**
+			 * @example {
+			 *   "127.0.0.1:5000": {
+			 *     "Name": "127.0.0.1:5000",
+			 *     "Mirrors": [],
+			 *     "Secure": false,
+			 *     "Official": false
+			 *   },
+			 *   "[2001:db8:a0b:12f0::1]:80": {
+			 *     "Name": "[2001:db8:a0b:12f0::1]:80",
+			 *     "Mirrors": [],
+			 *     "Secure": false,
+			 *     "Official": false
+			 *   },
+			 *   "docker.io": {
+			 *     "Name": "docker.io",
+			 *     "Mirrors": [
+			 *       "https://hub-mirror.corp.example.com:5000/"
+			 *     ],
+			 *     "Secure": true,
+			 *     "Official": true
+			 *   },
+			 *   "registry.internal.corp.example.com:3000": {
+			 *     "Name": "registry.internal.corp.example.com:3000",
+			 *     "Mirrors": [],
+			 *     "Secure": false,
+			 *     "Official": false
+			 *   }
+			 * }
+			 */
+			IndexConfigs?: { [key: string]: components["schemas"]["IndexInfo"] };
+			/**
+			 * @description List of registry URLs that act as a mirror for the official
+			 * (`docker.io`) registry.
+			 *
+			 * @example [
+			 *   "https://hub-mirror.corp.example.com:5000/",
+			 *   "https://[2001:db8:a0b:12f0::1]/"
+			 * ]
+			 */
+			Mirrors?: string[];
+		} | null;
+		/** @description IndexInfo contains information about a registry. */
+		IndexInfo: {
+			/**
+			 * @description Name of the registry, such as "docker.io".
+			 *
+			 * @example docker.io
+			 */
+			Name?: string;
+			/**
+			 * @description List of mirrors, expressed as URIs.
+			 *
+			 * @example [
+			 *   "https://hub-mirror.corp.example.com:5000/",
+			 *   "https://registry-2.docker.io/",
+			 *   "https://registry-3.docker.io/"
+			 * ]
+			 */
+			Mirrors?: string[];
+			/**
+			 * @description Indicates if the registry is part of the list of insecure
+			 * registries.
+			 *
+			 * If `false`, the registry is insecure. Insecure registries accept
+			 * un-encrypted (HTTP) and/or untrusted (HTTPS with certificates from
+			 * unknown CAs) communication.
+			 *
+			 * > **Warning**: Insecure registries can be useful when running a local
+			 * > registry. However, because its use creates security vulnerabilities
+			 * > it should ONLY be enabled for testing purposes. For increased
+			 * > security, users should add their CA to their system's list of
+			 * > trusted CAs instead of enabling this option.
+			 *
+			 * @example true
+			 */
+			Secure?: boolean;
+			/**
+			 * @description Indicates whether this is an official registry (i.e., Docker Hub / docker.io)
+			 *
+			 * @example true
+			 */
+			Official?: boolean;
+		} | null;
+		/**
+		 * @description Runtime describes an [OCI compliant](https://github.com/opencontainers/runtime-spec)
+		 * runtime.
+		 *
+		 * The runtime is invoked by the daemon via the `containerd` daemon. OCI
+		 * runtimes act as an interface to the Linux kernel namespaces, cgroups,
+		 * and SELinux.
+		 */
+		Runtime: {
+			/**
+			 * @description Name and, optional, path, of the OCI executable binary.
+			 *
+			 * If the path is omitted, the daemon searches the host's `$PATH` for the
+			 * binary and uses the first result.
+			 *
+			 * @example /usr/local/bin/my-oci-runtime
+			 */
+			path?: string;
+			/**
+			 * @description List of command-line arguments to pass to the runtime when invoked.
+			 *
+			 * @example [
+			 *   "--debug",
+			 *   "--systemd-cgroup=false"
+			 * ]
+			 */
+			runtimeArgs?: string[] | null;
+		};
+		/**
+		 * @description Commit holds the Git-commit (SHA1) that a binary was built from, as
+		 * reported in the version-string of external tools, such as `containerd`,
+		 * or `runC`.
+		 */
+		Commit: {
+			/**
+			 * @description Actual commit ID of external tool.
+			 * @example cfb82a876ecc11b5ca0977d1733adbe58599088a
+			 */
+			ID?: string;
+			/**
+			 * @description Commit ID of external tool expected by dockerd as set at build time.
+			 *
+			 * @example 2d41c047c83e09a6d61d464906feb2a2f3c52aa4
+			 */
+			Expected?: string;
+		};
+		/** @description Represents generic information about swarm. */
+		SwarmInfo: {
+			/**
+			 * @description Unique identifier of for this node in the swarm.
+			 * @default
+			 * @example k67qz4598weg5unwwffg6z1m1
+			 */
+			NodeID?: string;
+			/**
+			 * @description IP address at which this node can be reached by other nodes in the
+			 * swarm.
+			 *
+			 * @default
+			 * @example 10.0.0.46
+			 */
+			NodeAddr?: string;
+			LocalNodeState?: components["schemas"]["LocalNodeState"];
+			/**
+			 * @default false
+			 * @example true
+			 */
+			ControlAvailable?: boolean;
+			/** @default */
+			Error?: string;
+			/**
+			 * @description List of ID's and addresses of other managers in the swarm.
+			 *
+			 * @default null
+			 * @example [
+			 *   {
+			 *     "NodeID": "71izy0goik036k48jg985xnds",
+			 *     "Addr": "10.0.0.158:2377"
+			 *   },
+			 *   {
+			 *     "NodeID": "79y6h1o4gv8n120drcprv5nmc",
+			 *     "Addr": "10.0.0.159:2377"
+			 *   },
+			 *   {
+			 *     "NodeID": "k67qz4598weg5unwwffg6z1m1",
+			 *     "Addr": "10.0.0.46:2377"
+			 *   }
+			 * ]
+			 */
+			RemoteManagers?: components["schemas"]["PeerNode"][] | null;
+			/**
+			 * @description Total number of nodes in the swarm.
+			 * @example 4
+			 */
+			Nodes?: number | null;
+			/**
+			 * @description Total number of managers in the swarm.
+			 * @example 3
+			 */
+			Managers?: number | null;
+			Cluster?: components["schemas"]["ClusterInfo"];
+		};
+		/**
+		 * @description Current local status of this node.
+		 * @default
+		 * @example active
+		 * @enum {string}
+		 */
+		LocalNodeState: "" | "inactive" | "pending" | "active" | "error" | "locked";
+		/** @description Represents a peer-node in the swarm */
+		PeerNode: {
+			/** @description Unique identifier of for this node in the swarm. */
+			NodeID?: string;
+			/** @description IP address and ports at which this node can be reached. */
+			Addr?: string;
+		};
+		/** @description Specifies how a service should be attached to a particular network. */
+		NetworkAttachmentConfig: {
+			/** @description The target network for attachment. Must be a network name or ID. */
+			Target?: string;
+			/** @description Discoverable alternate names for the service on this network. */
+			Aliases?: string[];
+			/** @description Driver attachment options for the network target. */
+			DriverOpts?: { [key: string]: string };
+		};
+		/**
+		 * @description Actor describes something that generates events, like a container, network,
+		 * or a volume.
+		 */
+		EventActor: {
+			/**
+			 * @description The ID of the object emitting the event
+			 * @example ede54ee1afda366ab42f824e8a5ffd195155d853ceaec74a927f249ea270c743
+			 */
+			ID?: string;
+			/**
+			 * @description Various key/value attributes of the object, depending on its type.
+			 *
+			 * @example {
+			 *   "com.example.some-label": "some-label-value",
+			 *   "image": "alpine:latest",
+			 *   "name": "my-container"
+			 * }
+			 */
+			Attributes?: { [key: string]: string };
+		};
+		/**
+		 * SystemEventsResponse
+		 * @description EventMessage represents the information an event contains.
+		 */
+		EventMessage: {
+			/**
+			 * @description The type of object emitting the event
+			 * @example container
+			 * @enum {string}
+			 */
+			Type?:
+				| "builder"
+				| "config"
+				| "container"
+				| "daemon"
+				| "image"
+				| "network"
+				| "node"
+				| "plugin"
+				| "secret"
+				| "service"
+				| "volume";
+			/**
+			 * @description The type of event
+			 * @example create
+			 */
+			Action?: string;
+			Actor?: components["schemas"]["EventActor"];
+			/**
+			 * @description Scope of the event. Engine events are `local` scope. Cluster (Swarm)
+			 * events are `swarm` scope.
+			 *
+			 * @enum {string}
+			 */
+			scope?: "local" | "swarm";
+			/**
+			 * Format: int64
+			 * @description Timestamp of event
+			 * @example 1629574695
+			 */
+			time?: number;
+			/**
+			 * Format: int64
+			 * @description Timestamp of event, with nanosecond accuracy
+			 * @example 1629574695515050000
+			 */
+			timeNano?: number;
+		};
+		/**
+		 * @description A descriptor struct containing digest, media type, and size, as defined in
+		 * the [OCI Content Descriptors Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md).
+		 */
+		OCIDescriptor: {
+			/**
+			 * @description The media type of the object this schema refers to.
+			 *
+			 * @example application/vnd.docker.distribution.manifest.v2+json
+			 */
+			mediaType?: string;
+			/**
+			 * @description The digest of the targeted content.
+			 *
+			 * @example sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96
+			 */
+			digest?: string;
+			/**
+			 * Format: int64
+			 * @description The size in bytes of the blob.
+			 *
+			 * @example 3987495
+			 */
+			size?: number;
+		};
+		/**
+		 * @description Describes the platform which the image in the manifest runs on, as defined
+		 * in the [OCI Image Index Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-index.md).
+		 */
+		OCIPlatform: {
+			/**
+			 * @description The CPU architecture, for example `amd64` or `ppc64`.
+			 *
+			 * @example arm
+			 */
+			architecture?: string;
+			/**
+			 * @description The operating system, for example `linux` or `windows`.
+			 *
+			 * @example windows
+			 */
+			os?: string;
+			/**
+			 * @description Optional field specifying the operating system version, for example on
+			 * Windows `10.0.19041.1165`.
+			 *
+			 * @example 10.0.19041.1165
+			 */
+			"os.version"?: string;
+			/**
+			 * @description Optional field specifying an array of strings, each listing a required
+			 * OS feature (for example on Windows `win32k`).
+			 *
+			 * @example [
+			 *   "win32k"
+			 * ]
+			 */
+			"os.features"?: string[];
+			/**
+			 * @description Optional field specifying a variant of the CPU, for example `v7` to
+			 * specify ARMv7 when architecture is `arm`.
+			 *
+			 * @example v7
+			 */
+			variant?: string;
+		};
+		/**
+		 * DistributionInspectResponse
+		 * @description Describes the result obtained from contacting the registry to retrieve
+		 * image metadata.
+		 */
+		DistributionInspect: {
+			Descriptor: components["schemas"]["OCIDescriptor"];
+			/** @description An array containing all platforms supported by the image. */
+			Platforms: components["schemas"]["OCIPlatform"][];
+		};
+		/**
+		 * @description Options and information specific to, and only present on, Swarm CSI
+		 * cluster volumes.
+		 */
+		ClusterVolume: {
+			/**
+			 * @description The Swarm ID of this volume. Because cluster volumes are Swarm
+			 * objects, they have an ID, unlike non-cluster volumes. This ID can
+			 * be used to refer to the Volume instead of the name.
+			 */
+			ID?: string;
+			Version?: components["schemas"]["ObjectVersion"];
+			/** Format: dateTime */
+			CreatedAt?: string;
+			/** Format: dateTime */
+			UpdatedAt?: string;
+			Spec?: components["schemas"]["ClusterVolumeSpec"];
+			/** @description Information about the global status of the volume. */
+			Info?: {
+				/**
+				 * Format: int64
+				 * @description The capacity of the volume in bytes. A value of 0 indicates that
+				 * the capacity is unknown.
+				 */
+				CapacityBytes?: number;
+				/**
+				 * @description A map of strings to strings returned from the storage plugin when
+				 * the volume is created.
+				 */
+				VolumeContext?: { [key: string]: string };
+				/**
+				 * @description The ID of the volume as returned by the CSI storage plugin. This
+				 * is distinct from the volume's ID as provided by Docker. This ID
+				 * is never used by the user when communicating with Docker to refer
+				 * to this volume. If the ID is blank, then the Volume has not been
+				 * successfully created in the plugin yet.
+				 */
+				VolumeID?: string;
+				/** @description The topology this volume is actually accessible from. */
+				AccessibleTopology?: components["schemas"]["Topology"][];
+			};
+			/**
+			 * @description The status of the volume as it pertains to its publishing and use on
+			 * specific nodes
+			 */
+			PublishStatus?: {
+				/** @description The ID of the Swarm node the volume is published on. */
+				NodeID?: string;
+				/**
+				 * @description The published state of the volume.
+				 * * `pending-publish` The volume should be published to this node, but the call to the controller plugin to do so has not yet been successfully completed.
+				 * * `published` The volume is published successfully to the node.
+				 * * `pending-node-unpublish` The volume should be unpublished from the node, and the manager is awaiting confirmation from the worker that it has done so.
+				 * * `pending-controller-unpublish` The volume is successfully unpublished from the node, but has not yet been successfully unpublished on the controller.
+				 *
+				 * @enum {string}
+				 */
+				State?: "pending-publish" | "published" | "pending-node-unpublish" | "pending-controller-unpublish";
+				/**
+				 * @description A map of strings to strings returned by the CSI controller
+				 * plugin when a volume is published.
+				 */
+				PublishContext?: { [key: string]: string };
+			}[];
+		};
+		/** @description Cluster-specific options used to create the volume. */
+		ClusterVolumeSpec: {
+			/**
+			 * @description Group defines the volume group of this volume. Volumes belonging to
+			 * the same group can be referred to by group name when creating
+			 * Services.  Referring to a volume by group instructs Swarm to treat
+			 * volumes in that group interchangeably for the purpose of scheduling.
+			 * Volumes with an empty string for a group technically all belong to
+			 * the same, emptystring group.
+			 */
+			Group?: string;
+			/** @description Defines how the volume is used by tasks. */
+			AccessMode?: {
+				/**
+				 * @description The set of nodes this volume can be used on at one time.
+				 * - `single` The volume may only be scheduled to one node at a time.
+				 * - `multi` the volume may be scheduled to any supported number of nodes at a time.
+				 *
+				 * @default single
+				 * @enum {string}
+				 */
+				Scope?: "single" | "multi";
+				/**
+				 * @description The number and way that different tasks can use this volume
+				 * at one time.
+				 * - `none` The volume may only be used by one task at a time.
+				 * - `readonly` The volume may be used by any number of tasks, but they all must mount the volume as readonly
+				 * - `onewriter` The volume may be used by any number of tasks, but only one may mount it as read/write.
+				 * - `all` The volume may have any number of readers and writers.
+				 *
+				 * @default none
+				 * @enum {string}
+				 */
+				Sharing?: "none" | "readonly" | "onewriter" | "all";
+				/**
+				 * @description Options for using this volume as a Mount-type volume.
+				 *
+				 *     Either MountVolume or BlockVolume, but not both, must be
+				 *     present.
+				 *   properties:
+				 *     FsType:
+				 *       type: "string"
+				 *       description: |
+				 *         Specifies the filesystem type for the mount volume.
+				 *         Optional.
+				 *     MountFlags:
+				 *       type: "array"
+				 *       description: |
+				 *         Flags to pass when mounting the volume. Optional.
+				 *       items:
+				 *         type: "string"
+				 * BlockVolume:
+				 *   type: "object"
+				 *   description: |
+				 *     Options for using this volume as a Block-type volume.
+				 *     Intentionally empty.
+				 */
+				MountVolume?: { [key: string]: unknown };
+				/**
+				 * @description Swarm Secrets that are passed to the CSI storage plugin when
+				 * operating on this volume.
+				 */
+				Secrets?: {
+					/**
+					 * @description Key is the name of the key of the key-value pair passed to
+					 * the plugin.
+					 */
+					Key?: string;
+					/**
+					 * @description Secret is the swarm Secret object from which to read data.
+					 * This can be a Secret name or ID. The Secret data is
+					 * retrieved by swarm and used as the value of the key-value
+					 * pair passed to the plugin.
+					 */
+					Secret?: string;
+				}[];
+				/**
+				 * @description Requirements for the accessible topology of the volume. These
+				 * fields are optional. For an in-depth description of what these
+				 * fields mean, see the CSI specification.
+				 */
+				AccessibilityRequirements?: {
+					/**
+					 * @description A list of required topologies, at least one of which the
+					 * volume must be accessible from.
+					 */
+					Requisite?: components["schemas"]["Topology"][];
+					/**
+					 * @description A list of topologies that the volume should attempt to be
+					 * provisioned in.
+					 */
+					Preferred?: components["schemas"]["Topology"][];
+				};
+				/**
+				 * @description The desired capacity that the volume should be created with. If
+				 * empty, the plugin will decide the capacity.
+				 */
+				CapacityRange?: {
+					/**
+					 * Format: int64
+					 * @description The volume must be at least this big. The value of 0
+					 * indicates an unspecified minimum
+					 */
+					RequiredBytes?: number;
+					/**
+					 * Format: int64
+					 * @description The volume must not be bigger than this. The value of 0
+					 * indicates an unspecified maximum.
+					 */
+					LimitBytes?: number;
+				};
+				/**
+				 * @description The availability of the volume for use in tasks.
+				 * - `active` The volume is fully available for scheduling on the cluster
+				 * - `pause` No new workloads should use the volume, but existing workloads are not stopped.
+				 * - `drain` All workloads using this volume should be stopped and rescheduled, and no new ones should be started.
+				 *
+				 * @default active
+				 * @enum {string}
+				 */
+				Availability?: "active" | "pause" | "drain";
+			};
+		};
+		/**
+		 * @description A map of topological domains to topological segments. For in depth
+		 * details, see documentation for the Topology object in the CSI
+		 * specification.
+		 */
+		Topology: { [key: string]: string };
 	};
-	/**
-	 * @description A map of topological domains to topological segments. For in depth
-	 * details, see documentation for the Topology object in the CSI
-	 * specification.
-	 */
-	Topology: { [key: string]: string };
+	requestBodies: {
+		PluginPrivilegeArray: {
+			content: {
+				"application/json": components["schemas"]["PluginPrivilege"][];
+				"text/plain": components["schemas"]["PluginPrivilege"][];
+			};
+		};
+	};
 }
 
 export interface operations {
@@ -5908,15 +5887,21 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["ContainerSummary"][];
+				content: {
+					"application/json": components["schemas"]["ContainerSummary"][];
+				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -5948,34 +5933,50 @@ export interface operations {
 				 */
 				platform?: string;
 			};
-			body: {
-				/** Container to create */
-				body: definitions["ContainerConfig"] & {
-					HostConfig?: definitions["HostConfig"];
-					NetworkingConfig?: definitions["NetworkingConfig"];
-				};
-			};
 		};
 		responses: {
 			/** Container created successfully */
 			201: {
-				schema: definitions["ContainerCreateResponse"];
+				content: {
+					"application/json": components["schemas"]["ContainerCreateResponse"];
+				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** conflict */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Container to create */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ContainerConfig"] & {
+					HostConfig?: components["schemas"]["HostConfig"];
+					NetworkingConfig?: components["schemas"]["NetworkingConfig"];
+				};
+				"application/octet-stream": components["schemas"]["ContainerConfig"] & {
+					HostConfig?: components["schemas"]["HostConfig"];
+					NetworkingConfig?: components["schemas"]["NetworkingConfig"];
+				};
 			};
 		};
 	};
@@ -5994,56 +5995,62 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: {
-					/** @description The ID of the container */
-					Id?: string;
-					/** @description The time the container was created */
-					Created?: string;
-					/** @description The path to the command being run */
-					Path?: string;
-					/** @description The arguments to the command being run */
-					Args?: string[];
-					State?: definitions["ContainerState"];
-					/** @description The container's image ID */
-					Image?: string;
-					ResolvConfPath?: string;
-					HostnamePath?: string;
-					HostsPath?: string;
-					LogPath?: string;
-					Name?: string;
-					RestartCount?: number;
-					Driver?: string;
-					Platform?: string;
-					MountLabel?: string;
-					ProcessLabel?: string;
-					AppArmorProfile?: string;
-					/** @description IDs of exec instances that are running in the container. */
-					ExecIDs?: string[];
-					HostConfig?: definitions["HostConfig"];
-					GraphDriver?: definitions["GraphDriverData"];
-					/**
-					 * Format: int64
-					 * @description The size of files that have been created or changed by this
-					 * container.
-					 */
-					SizeRw?: number;
-					/**
-					 * Format: int64
-					 * @description The total size of all the files in this container.
-					 */
-					SizeRootFs?: number;
-					Mounts?: definitions["MountPoint"][];
-					Config?: definitions["ContainerConfig"];
-					NetworkSettings?: definitions["NetworkSettings"];
+				content: {
+					"application/json": {
+						/** @description The ID of the container */
+						Id?: string;
+						/** @description The time the container was created */
+						Created?: string;
+						/** @description The path to the command being run */
+						Path?: string;
+						/** @description The arguments to the command being run */
+						Args?: string[];
+						State?: components["schemas"]["ContainerState"];
+						/** @description The container's image ID */
+						Image?: string;
+						ResolvConfPath?: string;
+						HostnamePath?: string;
+						HostsPath?: string;
+						LogPath?: string;
+						Name?: string;
+						RestartCount?: number;
+						Driver?: string;
+						Platform?: string;
+						MountLabel?: string;
+						ProcessLabel?: string;
+						AppArmorProfile?: string;
+						/** @description IDs of exec instances that are running in the container. */
+						ExecIDs?: string[] | null;
+						HostConfig?: components["schemas"]["HostConfig"];
+						GraphDriver?: components["schemas"]["GraphDriverData"];
+						/**
+						 * Format: int64
+						 * @description The size of files that have been created or changed by this
+						 * container.
+						 */
+						SizeRw?: number;
+						/**
+						 * Format: int64
+						 * @description The total size of all the files in this container.
+						 */
+						SizeRootFs?: number;
+						Mounts?: components["schemas"]["MountPoint"][];
+						Config?: components["schemas"]["ContainerConfig"];
+						NetworkSettings?: components["schemas"]["NetworkSettings"];
+					};
 				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6065,23 +6072,40 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: {
-					/** @description The ps column titles */
-					Titles?: string[];
-					/**
-					 * @description Each process running in the container, where each is process
-					 * is an array of values corresponding to the titles.
-					 */
-					Processes?: string[][];
+				content: {
+					"application/json": {
+						/** @description The ps column titles */
+						Titles?: string[];
+						/**
+						 * @description Each process running in the container, where each is process
+						 * is an array of values corresponding to the titles.
+						 */
+						Processes?: string[][];
+					};
+					"text/plain": {
+						/** @description The ps column titles */
+						Titles?: string[];
+						/**
+						 * @description Each process running in the container, where each is process
+						 * is an array of values corresponding to the titles.
+						 */
+						Processes?: string[][];
+					};
 				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6125,15 +6149,25 @@ export interface operations {
 			 * upgrade the connection and does not set Content-Type.
 			 */
 			200: {
-				schema: string;
+				content: {
+					"application/vnd.docker.raw-stream": string;
+					"application/vnd.docker.multiplexed-stream": string;
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6155,15 +6189,21 @@ export interface operations {
 		responses: {
 			/** The list of changes */
 			200: {
-				schema: definitions["FilesystemChange"][];
+				content: {
+					"application/json": components["schemas"]["FilesystemChange"][];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6180,11 +6220,16 @@ export interface operations {
 			200: unknown;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/octet-stream": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/octet-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6238,15 +6283,21 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: { [key: string]: unknown };
+				content: {
+					"application/json": { [key: string]: unknown };
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6269,11 +6320,16 @@ export interface operations {
 			200: unknown;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"text/plain": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** cannot resize container */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6299,11 +6355,17 @@ export interface operations {
 			304: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6327,11 +6389,17 @@ export interface operations {
 			304: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6353,11 +6421,17 @@ export interface operations {
 			204: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6381,15 +6455,24 @@ export interface operations {
 			204: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** container is not running */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6403,26 +6486,34 @@ export interface operations {
 				/** ID or name of the container */
 				id: string;
 			};
-			body: {
-				update: definitions["Resources"] & {
-					RestartPolicy?: definitions["RestartPolicy"];
-				};
-			};
 		};
 		responses: {
 			/** The container has been updated. */
 			200: {
-				schema: {
-					Warnings?: string[];
+				content: {
+					"application/json": {
+						Warnings?: string[];
+					};
 				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["Resources"] & {
+					RestartPolicy?: components["schemas"]["RestartPolicy"];
+				};
 			};
 		};
 	};
@@ -6442,15 +6533,24 @@ export interface operations {
 			204: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** name already in use */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6474,11 +6574,17 @@ export interface operations {
 			204: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6495,11 +6601,17 @@ export interface operations {
 			204: never;
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6640,15 +6752,25 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6684,15 +6806,24 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6715,19 +6846,27 @@ export interface operations {
 		responses: {
 			/** The container has exit. */
 			200: {
-				schema: definitions["ContainerWaitResponse"];
+				content: {
+					"application/json": components["schemas"]["ContainerWaitResponse"];
+				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6751,19 +6890,31 @@ export interface operations {
 			204: never;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** conflict */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6784,15 +6935,22 @@ export interface operations {
 			200: unknown;
 			/** Bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/x-tar": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Container or path does not exist */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/x-tar": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/x-tar": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6822,33 +6980,48 @@ export interface operations {
 				 */
 				copyUIDGID?: string;
 			};
-			body: {
-				/**
-				 * The input stream must be a tar archive compressed with one of the
-				 * following algorithms: `identity` (no compression), `gzip`, `bzip2`,
-				 * or `xz`.
-				 */
-				inputStream: string;
-			};
 		};
 		responses: {
 			/** The content was extracted successfully */
 			200: unknown;
 			/** Bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Permission denied, the volume or container rootfs is marked as read-only. */
 			403: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** No such container or path does not exist inside the container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/**
+		 * The input stream must be a tar archive compressed with one of the
+		 * following algorithms: `identity` (no compression), `gzip`, `bzip2`,
+		 * or `xz`.
+		 */
+		requestBody: {
+			content: {
+				"application/x-tar": string;
+				"application/octet-stream": string;
 			};
 		};
 	};
@@ -6873,15 +7046,24 @@ export interface operations {
 			200: unknown;
 			/** Bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Container or path does not exist */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6901,19 +7083,23 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					/** @description Container IDs that were deleted */
-					ContainersDeleted?: string[];
-					/**
-					 * Format: int64
-					 * @description Disk space reclaimed in bytes
-					 */
-					SpaceReclaimed?: number;
+				content: {
+					"application/json": {
+						/** @description Container IDs that were deleted */
+						ContainersDeleted?: string[];
+						/**
+						 * Format: int64
+						 * @description Disk space reclaimed in bytes
+						 */
+						SpaceReclaimed?: number;
+					};
 				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6945,11 +7131,15 @@ export interface operations {
 		responses: {
 			/** Summary image data for the images matching the query */
 			200: {
-				schema: definitions["ImageSummary"][];
+				content: {
+					"application/json": components["schemas"]["ImageSummary"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -6964,10 +7154,6 @@ export interface operations {
 	 */
 	ImageBuild: {
 		parameters: {
-			body: {
-				/** A tar archive compressed with one of the following algorithms: identity (no compression), gzip, bzip2, xz. */
-				inputStream?: string;
-			};
 			query: {
 				/** Path within the build context to the `Dockerfile`. This is ignored if `remote` is specified and points to an external `Dockerfile`. */
 				dockerfile?: string;
@@ -7059,11 +7245,21 @@ export interface operations {
 			200: unknown;
 			/** Bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** A tar archive compressed with one of the following algorithms: identity (no compression), gzip, bzip2, xz. */
+		requestBody: {
+			content: {
+				"application/octet-stream": string;
 			};
 		};
 	};
@@ -7095,18 +7291,22 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					CachesDeleted?: string[];
-					/**
-					 * Format: int64
-					 * @description Disk space reclaimed in bytes
-					 */
-					SpaceReclaimed?: number;
+				content: {
+					"application/json": {
+						CachesDeleted?: string[];
+						/**
+						 * Format: int64
+						 * @description Disk space reclaimed in bytes
+						 */
+						SpaceReclaimed?: number;
+					};
 				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7152,10 +7352,6 @@ export interface operations {
 				 */
 				platform?: string;
 			};
-			body: {
-				/** Image content if the value `-` has been specified in fromSrc query parameter */
-				inputImage?: string;
-			};
 			header: {
 				/**
 				 * A base64url-encoded auth configuration.
@@ -7171,11 +7367,22 @@ export interface operations {
 			200: unknown;
 			/** repository does not exist or no read access */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Image content if the value `-` has been specified in fromSrc query parameter */
+		requestBody: {
+			content: {
+				"text/plain": string;
+				"application/octet-stream": string;
 			};
 		};
 	};
@@ -7190,15 +7397,21 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["ImageInspect"];
+				content: {
+					"application/json": components["schemas"]["ImageInspect"];
+				};
 			};
 			/** No such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7213,24 +7426,30 @@ export interface operations {
 		responses: {
 			/** List of image layers */
 			200: {
-				schema: {
-					Id: string;
-					/** Format: int64 */
-					Created: number;
-					CreatedBy: string;
-					Tags: string[];
-					/** Format: int64 */
-					Size: number;
-					Comment: string;
-				}[];
+				content: {
+					"application/json": {
+						Id: string;
+						/** Format: int64 */
+						Created: number;
+						CreatedBy: string;
+						Tags: string[];
+						/** Format: int64 */
+						Size: number;
+						Comment: string;
+					}[];
+				};
 			};
 			/** No such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7268,11 +7487,17 @@ export interface operations {
 			200: unknown;
 			/** No such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7295,19 +7520,31 @@ export interface operations {
 			201: unknown;
 			/** Bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** No such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Conflict */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7334,19 +7571,27 @@ export interface operations {
 		responses: {
 			/** The image was deleted successfully */
 			200: {
-				schema: definitions["ImageDeleteResponseItem"][];
+				content: {
+					"application/json": components["schemas"]["ImageDeleteResponseItem"][];
+				};
 			};
 			/** No such image */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Conflict */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7371,17 +7616,21 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					description?: string;
-					is_official?: boolean;
-					is_automated?: boolean;
-					name?: string;
-					star_count?: number;
-				}[];
+				content: {
+					"application/json": {
+						description?: string;
+						is_official?: boolean;
+						is_automated?: boolean;
+						name?: string;
+						star_count?: number;
+					}[];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7403,19 +7652,23 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					/** @description Images that were deleted */
-					ImagesDeleted?: definitions["ImageDeleteResponseItem"][];
-					/**
-					 * Format: int64
-					 * @description Disk space reclaimed in bytes
-					 */
-					SpaceReclaimed?: number;
+				content: {
+					"application/json": {
+						/** @description Images that were deleted */
+						ImagesDeleted?: components["schemas"]["ImageDeleteResponseItem"][];
+						/**
+						 * Format: int64
+						 * @description Disk space reclaimed in bytes
+						 */
+						SpaceReclaimed?: number;
+					};
 				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7424,31 +7677,37 @@ export interface operations {
 	 * token for accessing the registry without password.
 	 */
 	SystemAuth: {
-		parameters: {
-			body: {
-				/** Authentication to check */
-				authConfig?: definitions["AuthConfig"];
-			};
-		};
 		responses: {
 			/** An identity token was generated successfully. */
 			200: {
-				schema: {
-					/** @description The status of the authentication */
-					Status: string;
-					/** @description An opaque token used to authenticate a user after a successful login */
-					IdentityToken?: string;
+				content: {
+					"application/json": {
+						/** @description The status of the authentication */
+						Status: string;
+						/** @description An opaque token used to authenticate a user after a successful login */
+						IdentityToken?: string;
+					};
 				};
 			};
 			/** No error */
 			204: never;
 			/** Auth error */
 			401: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Authentication to check */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["AuthConfig"];
 			};
 		};
 	};
@@ -7456,11 +7715,15 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["SystemInfo"];
+				content: {
+					"application/json": components["schemas"]["SystemInfo"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7469,11 +7732,15 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["SystemVersion"];
+				content: {
+					"application/json": components["schemas"]["SystemVersion"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7482,13 +7749,44 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				headers: {};
-				schema: string;
+				headers: {
+					/** Max API Version the server supports */
+					"API-Version"?: string;
+					/**
+					 * Default version of docker image builder
+					 *
+					 * The default on Linux is version "2" (BuildKit), but the daemon
+					 * can be configured to recommend version "1" (classic Builder).
+					 * Windows does not yet support BuildKit for native Windows images,
+					 * and uses "1" (classic builder) as a default.
+					 *
+					 * This value is a recommendation as advertised by the daemon, and
+					 * it is up to the client to choose which builder to use.
+					 */
+					"Builder-Version"?: string;
+					/** If the server is running with experimental mode enabled */
+					"Docker-Experimental"?: boolean;
+					/**
+					 * Contains information about Swarm status of the daemon,
+					 * and if the daemon is acting as a manager or worker node.
+					 */
+					Swarm?: "inactive" | "pending" | "error" | "locked" | "active/worker" | "active/manager";
+					"Cache-Control"?: string;
+					Pragma?: string;
+				};
+				content: {
+					"text/plain": string;
+				};
 			};
 			/** server error */
 			500: {
-				headers: {};
-				schema: definitions["ErrorResponse"];
+				headers: {
+					"Cache-Control"?: string;
+					Pragma?: string;
+				};
+				content: {
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7497,21 +7795,35 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				headers: {};
-				schema: string;
+				headers: {
+					/** Max API Version the server supports */
+					"API-Version"?: string;
+					/** Default version of docker image builder */
+					"Builder-Version"?: string;
+					/** If the server is running with experimental mode enabled */
+					"Docker-Experimental"?: boolean;
+					/**
+					 * Contains information about Swarm status of the daemon,
+					 * and if the daemon is acting as a manager or worker node.
+					 */
+					Swarm?: "inactive" | "pending" | "error" | "locked" | "active/worker" | "active/manager";
+					"Cache-Control"?: string;
+					Pragma?: string;
+				};
+				content: {
+					"text/plain": string;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	ImageCommit: {
 		parameters: {
-			body: {
-				/** The container configuration */
-				containerConfig?: definitions["ContainerConfig"];
-			};
 			query: {
 				/** The ID or name of the container to commit */
 				container?: string;
@@ -7532,15 +7844,27 @@ export interface operations {
 		responses: {
 			/** no error */
 			201: {
-				schema: definitions["IdResponse"];
+				content: {
+					"application/json": components["schemas"]["IdResponse"];
+				};
 			};
 			/** no such container */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** The container configuration */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ContainerConfig"];
 			};
 		};
 	};
@@ -7600,15 +7924,21 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["EventMessage"];
+				content: {
+					"application/json": components["schemas"]["EventMessage"];
+				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7622,18 +7952,31 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: {
-					/** Format: int64 */
-					LayersSize?: number;
-					Images?: definitions["ImageSummary"][];
-					Containers?: definitions["ContainerSummary"][];
-					Volumes?: definitions["Volume"][];
-					BuildCache?: definitions["BuildCache"][];
+				content: {
+					"application/json": {
+						/** Format: int64 */
+						LayersSize?: number;
+						Images?: components["schemas"]["ImageSummary"][];
+						Containers?: components["schemas"]["ContainerSummary"][];
+						Volumes?: components["schemas"]["Volume"][];
+						BuildCache?: components["schemas"]["BuildCache"][];
+					};
+					"text/plain": {
+						/** Format: int64 */
+						LayersSize?: number;
+						Images?: components["schemas"]["ImageSummary"][];
+						Containers?: components["schemas"]["ContainerSummary"][];
+						Volumes?: components["schemas"]["Volume"][];
+						BuildCache?: components["schemas"]["BuildCache"][];
+					};
 				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7672,11 +8015,15 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: string;
+				content: {
+					"application/x-tar": string;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/x-tar": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7702,11 +8049,15 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: string;
+				content: {
+					"application/x-tar": string;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/x-tar": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7717,10 +8068,6 @@ export interface operations {
 	 */
 	ImageLoad: {
 		parameters: {
-			body: {
-				/** Tar archive containing images */
-				imagesTarball?: string;
-			};
 			query: {
 				/** Suppress progress details during load. */
 				quiet?: boolean;
@@ -7731,16 +8078,56 @@ export interface operations {
 			200: unknown;
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Tar archive containing images */
+		requestBody: {
+			content: {
+				"application/x-tar": string;
 			};
 		};
 	};
 	/** Run a command inside a running container. */
 	ContainerExec: {
 		parameters: {
-			body: {
-				/** Exec configuration */
-				execConfig: {
+			path: {
+				/** ID or name of container */
+				id: string;
+			};
+		};
+		responses: {
+			/** no error */
+			201: {
+				content: {
+					"application/json": components["schemas"]["IdResponse"];
+				};
+			};
+			/** no such container */
+			404: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** container is paused */
+			409: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** Server error */
+			500: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Exec configuration */
+		requestBody: {
+			content: {
+				"application/json": {
 					/** @description Attach to `stdin` of the exec command. */
 					AttachStdin?: boolean;
 					/** @description Attach to `stdout` of the exec command. */
@@ -7748,7 +8135,7 @@ export interface operations {
 					/** @description Attach to `stderr` of the exec command. */
 					AttachStderr?: boolean;
 					/** @description Initial console size, as an `[height, width]` array. */
-					ConsoleSize?: number[];
+					ConsoleSize?: number[] | null;
 					/**
 					 * @description Override the key sequence for detaching a container. Format is
 					 * a single character `[a-Z]` or `ctrl-<value>` where `<value>`
@@ -7776,28 +8163,6 @@ export interface operations {
 					WorkingDir?: string;
 				};
 			};
-			path: {
-				/** ID or name of container */
-				id: string;
-			};
-		};
-		responses: {
-			/** no error */
-			201: {
-				schema: definitions["IdResponse"];
-			};
-			/** no such container */
-			404: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** container is paused */
-			409: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** Server error */
-			500: {
-				schema: definitions["ErrorResponse"];
-			};
 		};
 	};
 	/**
@@ -7807,16 +8172,6 @@ export interface operations {
 	 */
 	ExecStart: {
 		parameters: {
-			body: {
-				execStartConfig?: {
-					/** @description Detach from the command. */
-					Detach?: boolean;
-					/** @description Allocate a pseudo-TTY. */
-					Tty?: boolean;
-					/** @description Initial console size, as an `[height, width]` array. */
-					ConsoleSize?: number[];
-				};
-			};
 			path: {
 				/** Exec instance ID */
 				id: string;
@@ -7827,11 +8182,29 @@ export interface operations {
 			200: unknown;
 			/** No such exec instance */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Container is stopped or paused */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description Detach from the command. */
+					Detach?: boolean;
+					/** @description Allocate a pseudo-TTY. */
+					Tty?: boolean;
+					/** @description Initial console size, as an `[height, width]` array. */
+					ConsoleSize?: number[] | null;
+				};
 			};
 		};
 	};
@@ -7857,15 +8230,24 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** No such exec instance */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7880,28 +8262,34 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					CanRemove?: boolean;
-					DetachKeys?: string;
-					ID?: string;
-					Running?: boolean;
-					ExitCode?: number;
-					ProcessConfig?: definitions["ProcessConfig"];
-					OpenStdin?: boolean;
-					OpenStderr?: boolean;
-					OpenStdout?: boolean;
-					ContainerID?: string;
-					/** @description The system process ID for the exec process. */
-					Pid?: number;
+				content: {
+					"application/json": {
+						CanRemove?: boolean;
+						DetachKeys?: string;
+						ID?: string;
+						Running?: boolean;
+						ExitCode?: number;
+						ProcessConfig?: components["schemas"]["ProcessConfig"];
+						OpenStdin?: boolean;
+						OpenStderr?: boolean;
+						OpenStdout?: boolean;
+						ContainerID?: string;
+						/** @description The system process ID for the exec process. */
+						Pid?: number;
+					};
 				};
 			};
 			/** No such exec instance */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7927,29 +8315,37 @@ export interface operations {
 		responses: {
 			/** Summary volume data that matches the query */
 			200: {
-				schema: definitions["VolumeListResponse"];
+				content: {
+					"application/json": components["schemas"]["VolumeListResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	VolumeCreate: {
-		parameters: {
-			body: {
-				/** Volume configuration */
-				volumeConfig: definitions["VolumeCreateOptions"];
-			};
-		};
 		responses: {
 			/** The volume was created successfully */
 			201: {
-				schema: definitions["Volume"];
+				content: {
+					"application/json": components["schemas"]["Volume"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Volume configuration */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["VolumeCreateOptions"];
 			};
 		};
 	};
@@ -7963,15 +8359,21 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["Volume"];
+				content: {
+					"application/json": components["schemas"]["Volume"];
+				};
 			};
 			/** No such volume */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -7980,15 +8382,6 @@ export interface operations {
 			path: {
 				/** The name or ID of the volume */
 				name: string;
-			};
-			body: {
-				/**
-				 * The spec of the volume to update. Currently, only Availability may
-				 * change. All other fields must remain unchanged.
-				 */
-				body?: {
-					Spec?: definitions["ClusterVolumeSpec"];
-				};
 			};
 			query: {
 				/**
@@ -8004,19 +8397,38 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such volume */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/**
+		 * The spec of the volume to update. Currently, only Availability may
+		 * change. All other fields must remain unchanged.
+		 */
+		requestBody: {
+			content: {
+				"application/json": {
+					Spec?: components["schemas"]["ClusterVolumeSpec"];
+				};
 			};
 		};
 	};
@@ -8037,15 +8449,24 @@ export interface operations {
 			204: never;
 			/** No such volume or volume driver */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Volume is in use and cannot be removed */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8065,19 +8486,23 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					/** @description Volumes that were deleted */
-					VolumesDeleted?: string[];
-					/**
-					 * Format: int64
-					 * @description Disk space reclaimed in bytes
-					 */
-					SpaceReclaimed?: number;
+				content: {
+					"application/json": {
+						/** @description Volumes that were deleted */
+						VolumesDeleted?: string[];
+						/**
+						 * Format: int64
+						 * @description Disk space reclaimed in bytes
+						 */
+						SpaceReclaimed?: number;
+					};
 				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8115,11 +8540,15 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["Network"][];
+				content: {
+					"application/json": components["schemas"]["Network"][];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8139,15 +8568,21 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["Network"];
+				content: {
+					"application/json": components["schemas"]["Network"];
+				};
 			};
 			/** Network not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8163,23 +8598,62 @@ export interface operations {
 			204: never;
 			/** operation not supported for pre-defined networks */
 			403: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such network */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	NetworkCreate: {
-		parameters: {
-			body: {
-				/** Network configuration */
-				networkConfig: {
+		responses: {
+			/** No error */
+			201: {
+				content: {
+					"application/json": {
+						/** @description The ID of the created network. */
+						Id?: string;
+						Warning?: string;
+					};
+				};
+			};
+			/** operation not supported for pre-defined networks */
+			403: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** plugin not found */
+			404: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** Server error */
+			500: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Network configuration */
+		requestBody: {
+			content: {
+				"application/json": {
 					/** @description The network's name. */
 					Name: string;
 					/**
@@ -8209,8 +8683,7 @@ export interface operations {
 					 * in swarm mode.
 					 */
 					Ingress?: boolean;
-					/** @description Optional custom IP scheme for the network. */
-					IPAM?: definitions["IPAM"];
+					IPAM?: components["schemas"]["IPAM"];
 					/** @description Enable IPv6 on the network. */
 					EnableIPv6?: boolean;
 					/** @description Network specific options to be used by the drivers. */
@@ -8220,28 +8693,6 @@ export interface operations {
 				};
 			};
 		};
-		responses: {
-			/** No error */
-			201: {
-				schema: {
-					/** @description The ID of the created network. */
-					Id?: string;
-					Warning?: string;
-				};
-			};
-			/** operation not supported for pre-defined networks */
-			403: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** plugin not found */
-			404: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** Server error */
-			500: {
-				schema: definitions["ErrorResponse"];
-			};
-		};
 	};
 	NetworkConnect: {
 		parameters: {
@@ -8249,28 +8700,39 @@ export interface operations {
 				/** Network ID or name */
 				id: string;
 			};
-			body: {
-				container: {
-					/** @description The ID or name of the container to connect to the network. */
-					Container?: string;
-					EndpointConfig?: definitions["EndpointSettings"];
-				};
-			};
 		};
 		responses: {
 			/** No error */
 			200: unknown;
 			/** Operation not supported for swarm scoped networks */
 			403: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Network or container not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The ID or name of the container to connect to the network. */
+					Container?: string;
+					EndpointConfig?: components["schemas"]["EndpointSettings"];
+				};
 			};
 		};
 	};
@@ -8280,29 +8742,40 @@ export interface operations {
 				/** Network ID or name */
 				id: string;
 			};
-			body: {
-				container: {
-					/** @description The ID or name of the container to disconnect from the network. */
-					Container?: string;
-					/** @description Force the container to disconnect from the network. */
-					Force?: boolean;
-				};
-			};
 		};
 		responses: {
 			/** No error */
 			200: unknown;
 			/** Operation not supported for swarm scoped networks */
 			403: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Network or container not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The ID or name of the container to disconnect from the network. */
+					Container?: string;
+					/** @description Force the container to disconnect from the network. */
+					Force?: boolean;
+				};
 			};
 		};
 	};
@@ -8322,14 +8795,18 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: {
-					/** @description Networks that were deleted */
-					NetworksDeleted?: string[];
+				content: {
+					"application/json": {
+						/** @description Networks that were deleted */
+						NetworksDeleted?: string[];
+					};
 				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8352,11 +8829,15 @@ export interface operations {
 		responses: {
 			/** No error */
 			200: {
-				schema: definitions["Plugin"][];
+				content: {
+					"application/json": components["schemas"]["Plugin"][];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8373,11 +8854,17 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["PluginPrivilege"][];
+				content: {
+					"application/json": components["schemas"]["PluginPrivilege"][];
+					"text/plain": components["schemas"]["PluginPrivilege"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8411,18 +8898,18 @@ export interface operations {
 				 */
 				"X-Registry-Auth"?: string;
 			};
-			body: {
-				body?: definitions["PluginPrivilege"][];
-			};
 		};
 		responses: {
 			/** no error */
 			204: never;
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
+		requestBody: components["requestBodies"]["PluginPrivilegeArray"];
 	};
 	PluginInspect: {
 		parameters: {
@@ -8437,15 +8924,24 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Plugin"];
+				content: {
+					"application/json": components["schemas"]["Plugin"];
+					"text/plain": components["schemas"]["Plugin"];
+				};
 			};
 			/** plugin is not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8469,15 +8965,24 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Plugin"];
+				content: {
+					"application/json": components["schemas"]["Plugin"];
+					"text/plain": components["schemas"]["Plugin"];
+				};
 			};
 			/** plugin is not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8500,11 +9005,17 @@ export interface operations {
 			200: unknown;
 			/** plugin is not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8527,11 +9038,17 @@ export interface operations {
 			200: unknown;
 			/** plugin is not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8562,22 +9079,26 @@ export interface operations {
 				 */
 				"X-Registry-Auth"?: string;
 			};
-			body: {
-				body?: definitions["PluginPrivilege"][];
-			};
 		};
 		responses: {
 			/** no error */
 			204: never;
 			/** plugin not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
+		requestBody: components["requestBodies"]["PluginPrivilegeArray"];
 	};
 	PluginCreate: {
 		parameters: {
@@ -8588,17 +9109,22 @@ export interface operations {
 				 */
 				name: string;
 			};
-			body: {
-				/** Path to tar containing plugin rootfs and manifest */
-				tarContext?: string;
-			};
 		};
 		responses: {
 			/** no error */
 			204: never;
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/** Path to tar containing plugin rootfs and manifest */
+		requestBody: {
+			content: {
+				"application/x-tar": string;
 			};
 		};
 	};
@@ -8618,11 +9144,17 @@ export interface operations {
 			200: unknown;
 			/** plugin not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8635,20 +9167,28 @@ export interface operations {
 				 */
 				name: string;
 			};
-			body: {
-				body?: string[];
-			};
 		};
 		responses: {
 			/** No error */
 			204: never;
 			/** Plugin not installed */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": string[];
 			};
 		};
 	};
@@ -8672,15 +9212,24 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Node"][];
+				content: {
+					"application/json": components["schemas"]["Node"][];
+					"text/plain": components["schemas"]["Node"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8694,19 +9243,31 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Node"];
+				content: {
+					"application/json": components["schemas"]["Node"];
+					"text/plain": components["schemas"]["Node"];
+				};
 			};
 			/** no such node */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8726,15 +9287,24 @@ export interface operations {
 			200: unknown;
 			/** no such node */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -8743,9 +9313,6 @@ export interface operations {
 			path: {
 				/** The ID of the node */
 				id: string;
-			};
-			body: {
-				body?: definitions["NodeSpec"];
 			};
 			query: {
 				/**
@@ -8760,19 +9327,37 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such node */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["NodeSpec"];
+				"text/plain": components["schemas"]["NodeSpec"];
 			};
 		};
 	};
@@ -8780,26 +9365,68 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Swarm"];
+				content: {
+					"application/json": components["schemas"]["Swarm"];
+					"text/plain": components["schemas"]["Swarm"];
+				};
 			};
 			/** no such swarm */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	SwarmInit: {
-		parameters: {
-			body: {
-				body: {
+		responses: {
+			/** no error */
+			200: {
+				content: {
+					"application/json": string;
+					"text/plain": string;
+				};
+			};
+			/** bad parameter */
+			400: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** server error */
+			500: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** node is already part of a swarm */
+			503: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
 					/**
 					 * @description Listen address used for inter-manager communication, as well
 					 * as determining the networking interface used for the VXLAN
@@ -8851,33 +9478,128 @@ export interface operations {
 					 * from the default subnet pool.
 					 */
 					SubnetSize?: number;
-					Spec?: definitions["SwarmSpec"];
+					Spec?: components["schemas"]["SwarmSpec"];
 				};
-			};
-		};
-		responses: {
-			/** no error */
-			200: {
-				schema: string;
-			};
-			/** bad parameter */
-			400: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** server error */
-			500: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** node is already part of a swarm */
-			503: {
-				schema: definitions["ErrorResponse"];
+				"text/plain": {
+					/**
+					 * @description Listen address used for inter-manager communication, as well
+					 * as determining the networking interface used for the VXLAN
+					 * Tunnel Endpoint (VTEP). This can either be an address/port
+					 * combination in the form `192.168.1.1:4567`, or an interface
+					 * followed by a port number, like `eth0:4567`. If the port number
+					 * is omitted, the default swarm listening port is used.
+					 */
+					ListenAddr?: string;
+					/**
+					 * @description Externally reachable address advertised to other nodes. This
+					 * can either be an address/port combination in the form
+					 * `192.168.1.1:4567`, or an interface followed by a port number,
+					 * like `eth0:4567`. If the port number is omitted, the port
+					 * number from the listen address is used. If `AdvertiseAddr` is
+					 * not specified, it will be automatically detected when possible.
+					 */
+					AdvertiseAddr?: string;
+					/**
+					 * @description Address or interface to use for data path traffic (format:
+					 * `<ip|interface>`), for example,  `192.168.1.1`, or an interface,
+					 * like `eth0`. If `DataPathAddr` is unspecified, the same address
+					 * as `AdvertiseAddr` is used.
+					 *
+					 * The `DataPathAddr` specifies the address that global scope
+					 * network drivers will publish towards other  nodes in order to
+					 * reach the containers running on this node. Using this parameter
+					 * it is possible to separate the container data traffic from the
+					 * management traffic of the cluster.
+					 */
+					DataPathAddr?: string;
+					/**
+					 * Format: uint32
+					 * @description DataPathPort specifies the data path port number for data traffic.
+					 * Acceptable port range is 1024 to 49151.
+					 * if no port is set or is set to 0, default port 4789 will be used.
+					 */
+					DataPathPort?: number;
+					/**
+					 * @description Default Address Pool specifies default subnet pools for global
+					 * scope networks.
+					 */
+					DefaultAddrPool?: string[];
+					/** @description Force creation of a new swarm. */
+					ForceNewCluster?: boolean;
+					/**
+					 * Format: uint32
+					 * @description SubnetSize specifies the subnet size of the networks created
+					 * from the default subnet pool.
+					 */
+					SubnetSize?: number;
+					Spec?: components["schemas"]["SwarmSpec"];
+				};
 			};
 		};
 	};
 	SwarmJoin: {
-		parameters: {
-			body: {
-				body: {
+		responses: {
+			/** no error */
+			200: unknown;
+			/** bad parameter */
+			400: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** server error */
+			500: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+			/** node is already part of a swarm */
+			503: {
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/**
+					 * @description Listen address used for inter-manager communication if the node
+					 * gets promoted to manager, as well as determining the networking
+					 * interface used for the VXLAN Tunnel Endpoint (VTEP).
+					 */
+					ListenAddr?: string;
+					/**
+					 * @description Externally reachable address advertised to other nodes. This
+					 * can either be an address/port combination in the form
+					 * `192.168.1.1:4567`, or an interface followed by a port number,
+					 * like `eth0:4567`. If the port number is omitted, the port
+					 * number from the listen address is used. If `AdvertiseAddr` is
+					 * not specified, it will be automatically detected when possible.
+					 */
+					AdvertiseAddr?: string;
+					/**
+					 * @description Address or interface to use for data path traffic (format:
+					 * `<ip|interface>`), for example,  `192.168.1.1`, or an interface,
+					 * like `eth0`. If `DataPathAddr` is unspecified, the same address
+					 * as `AdvertiseAddr` is used.
+					 *
+					 * The `DataPathAddr` specifies the address that global scope
+					 * network drivers will publish towards other nodes in order to
+					 * reach the containers running on this node. Using this parameter
+					 * it is possible to separate the container data traffic from the
+					 * management traffic of the cluster.
+					 */
+					DataPathAddr?: string;
+					/** @description Addresses of manager nodes already participating in the swarm. */
+					RemoteAddrs?: string[];
+					/** @description Secret token for joining this swarm. */
+					JoinToken?: string;
+				};
+				"text/plain": {
 					/**
 					 * @description Listen address used for inter-manager communication if the node
 					 * gets promoted to manager, as well as determining the networking
@@ -8913,22 +9635,6 @@ export interface operations {
 				};
 			};
 		};
-		responses: {
-			/** no error */
-			200: unknown;
-			/** bad parameter */
-			400: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** server error */
-			500: {
-				schema: definitions["ErrorResponse"];
-			};
-			/** node is already part of a swarm */
-			503: {
-				schema: definitions["ErrorResponse"];
-			};
-		};
 	};
 	SwarmLeave: {
 		parameters: {
@@ -8945,19 +9651,22 @@ export interface operations {
 			200: unknown;
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	SwarmUpdate: {
 		parameters: {
-			body: {
-				body: definitions["SwarmSpec"];
-			};
 			query: {
 				/**
 				 * The version number of the swarm object being updated. This is
@@ -8977,15 +9686,30 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["SwarmSpec"];
+				"text/plain": components["schemas"]["SwarmSpec"];
 			};
 		};
 	};
@@ -8993,40 +9717,56 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: {
-					/** @description The swarm's unlock key. */
-					UnlockKey?: string;
+				content: {
+					"application/json": {
+						/** @description The swarm's unlock key. */
+						UnlockKey?: string;
+					};
+					"text/plain": {
+						/** @description The swarm's unlock key. */
+						UnlockKey?: string;
+					};
 				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	SwarmUnlock: {
-		parameters: {
-			body: {
-				body: {
-					/** @description The swarm's unlock key. */
-					UnlockKey?: string;
-				};
-			};
-		};
 		responses: {
 			/** no error */
 			200: unknown;
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @description The swarm's unlock key. */
+					UnlockKey?: string;
+				};
 			};
 		};
 	};
@@ -9052,23 +9792,29 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Service"][];
+				content: {
+					"application/json": components["schemas"]["Service"][];
+					"text/plain": components["schemas"]["Service"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	ServiceCreate: {
 		parameters: {
-			body: {
-				body: definitions["ServiceSpec"] & { [key: string]: unknown };
-			};
 			header: {
 				/**
 				 * A base64url-encoded auth configuration for pulling from private
@@ -9083,32 +9829,51 @@ export interface operations {
 		responses: {
 			/** no error */
 			201: {
-				schema: {
-					/** @description The ID of the created service. */
-					ID?: string;
-					/** @description Optional warning message */
-					Warning?: string;
+				content: {
+					"application/json": {
+						/** @description The ID of the created service. */
+						ID?: string;
+						/** @description Optional warning message */
+						Warning?: string;
+					};
 				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** network is not eligible for services */
 			403: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** name conflicts with an existing service */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ServiceSpec"] & {
+					[key: string]: unknown;
+				};
 			};
 		};
 	};
@@ -9126,19 +9891,31 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Service"];
+				content: {
+					"application/json": components["schemas"]["Service"];
+					"text/plain": components["schemas"]["Service"];
+				};
 			};
 			/** no such service */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9154,15 +9931,24 @@ export interface operations {
 			200: unknown;
 			/** no such service */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9171,9 +9957,6 @@ export interface operations {
 			path: {
 				/** ID or name of service. */
 				id: string;
-			};
-			body: {
-				body: definitions["ServiceSpec"] & { [key: string]: unknown };
 			};
 			query: {
 				/**
@@ -9210,23 +9993,40 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["ServiceUpdateResponse"];
+				content: {
+					"application/json": components["schemas"]["ServiceUpdateResponse"];
+				};
 			};
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such service */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ServiceSpec"] & {
+					[key: string]: unknown;
+				};
 			};
 		};
 	};
@@ -9266,19 +10066,32 @@ export interface operations {
 		responses: {
 			/** logs returned as a stream in response body */
 			200: {
-				schema: string;
+				content: {
+					"application/vnd.docker.raw-stream": string;
+					"application/vnd.docker.multiplexed-stream": string;
+				};
 			};
 			/** no such service */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9304,15 +10117,21 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Task"][];
+				content: {
+					"application/json": components["schemas"]["Task"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9326,19 +10145,27 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Task"];
+				content: {
+					"application/json": components["schemas"]["Task"];
+				};
 			};
 			/** no such task */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9378,19 +10205,32 @@ export interface operations {
 		responses: {
 			/** logs returned as a stream in response body */
 			200: {
-				schema: string;
+				content: {
+					"application/vnd.docker.raw-stream": string;
+					"application/vnd.docker.multiplexed-stream": string;
+				};
 			};
 			/** no such task */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+					"application/json": unknown;
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+					"application/vnd.docker.multiplexed-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9414,40 +10254,56 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Secret"][];
+				content: {
+					"application/json": components["schemas"]["Secret"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	SecretCreate: {
-		parameters: {
-			body: {
-				body?: definitions["SecretSpec"] & { [key: string]: unknown };
-			};
-		};
 		responses: {
 			/** no error */
 			201: {
-				schema: definitions["IdResponse"];
+				content: {
+					"application/json": components["schemas"]["IdResponse"];
+				};
 			};
 			/** name conflicts with an existing object */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["SecretSpec"] & {
+					[key: string]: unknown;
+				};
 			};
 		};
 	};
@@ -9461,19 +10317,27 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Secret"];
+				content: {
+					"application/json": components["schemas"]["Secret"];
+				};
 			};
 			/** secret not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9489,15 +10353,21 @@ export interface operations {
 			204: never;
 			/** secret not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9506,14 +10376,6 @@ export interface operations {
 			path: {
 				/** The ID or name of the secret */
 				id: string;
-			};
-			body: {
-				/**
-				 * The spec of the secret to update. Currently, only the Labels field
-				 * can be updated. All other fields must remain unchanged from the
-				 * [SecretInspect endpoint](#operation/SecretInspect) response values.
-				 */
-				body?: definitions["SecretSpec"];
 			};
 			query: {
 				/**
@@ -9528,19 +10390,42 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such secret */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/**
+		 * The spec of the secret to update. Currently, only the Labels field
+		 * can be updated. All other fields must remain unchanged from the
+		 * [SecretInspect endpoint](#operation/SecretInspect) response values.
+		 */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["SecretSpec"];
+				"text/plain": components["schemas"]["SecretSpec"];
 			};
 		};
 	};
@@ -9564,40 +10449,56 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Config"][];
+				content: {
+					"application/json": components["schemas"]["Config"][];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
 	ConfigCreate: {
-		parameters: {
-			body: {
-				body?: definitions["ConfigSpec"] & { [key: string]: unknown };
-			};
-		};
 		responses: {
 			/** no error */
 			201: {
-				schema: definitions["IdResponse"];
+				content: {
+					"application/json": components["schemas"]["IdResponse"];
+				};
 			};
 			/** name conflicts with an existing object */
 			409: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ConfigSpec"] & {
+					[key: string]: unknown;
+				};
 			};
 		};
 	};
@@ -9611,19 +10512,27 @@ export interface operations {
 		responses: {
 			/** no error */
 			200: {
-				schema: definitions["Config"];
+				content: {
+					"application/json": components["schemas"]["Config"];
+				};
 			};
 			/** config not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9639,15 +10548,21 @@ export interface operations {
 			204: never;
 			/** config not found */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9656,14 +10571,6 @@ export interface operations {
 			path: {
 				/** The ID or name of the config */
 				id: string;
-			};
-			body: {
-				/**
-				 * The spec of the config to update. Currently, only the Labels field
-				 * can be updated. All other fields must remain unchanged from the
-				 * [ConfigInspect endpoint](#operation/ConfigInspect) response values.
-				 */
-				body?: definitions["ConfigSpec"];
 			};
 			query: {
 				/**
@@ -9678,19 +10585,42 @@ export interface operations {
 			200: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** no such config */
 			404: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** node is not part of a swarm */
 			503: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+					"text/plain": components["schemas"]["ErrorResponse"];
+				};
+			};
+		};
+		/**
+		 * The spec of the config to update. Currently, only the Labels field
+		 * can be updated. All other fields must remain unchanged from the
+		 * [ConfigInspect endpoint](#operation/ConfigInspect) response values.
+		 */
+		requestBody: {
+			content: {
+				"application/json": components["schemas"]["ConfigSpec"];
+				"text/plain": components["schemas"]["ConfigSpec"];
 			};
 		};
 	};
@@ -9705,15 +10635,21 @@ export interface operations {
 		responses: {
 			/** descriptor and platform information */
 			200: {
-				schema: definitions["DistributionInspect"];
+				content: {
+					"application/json": components["schemas"]["DistributionInspect"];
+				};
 			};
 			/** Failed authentication or no image found */
 			401: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** Server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/json": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};
@@ -9749,11 +10685,15 @@ export interface operations {
 			101: unknown;
 			/** bad parameter */
 			400: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 			/** server error */
 			500: {
-				schema: definitions["ErrorResponse"];
+				content: {
+					"application/vnd.docker.raw-stream": components["schemas"]["ErrorResponse"];
+				};
 			};
 		};
 	};

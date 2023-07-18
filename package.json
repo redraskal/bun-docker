@@ -8,7 +8,8 @@
 	},
 	"devDependencies": {
 		"bun-types": "latest",
-		"openapi-typescript": "v5"
+		"openapi-typescript": "v5",
+		"swagger2openapi": "^7.0.8"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
