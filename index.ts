@@ -85,7 +85,13 @@ function unixFetch(unixPath: string) {
 					.map(([key, value]) => `${key}: ${value}`)
 					.join("\r\n")
 			: "\r\n";
-		await promiseSocket.write(`${init?.method || "GET"} ${url} HTTP/1.0\r\nHost: localhost\r\n${requestHeaders}\r\n`);
+		const jsonBody = init?.body ? (init.body as string) : null;
+		const content = init?.body
+			? `Content-Type: application/json\r\nContent-Length: ${jsonBody?.length}\r\n\r\n${jsonBody}`
+			: "";
+		await promiseSocket.write(
+			`${init?.method || "GET"} ${url} HTTP/1.0\r\nHost: localhost\r\n${requestHeaders}${content}\r\n`
+		);
 		// TODO: figure out Docker stream responses
 		const buf = (await promiseSocket.read()) as Buffer;
 		const body = decoder.decode(buf).split("\r\n\r\n");
